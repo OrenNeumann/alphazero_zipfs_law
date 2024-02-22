@@ -141,8 +141,9 @@ def process_games(env: str, path: str, max_file_num: int = 39, save_serial: bool
                     turns_to_end[key] = turns_to_end.get(key, 0) + end - turn
             if save_value:
                 for turn, key in enumerate(keys, start=1):
-                    player = 1 - turn % 2
-                    values[key] = values.get(key, 0) + board.player_return(player)
+                    #player = 1 - turn % 2
+                    #values[key] = values.get(key, 0) + board.player_return(player)
+                    values[key] = values.get(key, 0) + board.player_return(0)
 
     extra_info = {}
     if save_serial:

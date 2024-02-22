@@ -7,6 +7,18 @@ import matplotlib.cm as cm
 import matplotlib.pyplot as plt
 from tqdm import tqdm
 
+
+"""
+IMPORTANT:
+I changed the way values are saved, or calculated by agents. Now an agent returns the value
+according to the first player (player 0). The solver calculates the value for the current player.
+Change the solver code to get the player 0 value.
+
+ALSO:
+I changed the model evaluator function to work with data chunks rather than individual states.
+
+"""
+
 env = 'connect4'
 
 data_labels = [0, 2, 4, 6]

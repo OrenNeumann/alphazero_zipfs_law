@@ -50,61 +50,26 @@ def get_model_value_estimator(env: str, config_path: str):
     game = _get_game(env)
     config = load_config(config_path)
     model = load_model_from_checkpoint(config=config, path=config_path, checkpoint_number=10_000)
-    evaluator = evaluator_lib.AlphaZeroEvaluator(game, model)
-
-    def model_value(serial_state: str) -> float:
-        """
-        Calculate value estimation of the model on a board state.
-        """
-        state = game.deserialize_state(serial_state)
-        if state.is_terminal():
-            # if the state is terminal, the model has nothing to predict.
-            raise Exception('Terminal state encountered')
-        # If I'm not mistaken, an evaluator returns two values for players 0 and 1.
-        # The first value is always for player 0 (the player who took the first turn).
-        # What the agent actually learns is only to predict the value of player 0 (unlike
-        # my old AZ implementation).
-        model_v = evaluator.evaluate(state)[state.current_player()]
-        return model_v
-    return model_value
-
-
-def get_model_value_estimator_FAST(env: str, config_path: str):
-    """ Creates an estimator function that uses a trained model to calculate state values.
-
-        :param env: Game environment.
-        :param config_path: Path to trained model.
-    """
-    game = _get_game(env)
-    config = load_config(config_path)
-    model = load_model_from_checkpoint(config=config, path=config_path, checkpoint_number=10_000)
 
     def model_value(serial_states: list[str]) -> npt.NDArray[float]:
         """
         Calculate value estimations of the model on a list of board states.
+        Note: this will crash if serial_states is too large and the network is
+        too big. If you get a segmentation fault, call this function on smaller
+        chunks of data.
         """
-        #if model.num_trainable_variables > 70_000:
-        #    raise Exception('will crash, tensor is too big for serials length 1696920. split the inference calculation.')
 
         observations = []
         masks = []
-        player_sign = np.zeros(len(serial_states))
         for i, serial in enumerate(serial_states):
             state = game.deserialize_state(serial)
             observations.append(state.observation_tensor())
             masks.append(state.legal_actions_mask())
-            player_sign[i] = 1 - 2 * state.current_player()
         values = model.inference(observations, masks)[0]
-        #print(values.shape)
-        #print(values.dtype)
-        #print(player_sign.shape)
-        #print(player_sign.dtype)
-        # models return the value of a state for player 0 (the player who started the game).
-        # So multiplying by +/- according to the current player.
-        return values.flatten() * player_sign
+
+        return values.flatten()
 
     return model_value
-
 
 
 def get_solver_value_estimator(env: str):

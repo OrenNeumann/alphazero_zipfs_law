@@ -1,12 +1,12 @@
 import numpy as np
 from data_analysis.gather_agent_data import gather_data
-from data_analysis.utils import get_model_value_estimator, sort_by_frequency, get_model_value_estimator_FAST
+from data_analysis.utils import get_model_value_estimator
 import matplotlib
 import matplotlib.cm as cm
 import matplotlib.pyplot as plt
 from tqdm import tqdm
 from collections import Counter
-from multiprocessing import Pool
+#from multiprocessing import Pool
 
 """
 Value loss
@@ -19,14 +19,14 @@ games = ['connect4', 'pentago', 'oware', 'checkers']
 env = games[game_num]
 
 data_labels = [0, 1, 2, 3, 4, 5, 6] # for oware no 6
-board_counter, info = gather_data(env, data_labels, max_file_num=3, save_serial=True, save_value=True)
+board_counter, info = gather_data(env, data_labels, max_file_num=2, save_serial=True, save_value=True)
 serials = info['serials']
 real_values = info['values']
 
 # (check) seems pruning 1's reduces by one OOM, 2's and 3's together by another OOM.
-#print('Counter length before pruning: ', len(board_counter))
-#board_counter = Counter({k: c for k, c in board_counter.items() if c >= 2})
-#print('After pruning: ', len(board_counter))
+print('Counter length before pruning: ', len(board_counter))
+board_counter = Counter({k: c for k, c in board_counter.items() if c >= 2})
+print('After pruning: ', len(board_counter))
 
 num_processes = 20
 def multiprocess_values(data):
@@ -36,11 +36,9 @@ def multiprocess_values(data):
 print('loss part...')
 estimators = [0, 1, 2, 3, 4, 5, 6]
 model_losses = dict()
-#for agent in tqdm(estimators, desc='Estimating model loss'):
 for agent in estimators:
     path_model = '/mnt/ceph/neumann/alphazero/scratch_backup/models/connect_four_10000/q_' + str(agent) + '_0/'
-    #model_value = get_model_value_estimator(env, path_model)
-    model_values = get_model_value_estimator_FAST(env, path_model)
+    model_values = get_model_value_estimator(env, path_model)
     temp_losses = dict()
 
     temp_serials = []
@@ -49,17 +47,15 @@ for agent in estimators:
         temp_serials.append(serials[key])
         z.append(real_values[key])
     z = np.array(z)
-    #v = model_values(temp_serials)
     chunk_size = len(temp_serials) // num_processes
     data_chunks = [temp_serials[i:i + chunk_size] for i in range(0, len(temp_serials), chunk_size)]
     vl = []
-    for chunk in tqdm(data_chunks, desc='Estimating model ' + str(agent) + 'loss'):
+    for chunk in tqdm(data_chunks, desc='Estimating model ' + str(agent) + ' loss'):
         vl.append(model_values(chunk))
     v = np.concatenate(vl)
     # Create a multiprocessing Pool
     #pool = Pool(processes=num_processes)
     #v = pool.map(multiprocess_values, data_chunks)
-
 
     model_losses[agent] = (z - v) ** 2
     """
@@ -70,7 +66,7 @@ for agent in estimators:
     model_losses[agent] = temp_losses
     """
 
-par = np.array([608, 1304, 2984, 7496, 21128, 66824, 231944])
+par = np.load('config/parameter_counts/'+env+'.npy')
 
 #### colorbar plot cargo-cult code ###
 w, h = plt.figaspect(0.6)
