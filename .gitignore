@@ -4,3 +4,4 @@ bin/
 lib64
 pyvenv.cfg
 data_analysis/__pycache__
+plots/

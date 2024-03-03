@@ -81,4 +81,4 @@ plt.yticks(fontsize=font_num)
 plt.legend(fontsize=font - 3, framealpha=1)
 
 plt.tight_layout()
-plt.savefig('theory.png', dpi=900)
+plt.savefig('plots/theory.png', dpi=900)
