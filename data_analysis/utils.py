@@ -1,7 +1,7 @@
 import collections
 
 from alphazero_scaling.solver_bot import connect_four_solver
-from alphazero_scaling.AZ_helper_lib import load_model_from_checkpoint, load_config
+from alphazero_scaling.loading import load_model_from_checkpoint, load_config
 from open_spiel.python.algorithms.alpha_zero import evaluator as evaluator_lib
 import subprocess
 from subprocess import PIPE

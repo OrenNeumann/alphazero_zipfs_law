@@ -24,9 +24,8 @@ print('Collecting '+env+' games:')
 # Process all games
 # board_counter, _ = process_games(env, path)
 board_counter, information = process_games(env, path, save_serial=True,
-                                           save_turn_num=True, max_file_num=39)
+                                           max_file_num=39)
 serial_states = information['serials']
-turn_numbers = information['turn_nums']
 
 # Sort by frequency
 board_freq = sorted(board_counter.items(), key=lambda x: x[1], reverse=True)
