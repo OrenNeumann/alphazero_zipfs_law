@@ -51,7 +51,7 @@ def get_model_value_estimator(env: str, config_path: str):
     config = load_config(config_path)
     model = load_model_from_checkpoint(config=config, path=config_path, checkpoint_number=10_000)
 
-    def model_value(serial_states: list[str]) -> npt.NDArray[float]:
+    def model_value(serial_states: list[str]) -> npt.NDArray[np.float64]:
         """
         Calculate value estimations of the model on a list of board states.
         Note: this will crash if serial_states is too large and the network is
@@ -152,3 +152,15 @@ def get_solver_turns(counter, serials, turns, save_data=True):
             pickle.dump(y_turns, f)
     # return cumulative average
     return np.cumsum(y_turns) / (np.arange(n) + 1)
+
+
+
+def calculate_solver_values(env: str, serial_states):
+    """ Calculate and save a database of solver value estimations of serial_states. """
+    solver_value = get_solver_value_estimator(env)
+    solver_values = {}
+    for key, serial in tqdm(serial_states.items(), desc="Estimating solver state values"):
+        solver_values[key] = solver_value(serial)
+
+    with open('solver_values.pkl', 'wb') as f:
+        pickle.dump(solver_values, f)
