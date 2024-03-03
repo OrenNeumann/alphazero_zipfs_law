@@ -1,29 +1,9 @@
 import numpy as np
 import matplotlib.pyplot as plt
-
+import scienceplots
 
 """
-sigma = 1
-mu = 0
-def gaussian(x):
-    return 1/np.sqrt(2*np.pi*sigma**2) * np.exp(-(x-mu)**2/(2*sigma**2))
-
-values = np.arange(-10,10,0.0001)
-
-probs = gaussian(values)
-
-n = np.arange(1,len(values))
-
-# sort n by probs:
-probs, n_sorted = zip(*sorted(zip(probs, n)))
-
-#plt.loglog(n[::-1],np.array(probs)/min(probs),'*')
-plt.xscale('log')
-plt.yscale('log')
-plt.scatter(n[::-1],np.array(probs)/min(probs), color='dodgerblue', s=4, alpha=0.3)
-plt.xlabel('rank')
-plt.ylabel('frequency')
-
+Plot the Zipf law of a theoretical game, which is just a branching tree.
 """
 
 
@@ -82,3 +62,4 @@ plt.legend(fontsize=font - 3, framealpha=1)
 
 plt.tight_layout()
 plt.savefig('plots/theory.png', dpi=900)
+
