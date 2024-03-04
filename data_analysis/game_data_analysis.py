@@ -58,8 +58,12 @@ def _extract_games(file_name):
     return games
 
 
-def process_games(env: str, path: str, max_file_num: int = 39, save_serial: bool = False,
-                  save_turn_num: bool = False, save_value: bool = False) -> tuple[Counter, dict]:
+def process_games(env: str,
+                  path: str,
+                  max_file_num: int = 39,
+                  save_serial: bool = False,
+                  save_turn_num: bool = False,
+                  save_value: bool = False) -> tuple[Counter, dict]:
     """ Get game actions from logfiles and use them to calculate which board states were
         played, returning a counter of board state frequencies.
         For convenience, the first (empty) board and terminal boards are not counted.
@@ -166,7 +170,10 @@ def generate_random_games(env, n=25_000 * 80, save_serial=False):
         return board_counter
 
 
-def process_games_with_buffer(env: str, path: str, max_file_num: int = 39) -> tuple[Counter, dict]:
+def process_games_with_buffer(env: str,
+                              path: str,
+                              sample_unique_states=False,
+                              max_file_num: int = 39) -> tuple[Counter, dict]:
     """ Same as process_games, but the state counts are the number of times
         an agent will see each state when training with prioritized experience replay."""
     batch_size = 2 ** 10
@@ -198,7 +205,10 @@ def process_games_with_buffer(env: str, path: str, max_file_num: int = 39) -> tu
 
                 if new_states == sample_threshold:
                     new_states = 0
-                    samples = _sample_from_buffer(buffer, batch_size)
+                    if sample_unique_states:
+                        samples = _sample_unique_states(buffer, batch_size)
+                    else:
+                        samples = _sample_uniformly(buffer, batch_size)
                     for k in samples:
                         board_counter[k] += 1
                         if board_counter[k] == 1:
@@ -212,8 +222,14 @@ def process_games_with_buffer(env: str, path: str, max_file_num: int = 39) -> tu
     return board_counter, extra_info
 
 
-def _sample_from_buffer(buffer, batch_size):
+def _sample_unique_states(buffer, batch_size):
     unique_keys = list(set(buffer))
     if len(unique_keys) < batch_size:
         raise Exception(f'Batch size ({batch_size}) larger than number of unique keys ({len(unique_keys)}).')
     return sample(unique_keys, batch_size)
+
+
+def _sample_uniformly(buffer, batch_size):
+    return sample(buffer, batch_size)
+
+

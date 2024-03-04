@@ -1,6 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import yaml
+from data_analysis.utils import fit_power_law
 
 """
 Plot all Zipf's law figures used in the workshop abstact.
@@ -13,25 +14,6 @@ mode = 'train'
 with open("config/config.yaml", "r") as f:
     config = yaml.load(f, Loader=yaml.FullLoader)
 path = config['paths']['plot_data']
-
-
-def fit_power_law(up_bound, low, name='', n_points=2 * 10 ** 6):
-    # Fit a power-law
-    x_nums = np.arange(up_bound)[low:] + 1
-    y_nums = freq[low:up_bound]
-    [m, c] = np.polyfit(np.log10(x_nums), np.log10(y_nums), deg=1, w=2 / x_nums)
-    exp = str(round(-m, 2))
-    # #Code for getting the full equation:
-    #const_exp = str(round(-c / m, 2))
-    # equation = r'$ \left( \frac{n}{ 10^{'+const_exp+r'} } \right) ^ {\mathbf{'+exp+r'}}$'
-    if name == '':
-        equation = r'$\alpha = ' + exp + '$'
-    else:
-        equation = name + r', $\alpha = ' + exp + '$'
-
-    x_fit = np.array([1, n_points])
-    y_fit = 10 ** c * x_fit ** m
-    return x_fit, y_fit, equation
 
 
 w, h = plt.figaspect(0.7) # 0.6,0.7
@@ -65,7 +47,7 @@ if mode == 'train':
 
         # Fit a power-law
         print('fitting...')
-        x_fit, y_fit, equation = fit_power_law(up, low, names[i], n_points=2 * 10 ** 6)
+        x_fit, y_fit, equation = fit_power_law(up, low, name=names[i], n_points=2 * 10 ** 6)
         x = np.arange(len(freq)) + 1
 
         print('plotting...')
@@ -110,7 +92,7 @@ if mode == 'test':
         freq = np.load(load_path)
 
         # Fit a power-law
-        x_fit, y_fit, equation = fit_power_law(up, low, name, n_points=n_points)
+        x_fit, y_fit, equation = fit_power_law(up, low, name=name, n_points=n_points)
         x = np.arange(len(freq)) + 1
         plt.scatter(x, freq, color='navy', s=2*40 / (10 + x), alpha=1)
         # plt.plot(x_fit, y_fit, color='red', linewidth=1.5, label=equation.format(c=c, m=m))
@@ -127,7 +109,7 @@ if mode == 'test':
         freq = np.load(load_path)
 
         # Fit a power-law
-        x_fit, y_fit, equation = fit_power_law(up, low, name, n_points=n_points)
+        x_fit, y_fit, equation = fit_power_law(up, low, name=name, n_points=n_points)
         x = np.arange(len(freq)) + 1
         plt.scatter(x, freq, color='dodgerblue', s=2*40 / (10 + x), alpha=1)
         # plt.plot(x_fit, y_fit, color='red', linewidth=1.5, label=equation.format(c=c, m=m))

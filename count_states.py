@@ -15,7 +15,7 @@ env = games[game_num]
 #path = '/mnt/ceph/neumann/alphazero/scratch_backup/models/'
 #path = '/home/oren/zipf/scratch_backup/models/connect_four_10000/'
 path = models_path()
-data_paths = {'connect4': 'connect_four_10000/f_4_2',#'connect_four_10000/q_0_0',
+data_paths = {'connect4': 'connect_four_10000/q_0_0',#'connect_four_10000/f_4_2',
               'pentago': 'pentago_t5_10000/q_0_0',
               'oware': 'oware_10000/q_1_0',
               'checkers': 'checkers/q_6_0'}
@@ -25,7 +25,7 @@ print('Collecting '+env+' games:')
 # Process all games
 #board_counter, information = process_games(env, path, save_serial=True,
 #                                           max_file_num=39)
-board_counter, information = process_games_with_buffer(env, path, max_file_num=39)
+board_counter, information = process_games_with_buffer(env, path, max_file_num=4)
 serial_states = information['serials']
 
 # Sort by frequency
