@@ -57,6 +57,9 @@ x = np.arange(n_points) + 1
 plt.scatter(x, freq[:n_points], color=data_colors[0], s=40 / (10 + x))
 plt.plot(x_fit, y_fit, color=fit_colors[0], linewidth=1.5, label=equation)
 
+print(sum(freq))
+
+
 ####### run again to get unique-sampling data: ###############
 
 
@@ -96,3 +99,6 @@ plt.legend()
 plt.tight_layout()
 plt.savefig('plots/buffer_distribution.png', dpi=900)
 plt.show()
+
+print('Number of counts: (erase this if equal)')
+print(sum(freq))
