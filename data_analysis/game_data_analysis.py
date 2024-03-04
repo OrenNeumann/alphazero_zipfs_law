@@ -1,8 +1,9 @@
 import numpy as np
-from collections import Counter
+from collections import Counter, deque
 import re
 from tqdm import tqdm
 import pyspiel
+from random import sample
 
 """
 Functions for retrieving information from recorded AlphaZero games.
@@ -31,6 +32,21 @@ def _init_board(env):
     else:
         raise NameError('Environment ' + str(env) + ' not supported.')
 
+def _get_action_string(env: str):
+    """ Return the string format used to encode actions, as a 
+        regular expression.
+    """
+    if env == 'connect4':
+        actions = r'[xo][0-6]'
+    elif env == 'pentago':
+        actions = r'[a-f][1-6][s-z]'
+    elif env == 'oware':
+        actions = r'[A-F,a-f]'
+    elif env == 'checkers':
+        actions = r'[a-h][1-8][a-h][1-8]'
+    else:
+        raise NameError('Environment ' + str(env) + ' not supported.')
+    return actions
 
 def _update_board(board, action):
     board.apply_action(board.string_to_action(action))
@@ -88,16 +104,8 @@ def process_games(env: str, path: str, max_file_num: int = 39, save_serial: bool
     turns_played = dict()
     turns_to_end = dict()
     values = dict()
-    if env == 'connect4':
-        action_string = r'[xo][0-6]'
-    elif env == 'pentago':
-        action_string = r'[a-f][1-6][s-z]'
-    elif env == 'oware':
-        action_string = r'[A-F,a-f]'
-    elif env == 'checkers':
-        action_string = r'[a-h][1-8][a-h][1-8]'
-    else:
-        raise NameError('Environment ' + str(env) + ' not supported.')
+    action_string = _get_action_string(env)
+
     # Collect all games from all files
     for i in range(max_file_num):
         file_name = f'/log-actor-{i}.txt'
@@ -107,7 +115,6 @@ def process_games(env: str, path: str, max_file_num: int = 39, save_serial: bool
             board = _init_board(env)
             actions = re.findall(action_string, game)
             keys = list()
-            # t = 0
             for action in actions:
                 _update_board(board, action)
                 # Don't count terminal states (not part of training, mess up value loss)
@@ -117,32 +124,20 @@ def process_games(env: str, path: str, max_file_num: int = 39, save_serial: bool
                 keys.append(key)
                 board_counter[key] += 1
 
-                # t = board.move_number()
-                # Save a representation of each board, for solver estimation later.
                 if save_serial and board_counter[key] == 1:
                     serials[key] = board.serialize()
-                # Add number of turns taken (divided later for average).
-                # For turns before end, first subtracting current turn, later adding
-                # final game length:
-                # if save_turn_num:
-                #    turns_played[key] = turns_played.get(key, 0) + t
-                #    turns_to_end[key] = turns_to_end.get(key, 0) - t
 
             if not board.is_terminal():
                 raise Exception('Game ended prematurely. Maybe a corrupted file?')
 
             # turn and value data is summed up, divide the sum by the count to get an average.
             if save_turn_num:
-                # for key in keys:
-                #    turns_to_end[key] += t + 1
                 end = board.move_number() + 1
                 for turn, key in enumerate(keys, start=1):
                     turns_played[key] = turns_played.get(key, 0) + turn
                     turns_to_end[key] = turns_to_end.get(key, 0) + end - turn
             if save_value:
                 for turn, key in enumerate(keys, start=1):
-                    #player = 1 - turn % 2
-                    #values[key] = values.get(key, 0) + board.player_return(player)
                     values[key] = values.get(key, 0) + board.player_return(0)
 
     extra_info = {}
@@ -177,3 +172,58 @@ def generate_random_games(env, n=25_000 * 80, save_serial=False):
         return board_counter, serials
     else:
         return board_counter
+
+
+def process_games_with_buffer(env: str, path: str, max_file_num: int = 39) -> tuple[Counter, dict]:
+    """ Same as process_games, but the state counts are the number of times
+        an agent will see each state when training with prioritized experience replay."""
+    batch_size = 2**10
+    buffer_size = 2**16
+    buffer_reuse = 10
+    sample_threshold = int(buffer_size/buffer_reuse)
+    buffer = deque(maxlen=buffer_size)
+    new_states = 0
+
+    board_counter = Counter()
+    serials = dict()
+    action_string = _get_action_string(env)
+    # Collect all games from all files
+    for i in range(max_file_num):
+        file_name = f'/log-actor-{i}.txt'
+        games = _extract_games(path + file_name)
+        # Get board positions from all games and add them to counter
+        for game in tqdm(games, desc=f'Processing actor {i}'):
+            board = _init_board(env)
+            actions = re.findall(action_string, game)
+            for action in actions:
+                _update_board(board, action)
+                # Don't count terminal states (not part of training, mess up value loss)
+                if board.is_terminal():
+                    break
+                key = _board_to_key(board)
+                buffer.append(key)
+                new_states += 1
+
+                if new_states == sample_threshold:
+                    new_states = 0
+                    samples = _sample_from_buffer(buffer,batch_size)
+                    for k in samples:
+                        board_counter[k] += 1
+                        if board_counter[k] == 1:
+                            serials[k] = board.serialize()
+
+            if not board.is_terminal():
+                raise Exception('Game ended prematurely. Maybe a corrupted file?')
+
+    extra_info = {}
+    extra_info['serials'] = serials
+
+    return board_counter, extra_info
+
+
+def _sample_from_buffer(buffer, batch_size):
+    unique_keys = list(set(buffer))
+    if len(unique_keys) < batch_size:
+        raise Exception(f'Batch size ({batch_size}) larger than number of unique keys ({len(unique_keys)}).')
+    return sample(unique_keys, batch_size)
+    

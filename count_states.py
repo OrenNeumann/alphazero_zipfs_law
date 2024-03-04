@@ -1,6 +1,6 @@
 import matplotlib.pyplot as plt
 import numpy as np
-from data_analysis.game_data_analysis import process_games
+from data_analysis.game_data_analysis import process_games, process_games_with_buffer
 
 
 """
@@ -22,9 +22,9 @@ path += data_paths[env]
 print('Collecting '+env+' games:')
 
 # Process all games
-# board_counter, _ = process_games(env, path)
-board_counter, information = process_games(env, path, save_serial=True,
-                                           max_file_num=39)
+#board_counter, information = process_games(env, path, save_serial=True,
+#                                           max_file_num=39)
+board_counter, information = process_games_with_buffer(env, path, max_file_num=39)
 serial_states = information['serials']
 
 # Sort by frequency
