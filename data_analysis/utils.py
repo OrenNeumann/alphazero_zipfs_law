@@ -1,8 +1,6 @@
 import collections
-
 from alphazero_scaling.solver_bot import connect_four_solver
 from alphazero_scaling.loading import load_model_from_checkpoint, load_config
-from open_spiel.python.algorithms.alpha_zero import evaluator as evaluator_lib
 import subprocess
 from subprocess import PIPE
 import pickle
@@ -10,12 +8,7 @@ import numpy as np
 import numpy.typing as npt
 import pyspiel
 from tqdm import tqdm
-
-
-CON4 = pyspiel.load_game('connect_four')
-PENT = pyspiel.load_game('pentago')
-OWAR = pyspiel.load_game('oware')
-CHEC = pyspiel.load_game('checkers')
+import yaml
 
 
 def sort_by_frequency(data: dict, counter: collections.Counter) -> np.array:
@@ -30,13 +23,13 @@ def sort_by_frequency(data: dict, counter: collections.Counter) -> np.array:
 def _get_game(env):
     """Return a pyspiel game"""
     if env == 'connect4':
-        return CON4
+        return pyspiel.load_game('connect_four')
     elif env == 'pentago':
-        return PENT
+        return pyspiel.load_game('pentago')
     elif env == 'oware':
-        return OWAR
+        return pyspiel.load_game('oware')
     elif env == 'checkers':
-        return CHEC
+        return pyspiel.load_game('checkers')
     else:
         raise NameError('Environment ' + str(env) + ' not supported.')
 
@@ -85,7 +78,7 @@ def get_solver_value_estimator(env: str):
         raise NameError('Game name provided not supported: ' + env)
 
     # Load solver from solver_bot
-    game = CON4
+    game = pyspiel.load_game('connect_four')
 
     def solver_value(serial_state: str) -> float:
         """
@@ -106,7 +99,7 @@ def _get_solver_game_length(env: str):
         if played optimally from the current state.
         uses the solver."""
     if env == 'connect4':
-        game = CON4
+        game = pyspiel.load_game('connect_four')
     else:
         raise NameError('Game name provided not supported: ' + env)
 
@@ -154,7 +147,6 @@ def get_solver_turns(counter, serials, turns, save_data=True):
     return np.cumsum(y_turns) / (np.arange(n) + 1)
 
 
-
 def calculate_solver_values(env: str, serial_states):
     """ Calculate and save a database of solver value estimations of serial_states. """
     solver_value = get_solver_value_estimator(env)
@@ -164,3 +156,9 @@ def calculate_solver_values(env: str, serial_states):
 
     with open('solver_values.pkl', 'wb') as f:
         pickle.dump(solver_values, f)
+
+
+def models_path():
+    with open("config/config.yaml", "r") as f:
+        config = yaml.load(f, Loader=yaml.FullLoader)
+    return config['paths']['models_dir']

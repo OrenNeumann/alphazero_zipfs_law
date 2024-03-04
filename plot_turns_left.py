@@ -1,8 +1,7 @@
 import numpy as np
 from data_analysis.gather_agent_data import gather_data
-from data_analysis.game_data_analysis import sort_by_frequency
+from data_analysis.utils import sort_by_frequency
 import matplotlib.pyplot as plt
-
 
 """
 Plot turn related data: how late/early in the game do states appear.
@@ -14,12 +13,11 @@ games = ['connect4', 'pentago', 'oware', 'checkers']
 
 env = games[game_num]
 
-data_labels = [0, 1, 2, 3, 4, 5] # for oware no 6
+data_labels = [0, 1, 2, 3, 4, 5]  # for oware no 6
 
 board_counter, info = gather_data(env, data_labels, save_turn_num=True)
 turns_played = info['turns_played']
 turns_to_end = info['turns_to_end']
-
 
 # Turns analysis:
 n = len(board_counter)
@@ -42,24 +40,21 @@ def plot_turns(y, name, y_label, y_logscale=False, fignum=1):
     plt.xticks(fontsize=font_num)
     plt.yticks(fontsize=font_num)
     plt.tight_layout()
-    plt.savefig('plots/'+name+'.png', dpi=900)
+    plt.savefig('plots/' + name + '.png', dpi=900)
     plt.show()
 
 
 print('plot turns taken so far')
 y = sort_by_frequency(data=turns_played, counter=board_counter)
 y = np.cumsum(y) / (np.arange(n) + 1)
-plot_turns(y,name='turns_taken',y_label='Average turn num.')
+plot_turns(y, name='turns_taken', y_label='Average turn num.')
 
 print('plot turns until end of game')
 y = sort_by_frequency(data=turns_to_end, counter=board_counter)
 y = np.cumsum(y) / (np.arange(n) + 1)
-plot_turns(y,name='turns_left',y_label='Average turns until end')
+plot_turns(y, name='turns_left', y_label='Average turns until end')
 
 print('Plot raw data (to see U-shape)')
 y = sort_by_frequency(data=turns_played, counter=board_counter)
-#y = sort_by_frequency(data=turns_to_end, counter=board_counter)
-plot_turns(y,name='turns_taken_raw',y_label='Turn num.', y_logscale=True) #ylabel 'Turns left'
-
-
-
+# y = sort_by_frequency(data=turns_to_end, counter=board_counter)
+plot_turns(y, name='turns_taken_raw', y_label='Turn num.', y_logscale=True)  # ylabel 'Turns left'

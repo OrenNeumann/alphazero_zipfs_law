@@ -1,7 +1,7 @@
 import matplotlib.pyplot as plt
 import numpy as np
 from data_analysis.game_data_analysis import process_games, process_games_with_buffer
-
+from data_analysis.utils import models_path
 
 """
 Count board states played from actor logfiles of AlphaZero agents.
@@ -13,7 +13,8 @@ games = ['connect4', 'pentago', 'oware', 'checkers']
 
 env = games[game_num]
 #path = '/mnt/ceph/neumann/alphazero/scratch_backup/models/'
-path = '/home/oren/zipf/scratch_backup/models/connect_four_10000/'
+#path = '/home/oren/zipf/scratch_backup/models/connect_four_10000/'
+path = models_path()
 data_paths = {'connect4': 'connect_four_10000/f_4_2',#'connect_four_10000/q_0_0',
               'pentago': 'pentago_t5_10000/q_0_0',
               'oware': 'oware_10000/q_1_0',

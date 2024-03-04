@@ -1,6 +1,6 @@
 import numpy as np
 from data_analysis.gather_agent_data import gather_data
-from data_analysis.utils import get_model_value_estimator
+from data_analysis.utils import get_model_value_estimator, models_path
 import matplotlib
 import matplotlib.cm as cm
 import matplotlib.pyplot as plt
@@ -15,8 +15,8 @@ Value loss
 # Choose game type:
 game_num = 0
 games = ['connect4', 'pentago', 'oware', 'checkers']
-
 env = games[game_num]
+path = models_path()
 
 data_labels = [0, 1, 2, 3, 4, 5, 6] # for oware no 6
 board_counter, info = gather_data(env, data_labels, max_file_num=2, save_serial=True, save_value=True)
@@ -37,7 +37,7 @@ print('loss part...')
 estimators = [0, 1, 2, 3, 4, 5, 6]
 model_losses = dict()
 for agent in estimators:
-    path_model = '/mnt/ceph/neumann/alphazero/scratch_backup/models/connect_four_10000/q_' + str(agent) + '_0/'
+    path_model = path + 'connect_four_10000/q_' + str(agent) + '_0/'
     model_values = get_model_value_estimator(env, path_model)
     temp_losses = dict()
 

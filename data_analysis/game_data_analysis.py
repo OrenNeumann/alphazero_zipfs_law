@@ -13,24 +13,15 @@ Note: This code assumes the logfiles only contain legal moves,
     be careful using it on another dataset.
 """
 
-CON4 = pyspiel.load_game('connect_four')
-PENT = pyspiel.load_game('pentago')
-OWAR = pyspiel.load_game('oware')
-CHEC = pyspiel.load_game('checkers')
-
 
 def _init_board(env):
     """Return a pyspiel state"""
     if env == 'connect4':
-        return CON4.new_initial_state()
-    elif env == 'pentago':
-        return PENT.new_initial_state()
-    elif env == 'oware':
-        return OWAR.new_initial_state()
-    elif env == 'checkers':
-        return CHEC.new_initial_state()
+        game = 'connect_four'
     else:
-        raise NameError('Environment ' + str(env) + ' not supported.')
+        game = env
+    return pyspiel.load_game(game).new_initial_state()
+
 
 def _get_action_string(env: str):
     """ Return the string format used to encode actions, as a 
@@ -47,6 +38,7 @@ def _get_action_string(env: str):
     else:
         raise NameError('Environment ' + str(env) + ' not supported.')
     return actions
+
 
 def _update_board(board, action):
     board.apply_action(board.string_to_action(action))
@@ -177,10 +169,10 @@ def generate_random_games(env, n=25_000 * 80, save_serial=False):
 def process_games_with_buffer(env: str, path: str, max_file_num: int = 39) -> tuple[Counter, dict]:
     """ Same as process_games, but the state counts are the number of times
         an agent will see each state when training with prioritized experience replay."""
-    batch_size = 2**10
-    buffer_size = 2**16
+    batch_size = 2 ** 10
+    buffer_size = 2 ** 16
     buffer_reuse = 10
-    sample_threshold = int(buffer_size/buffer_reuse)
+    sample_threshold = int(buffer_size / buffer_reuse)
     buffer = deque(maxlen=buffer_size)
     new_states = 0
 
@@ -206,7 +198,7 @@ def process_games_with_buffer(env: str, path: str, max_file_num: int = 39) -> tu
 
                 if new_states == sample_threshold:
                     new_states = 0
-                    samples = _sample_from_buffer(buffer,batch_size)
+                    samples = _sample_from_buffer(buffer, batch_size)
                     for k in samples:
                         board_counter[k] += 1
                         if board_counter[k] == 1:
@@ -215,8 +207,7 @@ def process_games_with_buffer(env: str, path: str, max_file_num: int = 39) -> tu
             if not board.is_terminal():
                 raise Exception('Game ended prematurely. Maybe a corrupted file?')
 
-    extra_info = {}
-    extra_info['serials'] = serials
+    extra_info = {'serials': serials}
 
     return board_counter, extra_info
 
@@ -226,4 +217,3 @@ def _sample_from_buffer(buffer, batch_size):
     if len(unique_keys) < batch_size:
         raise Exception(f'Batch size ({batch_size}) larger than number of unique keys ({len(unique_keys)}).')
     return sample(unique_keys, batch_size)
-    

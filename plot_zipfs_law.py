@@ -1,15 +1,18 @@
 import numpy as np
 import matplotlib.pyplot as plt
-from count_states import generate_random_games
+import yaml
 
 """
-Plot all Zipf's law figures.
+Plot all Zipf's law figures used in the workshop abstact.
 For plotting the toy-model power law, use plot_theory.py.
 """
 
 
 env = 'pentago'#'connect4'
 mode = 'train'
+with open("config/config.yaml", "r") as f:
+    config = yaml.load(f, Loader=yaml.FullLoader)
+path = config['paths']['plot_data']
 
 
 def fit_power_law(up_bound, low, name='', n_points=2 * 10 ** 6):
@@ -57,7 +60,7 @@ if mode == 'train':
 
     for i in range(2):
         model = models[i]
-        load_path = '/mnt/ceph/neumann/AZ_new/count_states/plot_data/' + env + '/train_' + model + '.npy'
+        load_path = path + env + '/train_' + model + '.npy'
         freq = np.load(load_path)
 
         # Fit a power-law
@@ -86,8 +89,7 @@ if mode == 'test':
         plt.title('Random games, Connect Four', fontsize=font)
         n_points = 3 * 10 ** 6
 
-        load_path = '/mnt/ceph/neumann/AZ_new/count_states/plot_data/' + env + '/test_' + filename + '.npy'
-        #load_path = './plot_data/' + env + '/test_' + filename + '.npy'
+        load_path = path + env + '/test_' + filename + '.npy'
         freq = np.load(load_path)
 
         # Fit a power-law
@@ -121,7 +123,7 @@ if mode == 'test':
         up = 4 * 10 ** 5  # upper fit bound
         name = r'$T=1$     '
         n_points = 6 * 10 ** 5
-        load_path = '/mnt/ceph/neumann/AZ_new/count_states/plot_data/' + env + '/test_' + filename + '.npy'
+        load_path = path + env + '/test_' + filename + '.npy'
         freq = np.load(load_path)
 
         # Fit a power-law
