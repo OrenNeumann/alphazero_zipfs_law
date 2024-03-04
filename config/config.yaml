@@ -1,6 +1,0 @@
----
-paths:
-  models_dir: '/mnt/ceph/neumann/alphazero/scratch_backup/models/'
-  plot_data: '/mnt/ceph/neumann/zipf/plot_data/'
-
-games: ['connect4', 'pentago', 'oware', 'checkers']
