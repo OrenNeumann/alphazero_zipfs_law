@@ -82,7 +82,7 @@ elif env == 'pentago':
 else:
     low = 10 ** 2
     up = int(len(freq) / 10 ** 2)
-x_fit, y_fit, equation = fit_logaritm(freq, up, low)
+x_fit, y_fit, equation = fit_logaritm(freq, up, low, n_points=up)
 
 n_points = len(freq)  # 5 * 10 ** 6  # Display top n_points
 
