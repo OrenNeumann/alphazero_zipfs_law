@@ -1,11 +1,8 @@
 import collections
-from src.alphazero_scaling.solver_bot import connect_four_solver
-from src.alphazero_scaling.loading import load_model_from_checkpoint, load_config
 import subprocess
 from subprocess import PIPE
 import pickle
 import numpy as np
-import numpy.typing as npt
 import pyspiel
 from tqdm import tqdm
 
@@ -17,7 +14,6 @@ def sort_by_frequency(data: dict, counter: collections.Counter) -> np.array:
         key = entry[0]
         sorted_data[idx] = data[key]
     return sorted_data
-
 
 
 def _get_solver_game_length(env: str):

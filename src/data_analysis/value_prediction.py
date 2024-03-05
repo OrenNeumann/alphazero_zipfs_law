@@ -3,6 +3,8 @@ from src.alphazero_scaling.loading import load_model_from_checkpoint, load_confi
 import numpy as np
 import numpy.typing as npt
 import pyspiel
+from tqdm import tqdm
+import pickle
 
 
 def _get_game(env):
@@ -77,3 +79,14 @@ def get_solver_value_estimator(env: str):
         return solver_v
 
     return solver_value
+
+
+def calculate_solver_values(env: str, serial_states):
+    """ Calculate and save a database of solver value estimations of serial_states. """
+    solver_value = get_solver_value_estimator(env)
+    solver_values = {}
+    for key, serial in tqdm(serial_states.items(), desc="Estimating solver state values"):
+        solver_values[key] = solver_value(serial)
+
+    with open('solver_values.pkl', 'wb') as f:
+        pickle.dump(solver_values, f)
