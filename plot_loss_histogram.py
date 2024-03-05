@@ -6,10 +6,9 @@ import matplotlib.cm as cm
 import matplotlib.pyplot as plt
 from tqdm import tqdm
 from collections import Counter
-#from multiprocessing import Pool
 
 """
-Value loss
+Value loss histogram
 """
 
 # Choose game type:
@@ -19,7 +18,7 @@ env = games[game_num]
 path = models_path()
 
 #data_labels = [0, 1, 2, 3, 4, 5, 6] # for oware no 6
-data_labels = [0]
+data_labels = [6]
 board_counter, info = gather_data(env, data_labels, max_file_num=2, save_serial=True, save_value=True)
 serials = info['serials']
 real_values = info['values']
@@ -36,7 +35,9 @@ def multiprocess_values(data):
 # Value loss analysis:
 print('loss part...')
 #estimators = [0, 1, 2, 3, 4, 5, 6]
-estimators = [0, 1]
+estimators = [6]
+if len(estimators) != 1:
+    raise Exception('only single agent ATM')
 model_losses = dict()
 for agent in estimators:
     path_model = path + 'connect_four_10000/q_' + str(agent) + '_0/'
@@ -69,22 +70,38 @@ for agent in estimators:
     """
 
 par = np.load('config/parameter_counts/'+env+'.npy')
-
-#### colorbar plot cargo-cult code ###
-w, h = plt.figaspect(0.6)
-plt.figure(2, figsize=(w, h))
-plt.style.use(['grid'])
 font = 18
 font_num = 16
-plt.clf()
-ax = plt.gca()
-norm = matplotlib.colors.LogNorm(vmin=par.min(), vmax=par.max())
-# create a scalarmappable from the colormap
-sm = matplotlib.cm.ScalarMappable(cmap=plt.get_cmap('viridis'), norm=norm)
-cbar = plt.colorbar(sm)
-cbar.ax.tick_params(labelsize=font_num)
-cbar.ax.set_ylabel('Parameters', rotation=90, fontsize=font)
-#################################
+
+def bar_figure_preamble(par,label_font=18, number_font=16):
+    # colorbar plot cargo-cult code
+    w, h = plt.figaspect(0.6)
+    plt.figure(2, figsize=(w, h))
+    plt.style.use(['grid'])
+    plt.clf()
+    ax = plt.gca()
+    norm = matplotlib.colors.LogNorm(vmin=par.min(), vmax=par.max())
+    # create a scalarmappable from the colormap
+    sm = matplotlib.cm.ScalarMappable(cmap=plt.get_cmap('viridis'), norm=norm)
+    cbar = plt.colorbar(sm)
+    cbar.ax.tick_params(labelsize=number_font)
+    cbar.ax.set_ylabel('Parameters', rotation=90, fontsize=label_font)
+
+
+def incremental_bin(bin_max):
+    bins = [1]
+    alpha = 1
+    for n in range(bin_max):
+        new_val = bins[-1] + (n + 1)**alpha
+        alpha += 0.02
+        if new_val >= bin_max:
+            bins.append(bin_max)
+            break
+        bins.append(new_val)
+    return np.array(bins)
+
+
+bar_figure_preamble(par)
 
 # calculate colorbar colors:
 log_par = np.log(par)
@@ -93,25 +110,32 @@ color_nums = (log_par - log_par.min()) / (log_par.max() - log_par.min())
 n = len(board_counter)
 x = np.arange(n) + 1
 for agent in tqdm(estimators, desc='Plotting cumulative average loss'):
-    #y = sort_by_frequency(data=model_losses[agent], counter=board_counter)
     y = model_losses[agent]
-    # plotting cumulative average of loss
-    y = np.cumsum(y) / x
+    # log-scaled bins
+    bins = incremental_bin(len(y))
+    widths = (bins[1:] - bins[:-1])
+    x = np.arange(len(y)) + 1
 
-    # standad deviation:
-    #std = np.sqrt((y_losses**2).cumsum()/x - y**2)
+    # Calculate histogram.
+    # np.histogram counts how many elements of x fall in each bin.
+    # by specifying 'weights', you can make it sum weights instead of counting.
+    # divide by hist_count after to get an average of the weights of each bin.
+    hist_count = np.histogram(x, bins=bins)
+    hist_value = np.histogram(x, bins=bins, weights=y)
+    # Divide sum to get average:
+    hist_norm = hist_value[0] / hist_count[0]
 
-    # weighted average with frequency:
-    #y = np.cumsum(np.array(y_losses)*freq) / np.cumsum(freq)
+    plt.bar(bins[:-1], hist_norm, widths)
 
-    plt.scatter(x, y, s=40 / (10 + x), alpha=0.3, color=cm.viridis(color_nums[agent]))
 plt.xscale('log')
+plt.yscale('log')
 plt.xlabel('State rank', fontsize=font)
-plt.ylabel('Cumulative average of the loss', fontsize=font - 2)
+plt.ylabel('Loss', fontsize=font - 2)
 plt.title('Value loss of fully-trained agents', fontsize=font)
 plt.xticks(fontsize=font_num)
 plt.yticks(fontsize=font_num)
 plt.tight_layout()
 name = 'value_loss'
 plt.savefig('plots/'+name+'.png', dpi=900)
+
 
