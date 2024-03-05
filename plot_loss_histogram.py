@@ -1,8 +1,6 @@
 import numpy as np
 from src.data_analysis.gather_agent_data import gather_data
 from src.data_analysis.utils import get_model_value_estimator, models_path
-import matplotlib
-import matplotlib.cm as cm
 import matplotlib.pyplot as plt
 from tqdm import tqdm
 from collections import Counter
