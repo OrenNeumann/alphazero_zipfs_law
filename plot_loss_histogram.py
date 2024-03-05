@@ -19,7 +19,7 @@ path = models_path()
 
 #data_labels = [0, 1, 2, 3, 4, 5, 6] # for oware no 6
 data_labels = [6]
-board_counter, info = gather_data(env, data_labels, max_file_num=10, save_serial=True, save_value=True)
+board_counter, info = gather_data(env, data_labels, max_file_num=20, save_serial=True, save_value=True)
 serials = info['serials']
 real_values = info['values']
 

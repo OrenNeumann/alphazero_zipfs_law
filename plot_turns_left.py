@@ -1,7 +1,7 @@
 import numpy as np
 from src.data_analysis.gather_agent_data import gather_data
 from src.data_analysis.data_utils import sort_by_frequency
-from src.plotting.plot_utils import figure_preamble
+from src.plotting.plot_utils import figure_preamble, figure_epilogue
 import matplotlib.pyplot as plt
 
 """
@@ -33,11 +33,7 @@ def plot_turns(y, name, y_label, y_logscale=False, fignum=1):
     plt.xscale('log')
     if y_logscale:
         plt.yscale('log')
-    plt.xlabel('State rank', fontsize=font)
-    plt.ylabel(y_label, fontsize=font - 2)
-    plt.xticks(fontsize=font_num)
-    plt.yticks(fontsize=font_num)
-    plt.tight_layout()
+    figure_epilogue(x_label='State rank', y_label=y_label, label_font=font, number_font=font_num)
     plt.savefig('plots/' + name + '.png', dpi=900)
     plt.show()
 
