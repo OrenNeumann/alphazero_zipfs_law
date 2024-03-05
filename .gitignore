@@ -5,6 +5,8 @@ lib64
 pyvenv.cfg
 src/data_analysis/__pycache__
 src/alphazero_scaling/__pycache__
+src/general/__pycache__
+src/plotting/__pycache__
 src/alphazero_scaling/connect4-master/
 plots/
 alphazero_scaling_full/

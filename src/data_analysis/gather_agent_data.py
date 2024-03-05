@@ -1,13 +1,6 @@
 from collections import Counter
 from src.data_analysis.game_data_analysis import process_games
-
-DATA_PATH = '/mnt/ceph/neumann/alphazero/scratch_backup/models/'
-GAME_PATHS = {'connect4': 'connect_four_10000/q_',
-              'pentago': 'pentago_t5_10000/q_',
-              'oware': 'oware_10000/q_',
-              'checkers': 'checkers/q_'}
-
-#INFO_TYPES = ('serials', 'turns_played', 'turns_to_end', 'values')
+from src.general.general_utils import models_path, game_path
 
 
 def gather_data(env: str, labels: list[int], max_file_num: int = 1, save_serial: bool = False,
@@ -16,7 +9,7 @@ def gather_data(env: str, labels: list[int], max_file_num: int = 1, save_serial:
         Counts and averages are taken over all agents in 'labels'.
         Currently just uses agent copy num. 0."""
     print('Collecting ' + env + ' games:')
-    path = DATA_PATH + GAME_PATHS[env]
+    path = models_path() + game_path(env) + 'q_'
     board_counter = Counter()
     serial_states = dict()
     turns_played = dict()
@@ -25,7 +18,7 @@ def gather_data(env: str, labels: list[int], max_file_num: int = 1, save_serial:
     for label in labels:
         num = str(label)
         print("label " + num)
-        agent_path = path + num + '_0'
+        agent_path = path + num + '_2'
         temp_counter, info = process_games(env, agent_path, max_file_num=max_file_num, save_serial=save_serial,
                                            save_turn_num=save_turn_num, save_value=save_value)
         # add counts to the counter:

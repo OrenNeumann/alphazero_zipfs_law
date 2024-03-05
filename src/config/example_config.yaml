@@ -4,3 +4,9 @@ paths:
   plot_data: '/path/to/plot_data/'
  
 games: ['connect4', 'pentago', 'oware', 'checkers']
+
+game_paths:
+  connect4: 'connect_four_10000/'
+  pentago: 'pentago_t5_10000/'
+  oware: 'oware_10000/'
+  checkers: 'checkers/'

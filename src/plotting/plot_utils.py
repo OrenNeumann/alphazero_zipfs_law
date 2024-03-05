@@ -1,6 +1,8 @@
 import matplotlib
 import matplotlib.pyplot as plt
+import scienceplots
 
+# this should be a class
 
 def figure_preamble(fig_num=1):
     w, h = plt.figaspect(0.6)
