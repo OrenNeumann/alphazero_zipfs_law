@@ -1,8 +1,8 @@
 import numpy as np
 from src.data_analysis.gather_agent_data import gather_data
 from src.data_analysis.value_prediction import get_model_value_estimator
-from src.plotting.utils import figure_preamble
-from src.general.utils import incremental_bin, models_path
+from src.plotting.plot_utils import figure_preamble
+from src.general.general_utils import incremental_bin, models_path
 import matplotlib.pyplot as plt
 from tqdm import tqdm
 from collections import Counter

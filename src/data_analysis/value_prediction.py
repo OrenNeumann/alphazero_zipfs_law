@@ -6,6 +6,10 @@ import pyspiel
 from tqdm import tqdm
 import pickle
 
+"""
+Tools for getting an stimate of a state's value. Either from a trained agent, or a solver.
+"""
+
 
 def _get_game(env):
     """Return a pyspiel game"""

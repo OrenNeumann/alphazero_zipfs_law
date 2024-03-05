@@ -1,4 +1,3 @@
-import collections
 import subprocess
 from subprocess import PIPE
 import pickle
@@ -6,14 +5,9 @@ import numpy as np
 import pyspiel
 from tqdm import tqdm
 
-
-def sort_by_frequency(data: dict, counter: collections.Counter) -> np.array:
-    """ Sort any state-data by descending order of frequency in counter."""
-    sorted_data = np.zeros(len(counter))
-    for idx, entry in enumerate(tqdm(counter.most_common())):
-        key = entry[0]
-        sorted_data[idx] = data[key]
-    return sorted_data
+"""
+A tool to get the solver analysis on how long a game will last, given a state.
+"""
 
 
 def _get_solver_game_length(env: str):
@@ -68,13 +62,3 @@ def get_solver_turns(counter, serials, turns, save_data=True):
     # return cumulative average
     return np.cumsum(y_turns) / (np.arange(n) + 1)
 
-
-def calculate_solver_values(env: str, serial_states):
-    """ Calculate and save a database of solver value estimations of serial_states. """
-    solver_value = get_solver_value_estimator(env)
-    solver_values = {}
-    for key, serial in tqdm(serial_states.items(), desc="Estimating solver state values"):
-        solver_values[key] = solver_value(serial)
-
-    with open('solver_values.pkl', 'wb') as f:
-        pickle.dump(solver_values, f)

@@ -1,6 +1,6 @@
 import numpy as np
 from src.data_analysis.gather_agent_data import gather_data
-from src.data_analysis.utils import sort_by_frequency
+from src.data_analysis.data_utils import sort_by_frequency
 import matplotlib.pyplot as plt
 
 """

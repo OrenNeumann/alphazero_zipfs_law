@@ -1,7 +1,7 @@
 import matplotlib.pyplot as plt
 import numpy as np
 from src.data_analysis.game_data_analysis import process_games_with_buffer
-from src.general.utils import models_path, fit_power_law
+from src.general.general_utils import models_path, fit_power_law
 
 """
 Plot state frequency with a buffer.

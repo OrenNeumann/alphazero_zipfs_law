@@ -1,7 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import yaml
-from src.general.utils import fit_power_law
+from src.general.general_utils import fit_power_law
 
 """
 Plot all Zipf's law figures used in the workshop abstact.
