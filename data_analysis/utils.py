@@ -169,8 +169,8 @@ def fit_power_law(freq,
                   low_bound,
                   full_equation=False,
                   name='',
-                  n_points=2 * 10 ** 6):
-    # Fit a power-law
+                  min_x=1,
+                  max_x=2 * 10 ** 6):
     x_nums = np.arange(up_bound)[low_bound:] + 1
     y_nums = freq[low_bound:up_bound]
     [m, c] = np.polyfit(np.log10(x_nums), np.log10(y_nums), deg=1, w=2 / x_nums)
@@ -184,7 +184,7 @@ def fit_power_law(freq,
         else:
             equation = name + r', $\alpha = ' + exp + '$'
 
-    x_fit = np.array([1, n_points])
+    x_fit = np.array([min_x, max_x])
     y_fit = 10 ** c * x_fit ** m
     return x_fit, y_fit, equation
 
@@ -192,8 +192,8 @@ def fit_power_law(freq,
 def fit_logaritm(freq,
                   up_bound,
                   low_bound,
-                  n_points=2 * 10 ** 6):
-    # Fit a power-law
+                  n_points=None):
+    # not used
     x_nums = np.arange(up_bound)[low_bound:] + 1
     y_nums = freq[low_bound:up_bound]
     [m, c] = np.polyfit(np.log10(x_nums), y_nums, deg=1, w=2 / x_nums)
@@ -201,6 +201,10 @@ def fit_logaritm(freq,
     const = str(round(c, 2))
     equation = r'$ {'+slope+r'} \cdot \log_{10} n + {'+const+r'}$'
 
-    x_fit = np.array([1, n_points])
+    if n_points is None:
+        # Plot fit up to y=1:
+        n_points = 10**((1-c)/m)
+
+    x_fit = np.power(10, np.linspace(0.0, np.log10(n_points), num=100))
     y_fit = m * np.log10(x_fit) + c
     return x_fit, y_fit, equation

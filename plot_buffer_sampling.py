@@ -15,7 +15,7 @@ env = games[game_num]
 # path = '/mnt/ceph/neumann/alphazero/scratch_backup/models/'
 # path = '/home/oren/zipf/scratch_backup/models/connect_four_10000/'
 path = models_path()
-data_paths = {'connect4': 'connect_four_10000/q_0_0',  # 'connect_four_10000/f_4_2',
+data_paths = {'connect4': 'connect_four_10000/connect_four_10000/q_2_2',#'connect_four_10000/q_0_0',  
               'pentago': 'pentago_t5_10000/q_0_0',
               'oware': 'oware_10000/q_1_0',
               'checkers': 'checkers/q_6_0'}
@@ -25,9 +25,8 @@ print('Collecting ' + env + ' games:')
 num_files = 39
 fit_colors = ['olivedrab', 'dodgerblue']
 data_colors = ['navy', 'darkviolet']
-# Process all games
-# board_counter, information = process_games(env, path, save_serial=True,
-#                                           max_file_num=39)
+plt.figure(figsize=(10, 6))
+
 board_counter, _ = process_games_with_buffer(env, path, sample_unique_states=False, max_file_num=num_files)
 
 # Sort by frequency
@@ -50,14 +49,12 @@ else:
 x_fit, y_fit, equation = fit_power_law(freq, up, low, full_equation=True)
 
 # Plot
-plt.figure(figsize=(10, 6))
 n_points = len(freq)  # 5 * 10 ** 6  # Display top n_points
 
 x = np.arange(n_points) + 1
 plt.scatter(x, freq[:n_points], color=data_colors[0], s=40 / (10 + x))
-plt.plot(x_fit, y_fit, color=fit_colors[0], linewidth=1.5, label=equation)
+plt.plot(x_fit, y_fit, color=fit_colors[0], linewidth=1.5, label='Uniform sampling, '+equation)
 
-print(sum(freq))
 
 
 ####### run again to get unique-sampling data: ###############
@@ -82,13 +79,22 @@ elif env == 'pentago':
 else:
     low = 10 ** 2
     up = int(len(freq) / 10 ** 2)
-x_fit, y_fit, equation = fit_logaritm(freq, up, low, n_points=up)
+
+# set fitting limits to capture the tail power-law:
+# omit last two plateaus (freq=1 or 2)
+up = len(freq) - sum(np.array(freq)<3)
+low = int(up/10**2)
+# plot from ~middle of x-axis on
+min_x = 10**(np.log10(len(freq))/2 - 1)
+max_x = len(freq) - sum(np.array(freq)==1)
+x_fit, y_fit, equation = fit_power_law(freq, up_bound=up, low_bound=low, full_equation=True,
+                                       min_x=min_x, max_x=max_x)
 
 n_points = len(freq)  # 5 * 10 ** 6  # Display top n_points
 
 x = np.arange(n_points) + 1
 plt.scatter(x, freq[:n_points], color=data_colors[1], s=40 / (10 + x))
-plt.plot(x_fit, y_fit, color=fit_colors[1], linewidth=1.5, label=equation)
+plt.plot(x_fit, y_fit, color=fit_colors[1], linewidth=1.5, label='Unique sampling, '+equation)
 plt.ylabel('Frequency')
 plt.xlabel('Board state number')
 plt.xscale('log')
@@ -99,6 +105,3 @@ plt.legend()
 plt.tight_layout()
 plt.savefig('plots/buffer_distribution.png', dpi=900)
 plt.show()
-
-print('Number of counts: (erase this if equal)')
-print(sum(freq))

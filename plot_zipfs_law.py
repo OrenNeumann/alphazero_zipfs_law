@@ -47,7 +47,7 @@ if mode == 'train':
 
         # Fit a power-law
         print('fitting...')
-        x_fit, y_fit, equation = fit_power_law(up, low, name=names[i], n_points=2 * 10 ** 6)
+        x_fit, y_fit, equation = fit_power_law(up, low, name=names[i], max_x=2 * 10 ** 6)
         x = np.arange(len(freq)) + 1
 
         print('plotting...')
@@ -75,7 +75,7 @@ if mode == 'test':
         freq = np.load(load_path)
 
         # Fit a power-law
-        x_fit, y_fit, equation = fit_power_law(up, low, n_points=n_points)
+        x_fit, y_fit, equation = fit_power_law(up, low, max_x=n_points)
         x = np.arange(len(freq)) + 1
         plt.scatter(x, freq, color='dodgerblue', s=2*40 / (10 + x), alpha=1)
         # plt.plot(x_fit, y_fit, color='red', linewidth=1.5, label=equation.format(c=c, m=m))
@@ -92,7 +92,7 @@ if mode == 'test':
         freq = np.load(load_path)
 
         # Fit a power-law
-        x_fit, y_fit, equation = fit_power_law(up, low, name=name, n_points=n_points)
+        x_fit, y_fit, equation = fit_power_law(up, low, name=name, max_x=n_points)
         x = np.arange(len(freq)) + 1
         plt.scatter(x, freq, color='navy', s=2*40 / (10 + x), alpha=1)
         # plt.plot(x_fit, y_fit, color='red', linewidth=1.5, label=equation.format(c=c, m=m))
@@ -109,7 +109,7 @@ if mode == 'test':
         freq = np.load(load_path)
 
         # Fit a power-law
-        x_fit, y_fit, equation = fit_power_law(up, low, name=name, n_points=n_points)
+        x_fit, y_fit, equation = fit_power_law(up, low, name=name, max_x=n_points)
         x = np.arange(len(freq)) + 1
         plt.scatter(x, freq, color='dodgerblue', s=2*40 / (10 + x), alpha=1)
         # plt.plot(x_fit, y_fit, color='red', linewidth=1.5, label=equation.format(c=c, m=m))
