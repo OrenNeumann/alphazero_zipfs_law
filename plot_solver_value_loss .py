@@ -1,6 +1,7 @@
 import numpy as np
 import pickle
-from src.data_analysis.game_data_analysis import process_games, get_value_estimators
+from src.data_analysis.game_data_analysis import process_games
+from src.data_analysis.utils import get_model_value_estimator
 import collections
 import matplotlib
 import matplotlib.cm as cm
@@ -69,7 +70,7 @@ model_values = list()
 # losses = dict()
 for i in estimators:
     path_model = '/mnt/ceph/neumann/alphazero/scratch_backup/models/connect_four_10000/q_' + str(i) + '_0/'
-    _, model_value = get_value_estimators(env, path_model)
+    model_value = get_model_value_estimator(env, path_model)
     values_dict = dict()
     # temp_losses = dict()
     for key, serial in tqdm(serial_states.items(), desc="Estimating model state values"):

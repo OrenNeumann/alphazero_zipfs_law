@@ -1,6 +1,8 @@
 import numpy as np
 from src.data_analysis.gather_agent_data import gather_data
-from src.data_analysis.utils import get_model_value_estimator, models_path
+from src.data_analysis.utils import get_model_value_estimator
+from src.plotting.utils import figure_preamble
+from src.general.utils import incremental_bin, models_path
 import matplotlib.pyplot as plt
 from tqdm import tqdm
 from collections import Counter
@@ -72,39 +74,8 @@ par = np.load('config/parameter_counts/'+env+'.npy')
 font = 18
 font_num = 16
 
-def bar_figure_preamble(par,label_font=18, number_font=16):
-    # colorbar plot cargo-cult code
-    w, h = plt.figaspect(0.6)
-    plt.figure(2, figsize=(w, h))
-    plt.style.use(['grid'])
-    plt.clf()
-    #ax = plt.gca()
-    #norm = matplotlib.colors.LogNorm(vmin=par.min(), vmax=par.max())
-    # create a scalarmappable from the colormap
-    #sm = matplotlib.cm.ScalarMappable(cmap=plt.get_cmap('viridis'), norm=norm)
-    #cbar = plt.colorbar(sm)
-    #cbar.ax.tick_params(labelsize=number_font)
-    #cbar.ax.set_ylabel('Parameters', rotation=90, fontsize=label_font)
 
-
-def incremental_bin(bin_max):
-    bins = [1]
-    alpha = 1
-    for n in range(bin_max):
-        new_val = bins[-1] + (n + 1)**alpha
-        alpha += 0.02
-        if new_val >= bin_max:
-            bins.append(bin_max)
-            break
-        bins.append(new_val)
-    return np.array(bins)
-
-
-bar_figure_preamble(par)
-
-# calculate colorbar colors:
-log_par = np.log(par)
-color_nums = (log_par - log_par.min()) / (log_par.max() - log_par.min())
+figure_preamble()
 
 n = len(board_counter)
 x = np.arange(n) + 1
