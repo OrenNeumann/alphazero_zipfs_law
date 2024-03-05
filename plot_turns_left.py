@@ -1,6 +1,7 @@
 import numpy as np
 from src.data_analysis.gather_agent_data import gather_data
 from src.data_analysis.data_utils import sort_by_frequency
+from src.plotting.plot_utils import figure_preamble
 import matplotlib.pyplot as plt
 
 """
@@ -25,12 +26,9 @@ x = np.arange(n) + 1
 
 
 def plot_turns(y, name, y_label, y_logscale=False, fignum=1):
-    w, h = plt.figaspect(0.6)
-    plt.figure(fignum, figsize=(w, h))
-    plt.style.use(['grid'])
+    figure_preamble(fig_num=fignum)
     font = 18 - 2
     font_num = 16 - 2
-    plt.clf()
     plt.scatter(x, y, s=40 * 3 / (10 + x), alpha=1, color='green')
     plt.xscale('log')
     if y_logscale:

@@ -7,7 +7,7 @@ from tqdm import tqdm
 import pickle
 
 """
-Tools for getting an stimate of a state's value. Either from a trained agent, or a solver.
+Tools for getting an estimate of a state's value. Either from a trained agent, or a solver.
 """
 
 

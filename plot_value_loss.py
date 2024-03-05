@@ -69,7 +69,7 @@ for agent in estimators:
     model_losses[agent] = temp_losses
     """
 
-par = np.load('config/parameter_counts/'+env+'.npy')
+par = np.load('src/config/parameter_counts/'+env+'.npy')
 
 #### colorbar plot cargo-cult code ###
 w, h = plt.figaspect(0.6)

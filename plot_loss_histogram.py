@@ -70,7 +70,7 @@ for agent in estimators:
     model_losses[agent] = temp_losses
     """
 
-par = np.load('config/parameter_counts/'+env+'.npy')
+par = np.load('src/config/parameter_counts/'+env+'.npy')
 font = 18
 font_num = 16
 
