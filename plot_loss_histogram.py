@@ -1,6 +1,6 @@
 import numpy as np
 from src.data_analysis.gather_agent_data import gather_data
-from src.data_analysis.utils import get_model_value_estimator
+from src.data_analysis.value_prediction import get_model_value_estimator
 from src.plotting.utils import figure_preamble
 from src.general.utils import incremental_bin, models_path
 import matplotlib.pyplot as plt

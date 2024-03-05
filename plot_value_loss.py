@@ -1,6 +1,6 @@
 import numpy as np
 from src.data_analysis.gather_agent_data import gather_data
-from src.data_analysis.utils import get_model_value_estimator
+from src.data_analysis.value_prediction import get_model_value_estimator
 from src.general.utils import models_path
 import matplotlib
 import matplotlib.cm as cm
