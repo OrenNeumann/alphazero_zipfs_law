@@ -1,4 +1,4 @@
-from game_data_analysis import process_games, generate_random_games
+from src.data_analysis.game_data_analysis import process_games, generate_random_games
 import matplotlib.pyplot as plt
 import numpy as np
 

@@ -1,7 +1,7 @@
 import matplotlib.pyplot as plt
 import numpy as np
-from data_analysis.game_data_analysis import process_games, process_games_with_buffer
-from data_analysis.utils import models_path
+from src.data_analysis.game_data_analysis import process_games, process_games_with_buffer
+from src.data_analysis.utils import models_path
 
 """
 Count board states played from actor logfiles of AlphaZero agents.

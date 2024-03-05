@@ -1,6 +1,0 @@
----
-paths:
-  models_dir: '/path/to/models/'
-  plot_data: '/path/to/plot_data/'
- 
-games: ['connect4', 'pentago', 'oware', 'checkers']

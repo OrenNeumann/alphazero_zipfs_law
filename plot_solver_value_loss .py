@@ -1,6 +1,6 @@
 import numpy as np
 import pickle
-from data_analysis.game_data_analysis import process_games, get_value_estimators
+from src.data_analysis.game_data_analysis import process_games, get_value_estimators
 import collections
 import matplotlib
 import matplotlib.cm as cm

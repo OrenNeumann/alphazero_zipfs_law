@@ -1,6 +1,6 @@
 import numpy as np
-from data_analysis.gather_agent_data import gather_data
-from data_analysis.utils import get_model_value_estimator, models_path
+from src.data_analysis.gather_agent_data import gather_data
+from src.data_analysis.utils import get_model_value_estimator, models_path
 import matplotlib
 import matplotlib.cm as cm
 import matplotlib.pyplot as plt
@@ -19,11 +19,12 @@ path = models_path()
 
 #data_labels = [0, 1, 2, 3, 4, 5, 6] # for oware no 6
 data_labels = [6]
-board_counter, info = gather_data(env, data_labels, max_file_num=2, save_serial=True, save_value=True)
+board_counter, info = gather_data(env, data_labels, max_file_num=10, save_serial=True, save_value=True)
 serials = info['serials']
 real_values = info['values']
 
-# (check) seems pruning 1's reduces by one OOM, 2's and 3's together by another OOM.
+
+# seems pruning 1's reduces by one OOM, 2's and 3's together by another OOM.
 print('Counter length before pruning:', len(board_counter))
 board_counter = Counter({k: c for k, c in board_counter.items() if c >= 2})
 print('Counter length after pruning: ', len(board_counter))
@@ -79,13 +80,13 @@ def bar_figure_preamble(par,label_font=18, number_font=16):
     plt.figure(2, figsize=(w, h))
     plt.style.use(['grid'])
     plt.clf()
-    ax = plt.gca()
-    norm = matplotlib.colors.LogNorm(vmin=par.min(), vmax=par.max())
+    #ax = plt.gca()
+    #norm = matplotlib.colors.LogNorm(vmin=par.min(), vmax=par.max())
     # create a scalarmappable from the colormap
-    sm = matplotlib.cm.ScalarMappable(cmap=plt.get_cmap('viridis'), norm=norm)
-    cbar = plt.colorbar(sm)
-    cbar.ax.tick_params(labelsize=number_font)
-    cbar.ax.set_ylabel('Parameters', rotation=90, fontsize=label_font)
+    #sm = matplotlib.cm.ScalarMappable(cmap=plt.get_cmap('viridis'), norm=norm)
+    #cbar = plt.colorbar(sm)
+    #cbar.ax.tick_params(labelsize=number_font)
+    #cbar.ax.set_ylabel('Parameters', rotation=90, fontsize=label_font)
 
 
 def incremental_bin(bin_max):
@@ -131,7 +132,7 @@ plt.xscale('log')
 plt.yscale('log')
 plt.xlabel('State rank', fontsize=font)
 plt.ylabel('Loss', fontsize=font - 2)
-plt.title('Value loss of fully-trained agents', fontsize=font)
+plt.title('Value loss of fully-trained agent', fontsize=font)
 plt.xticks(fontsize=font_num)
 plt.yticks(fontsize=font_num)
 plt.tight_layout()
