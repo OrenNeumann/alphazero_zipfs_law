@@ -1,12 +1,10 @@
 import numpy as np
-from src.data_analysis.gather_agent_data import gather_data
 from src.data_analysis.game_data_analysis import process_games, noramlize_info
-from src.data_analysis.value_prediction import get_model_value_estimator
-from src.plotting.plot_utils import figure_preamble, figure_epilogue, BarFigure
+from src.data_analysis.state_value.value_loss import value_loss
+from src.plotting.plot_utils import BarFigure
 from src.general.general_utils import incremental_bin, models_path, game_path
 import matplotlib.pyplot as plt
 import matplotlib.cm as cm
-from tqdm import tqdm
 from collections import Counter
 
 """
@@ -18,35 +16,6 @@ game_num = 0
 games = ['connect4', 'pentago', 'oware', 'checkers']
 env = games[game_num]
 path = models_path()
-num_chunks = 20
-
-
-def value_loss(path_model, board_count, info):
-    """
-    Calculate the value loss of a model on all states, sorted by rank.
-    """
-    serials = info['serials']
-    real_values = info['values']
-    model_values = get_model_value_estimator(env, path_model)
-    sorted_serials = []
-    z = []
-    #counts = []
-    for key, count in board_count.most_common():
-        sorted_serials.append(serials[key])
-        z.append(real_values[key])
-        #counts.append(count)
-    z = np.array(z)
-
-    # Chunk data to smaller pieces to save memory:
-    chunk_size = len(sorted_serials) // num_chunks
-    data_chunks = [sorted_serials[i:i + chunk_size] for i in range(0, len(sorted_serials), chunk_size)]
-    vl = []
-    for chunk in tqdm(data_chunks, desc='Estimating model loss'):
-        vl.append(model_values(chunk))
-    v = np.concatenate(vl)
-
-    return (z - v) ** 2#, counts
-
 
 par = np.load('src/config/parameter_counts/'+env+'.npy')
 font = 18
@@ -89,7 +58,7 @@ for label in data_labels:
 
         # consider pruning more, and checking that the max rank is more or less similar between all agents with the same label. to avoid averaging different-frequency states together.
 
-        loss = value_loss(model_path,board_count=board_counter, info=info)
+        loss = value_loss(env, model_path,board_count=board_counter, info=info)
 
         ranks = np.arange(len(loss)) + 1
         # Calculate histogram.

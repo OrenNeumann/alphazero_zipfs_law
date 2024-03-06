@@ -92,7 +92,7 @@ class Figure:
         if self.title is not '':
             plt.title(self.title, fontsize=self.text_font)
         if self.legend:
-            plt.legend()
+            plt.legend(fontsize=self.text_font - 3)
         plt.xticks(fontsize=self.number_font)
         plt.yticks(fontsize=self.number_font)
         plt.tight_layout()
