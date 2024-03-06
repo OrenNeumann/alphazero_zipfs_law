@@ -2,9 +2,10 @@ import numpy as np
 from src.data_analysis.gather_agent_data import gather_data
 from src.data_analysis.game_data_analysis import process_games
 from src.data_analysis.value_prediction import get_model_value_estimator
-from src.plotting.plot_utils import figure_preamble, figure_epilogue
+from src.plotting.plot_utils import figure_preamble, figure_epilogue, BarFigure
 from src.general.general_utils import incremental_bin, models_path, game_path
 import matplotlib.pyplot as plt
+import matplotlib.cm as cm
 from tqdm import tqdm
 from collections import Counter
 
@@ -49,6 +50,17 @@ par = np.load('src/config/parameter_counts/'+env+'.npy')
 font = 18
 font_num = 16
 
+figure = BarFigure(par, 
+                   x_label='State rank', 
+                   y_label='Loss', 
+                   title='Value loss on the train set', 
+                   text_font=font, 
+                   number_font=font_num, 
+                   legend=True)
+figure.figure_preamble()
+color_nums = figure.colorbar_colors()
+print(color_nums)
+
 #data_labels = [0, 1, 2, 3, 4, 5, 6] # for oware no 6
 data_labels = [6]
 n_copies = 3
@@ -58,14 +70,14 @@ bins = incremental_bin(10**10)
 widths = (bins[1:] - bins[:-1])
 x =  bins[:-1] + widths/2
 
-figure_preamble()
 for label in data_labels:
     counts = np.zeros(len(bins))
     loss_sums = np.zeros(len(bins))
     for copy in range(n_copies):
-        print(f'q_{label}_{copy}')
-        model_path = path + game_path(env) + f'q_{label}_{copy}/'
-        board_counter, info = process_games(env, model_path, max_file_num=2, save_serial=True, save_value=True)#gather_data(env, data_labels, max_file_num=20, save_serial=True, save_value=True)
+        model_name = f'q_{label}_{copy}'
+        print(model_name)
+        model_path = path + game_path(env) + model_name
+        board_counter, info = process_games(env, model_path, max_file_num=2, save_serial=True, save_value=True)
 
         # seems pruning 1's reduces by one OOM, 2's and 3's together by another OOM.
         #print('Counter length before pruning:', len(board_counter))
@@ -84,16 +96,12 @@ for label in data_labels:
     loss_averages = loss_sums / counts
     loss_averages = loss_averages[np.nonzero(loss_averages)]
 
-    plt.scatter(x[:len(loss_averages)], loss_averages,s=10,label=label)
+    plt.scatter(x[:len(loss_averages)], loss_averages,s=10,label=label, color=cm.viridis(color_nums[label]))
 
 plt.xscale('log')
 plt.yscale('log')
-figure_epilogue(x_label='State rank',
-                y_label='Loss',
-                title='Value loss of fully-trained agent',
-                label_font=font,
-                number_font=font_num)
-plt.tight_layout()
+figure.figure_epilogue()
+
 name = 'value_loss_scatter'
 plt.savefig('plots/'+name+'.png', dpi=900)
 
