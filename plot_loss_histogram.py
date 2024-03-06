@@ -96,6 +96,8 @@ for label in data_labels:
     mask = np.nonzero(counts)
     print(mask)
     loss_averages = loss_sums[mask] / counts[mask]
+    print('counts',counts[mask])
+    print('loss',loss_sums[mask])
     print(loss_averages)
     print(x[mask])
 
