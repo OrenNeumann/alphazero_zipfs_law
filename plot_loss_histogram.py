@@ -76,7 +76,7 @@ for label in data_labels:
     for copy in range(n_copies):
         model_name = f'q_{label}_{copy}'
         print(model_name)
-        model_path = path + game_path(env) + model_name
+        model_path = path + game_path(env) + model_name + '/'
         board_counter, info = process_games(env, model_path, max_file_num=2, save_serial=True, save_value=True)
 
         # seems pruning 1's reduces by one OOM, 2's and 3's together by another OOM.
