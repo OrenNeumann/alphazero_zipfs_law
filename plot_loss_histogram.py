@@ -65,7 +65,7 @@ print(color_nums)
 
 #data_labels = [0, 1, 2, 3, 4, 5, 6] # for oware no 6
 data_labels = [6]
-n_copies = 1
+n_copies = 3
 
 # initialize bins to cover a range definitely larger than what you'll need:
 bins = incremental_bin(10**10)
@@ -73,13 +73,13 @@ widths = (bins[1:] - bins[:-1])
 x =  bins[:-1] + widths/2
 
 for label in data_labels:
-    counts = np.zeros(len(x))
+    bin_counts = np.zeros(len(x))
     loss_sums = np.zeros(len(x))
     for copy in range(n_copies):
         model_name = f'q_{label}_{copy}'
         print(model_name)
         model_path = path + game_path(env) + model_name + '/'
-        board_counter, info = process_games(env, model_path, max_file_num=2, save_serial=True, save_value=True)
+        board_counter, info = process_games(env, model_path, max_file_num=4, save_serial=True, save_value=True)
         noramlize_info(info, board_counter)
 
         # seems pruning 1's reduces by one OOM, 2's and 3's together by another OOM.
@@ -87,24 +87,19 @@ for label in data_labels:
         board_counter = Counter({k: c for k, c in board_counter.items() if c >= 2})
         #print('Counter length after pruning: ', len(board_counter))
 
+        # consider pruning more, and checking that the max rank is more or less similar between all agents with the same label. to avoid averaging different-frequency states together.
+
         loss = value_loss(model_path,board_count=board_counter, info=info)
-        print(len(loss))
-        print('loss',loss[:100])
 
         ranks = np.arange(len(loss)) + 1
         # Calculate histogram.
         # np.histogram counts how many elements of 'ranks' fall in each bin.
         # by specifying 'weights=loss', you can make it sum losses instead of counting.
-        counts += np.histogram(ranks, bins=bins)[0]#, weights=rank_counts)[0]
+        bin_counts += np.histogram(ranks, bins=bins)[0]#, weights=rank_counts)[0]
         loss_sums += np.histogram(ranks, bins=bins, weights=loss)[0]
     # Divide sum to get average:
-    mask = np.nonzero(counts)
-    print(mask)
-    loss_averages = loss_sums[mask] / counts[mask]
-    print('counts',counts[mask])
-    print('loss',loss_sums[mask])
-    print(loss_averages)
-    print(x[mask])
+    mask = np.nonzero(bin_counts)
+    loss_averages = loss_sums[mask] / bin_counts[mask]
 
     plt.scatter(x[mask], loss_averages,s=10,label=label, color=cm.viridis(color_nums[label]))
 
