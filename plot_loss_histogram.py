@@ -94,7 +94,10 @@ for label in data_labels:
         loss_sums += np.histogram(ranks, bins=bins, weights=loss)[0]
     # Divide sum to get average:
     mask = np.nonzero(counts)
+    print(mask)
     loss_averages = loss_sums[mask] / counts[mask]
+    print(loss_averages)
+    print(x[mask])
 
     plt.scatter(x[mask], loss_averages,s=10,label=label, color=cm.viridis(color_nums[label]))
 
