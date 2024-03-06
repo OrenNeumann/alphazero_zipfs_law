@@ -101,7 +101,7 @@ for label in data_labels:
     mask = np.nonzero(bin_counts)
     loss_averages = loss_sums[mask] / bin_counts[mask]
 
-    plt.scatter(x[mask], loss_averages,s=10,label=label, color=cm.viridis(color_nums[label]))
+    plt.scatter(x[mask], loss_averages,s=6,label=label, color=cm.viridis(color_nums[label]))
 
 plt.xscale('log')
 plt.yscale('log')
@@ -110,16 +110,8 @@ figure.figure_epilogue()
 name = 'value_loss_scatter'
 plt.savefig('plots/'+name+'.png', dpi=900)
 
-"""
-figure_preamble()
-plt.bar(bins[:-1], loss_averages, widths)
-plt.xscale('log')
-plt.yscale('log')
-figure_epilogue(x_label='State rank',
-                y_label='Loss',
-                title='Value loss of fully-trained agent',
-                label_font=font,
-                number_font=font_num)
-name = 'value_loss_barplot'
+plt.yscale('linear')
+figure.figure_epilogue()
+name = 'value_loss_scatter_semilog'
 plt.savefig('plots/'+name+'.png', dpi=900)
-"""
+
