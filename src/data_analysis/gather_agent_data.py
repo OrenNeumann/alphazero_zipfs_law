@@ -1,5 +1,5 @@
 from collections import Counter
-from src.data_analysis.game_data_analysis import process_games
+from src.data_analysis.game_data_analysis import process_games, noramlize_info
 from src.general.general_utils import models_path, game_path
 
 
@@ -31,7 +31,7 @@ def gather_data(env: str, labels: list[int], max_file_num: int = 1, save_serial:
             _update_dict(turns_to_end, info['turns_to_end'])
         if save_value:
             _update_dict(values, info['values'])
-
+    """
     if save_turn_num:
         for key, n in board_counter.items():
             turns_played[key] /= n
@@ -39,10 +39,12 @@ def gather_data(env: str, labels: list[int], max_file_num: int = 1, save_serial:
     if save_value:
         for key, n in board_counter.items():
             values[key] /= n
+    """
     total_info = {'serials': serial_states,
                   'turns_played': turns_played,
                   'turns_to_end': turns_to_end,
                   'values': values}
+    noramlize_info(total_info, board_counter)
 
     return board_counter, total_info
 

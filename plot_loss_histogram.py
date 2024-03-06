@@ -1,6 +1,6 @@
 import numpy as np
 from src.data_analysis.gather_agent_data import gather_data
-from src.data_analysis.game_data_analysis import process_games
+from src.data_analysis.game_data_analysis import process_games, noramlize_info
 from src.data_analysis.value_prediction import get_model_value_estimator
 from src.plotting.plot_utils import figure_preamble, figure_epilogue, BarFigure
 from src.general.general_utils import incremental_bin, models_path, game_path
@@ -80,6 +80,7 @@ for label in data_labels:
         print(model_name)
         model_path = path + game_path(env) + model_name + '/'
         board_counter, info = process_games(env, model_path, max_file_num=2, save_serial=True, save_value=True)
+        noramlize_info(info, board_counter)
 
         # seems pruning 1's reduces by one OOM, 2's and 3's together by another OOM.
         #print('Counter length before pruning:', len(board_counter))
