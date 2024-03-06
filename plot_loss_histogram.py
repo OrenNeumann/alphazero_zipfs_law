@@ -71,8 +71,8 @@ widths = (bins[1:] - bins[:-1])
 x =  bins[:-1] + widths/2
 
 for label in data_labels:
-    counts = np.zeros(len(bins))
-    loss_sums = np.zeros(len(bins))
+    counts = np.zeros(len(x))
+    loss_sums = np.zeros(len(x))
     for copy in range(n_copies):
         model_name = f'q_{label}_{copy}'
         print(model_name)
@@ -93,10 +93,10 @@ for label in data_labels:
         counts += np.histogram(ranks, bins=bins)[0]
         loss_sums += np.histogram(ranks, bins=bins, weights=loss)[0]
     # Divide sum to get average:
-    loss_averages = loss_sums / counts
-    loss_averages = loss_averages[np.nonzero(loss_averages)]
+    mask = np.nonzero(counts)
+    loss_averages = loss_sums[mask] / counts[mask]
 
-    plt.scatter(x[:len(loss_averages)], loss_averages,s=10,label=label, color=cm.viridis(color_nums[label]))
+    plt.scatter(x[mask], loss_averages,s=10,label=label, color=cm.viridis(color_nums[label]))
 
 plt.xscale('log')
 plt.yscale('log')
