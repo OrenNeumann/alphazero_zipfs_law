@@ -28,7 +28,7 @@ figure = BarFigure(par,
                    text_font=font, 
                    number_font=font_num, 
                    legend=True)
-figure.figure_preamble()
+figure.preamble()
 color_nums = figure.colorbar_colors()
 print(color_nums)
 
@@ -74,13 +74,10 @@ for label in data_labels:
 
 plt.xscale('log')
 plt.yscale('log')
-figure.figure_epilogue()
-
-name = 'value_loss_scatter'
-plt.savefig('plots/'+name+'.png', dpi=900)
+figure.epilogue()
+figure.save('value_loss_scatter')
 
 plt.yscale('linear')
-figure.figure_epilogue()
-name = 'value_loss_scatter_semilog'
-plt.savefig('plots/'+name+'.png', dpi=900)
+figure.epilogue()   
+figure.save('value_loss_scatter_semilog')
 

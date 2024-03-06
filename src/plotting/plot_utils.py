@@ -78,13 +78,13 @@ class Figure:
         self.number_font = number_font
         self.legend = legend
 
-    def figure_preamble(self, fig_aspect=0.6):
+    def preamble(self, fig_aspect=0.6):
         w, h = plt.figaspect(fig_aspect)
         plt.figure(self.fig_num, figsize=(w, h))
         plt.style.use(['grid'])
         plt.clf()
 
-    def figure_epilogue(self):
+    def epilogue(self):
         if self.x_label is not '':
             plt.xlabel(self.x_label, fontsize=self.text_font)
         if self.y_label is not '':
@@ -96,6 +96,9 @@ class Figure:
         plt.xticks(fontsize=self.number_font)
         plt.yticks(fontsize=self.number_font)
         plt.tight_layout()
+
+    def save(self, name):
+        plt.savefig('plots/' + name + '.png', dpi=900)
 
 class BarFigure(Figure):
     """

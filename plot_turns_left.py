@@ -1,7 +1,7 @@
 import numpy as np
 from src.data_analysis.gather_agent_data import gather_data
 from src.data_analysis.data_utils import sort_by_frequency
-from src.plotting.plot_utils import figure_preamble, figure_epilogue
+from src.plotting.plot_utils import Figure
 import matplotlib.pyplot as plt
 
 """
@@ -24,17 +24,22 @@ turns_to_end = info['turns_to_end']
 n = len(board_counter)
 x = np.arange(n) + 1
 
+font = 18 - 2
+font_num = 16 - 2
 
-def plot_turns(y, name, y_label, y_logscale=False, fignum=1):
-    figure_preamble(fig_num=fignum)
-    font = 18 - 2
-    font_num = 16 - 2
+fig = Figure(x_label='State rank',text_font=font, number_font=font_num)
+plt.xscale('log')
+
+def plot_turns(y, name, y_label, y_logscale=False):
+    fig.preamble()
     plt.scatter(x, y, s=40 * 3 / (10 + x), alpha=1, color='green')
-    plt.xscale('log')
     if y_logscale:
         plt.yscale('log')
-    figure_epilogue(x_label='State rank', y_label=y_label, label_font=font, number_font=font_num)
-    plt.savefig('plots/' + name + '.png', dpi=900)
+    else:
+        plt.yscale('linear')
+    fig.y_label = y_label
+    fig.epilogue()
+    fig.save(name)
     plt.show()
 
 
