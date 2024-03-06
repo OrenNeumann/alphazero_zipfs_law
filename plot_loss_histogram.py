@@ -30,11 +30,11 @@ def value_loss(path_model, board_count, info):
     model_values = get_model_value_estimator(env, path_model)
     sorted_serials = []
     z = []
-    counts = []
+    #counts = []
     for key, count in board_count.most_common():
         sorted_serials.append(serials[key])
         z.append(real_values[key])
-        counts.append(count)
+        #counts.append(count)
     z = np.array(z)
 
     # Chunk data to smaller pieces to save memory:
@@ -45,7 +45,7 @@ def value_loss(path_model, board_count, info):
         vl.append(model_values(chunk))
     v = np.concatenate(vl)
 
-    return (z - v) ** 2, counts
+    return (z - v) ** 2#, counts
 
 
 par = np.load('src/config/parameter_counts/'+env+'.npy')
@@ -86,13 +86,15 @@ for label in data_labels:
         board_counter = Counter({k: c for k, c in board_counter.items() if c >= 2})
         #print('Counter length after pruning: ', len(board_counter))
 
-        loss, rank_counts = value_loss(model_path,board_count=board_counter, info=info)
+        loss = value_loss(model_path,board_count=board_counter, info=info)
+        print(len(loss))
+        print('loss',loss[:100])
 
         ranks = np.arange(len(loss)) + 1
         # Calculate histogram.
         # np.histogram counts how many elements of 'ranks' fall in each bin.
         # by specifying 'weights=loss', you can make it sum losses instead of counting.
-        counts += np.histogram(ranks, bins=bins, weights=rank_counts)[0]
+        counts += np.histogram(ranks, bins=bins)[0]#, weights=rank_counts)[0]
         loss_sums += np.histogram(ranks, bins=bins, weights=loss)[0]
     # Divide sum to get average:
     mask = np.nonzero(counts)
