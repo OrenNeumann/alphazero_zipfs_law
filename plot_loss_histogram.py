@@ -63,8 +63,8 @@ figure.figure_preamble()
 color_nums = figure.colorbar_colors()
 print(color_nums)
 
-#data_labels = [0, 1, 2, 3, 4, 5, 6] # for oware no 6
-data_labels = [6]
+data_labels = [0, 1, 2, 3, 4, 5, 6] # for oware no 6
+#data_labels = [6]
 n_copies = 3
 
 # initialize bins to cover a range definitely larger than what you'll need:
