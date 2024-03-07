@@ -92,15 +92,17 @@ class StateCounter:
             # for an observation of a final board throws an error.
             key = str(board)
             keys.append(key)
-            self.frequencies[key] += 1
-
-            if self.save_serial and self.frequencies[key] == 1:
-                self.serials[key] = board.serialize()
+            self._update_frequencies(board, key)
         # Apply final action (not counted, it's not trained on and it messes up value loss)
         board.apply_action(board.string_to_action(actions[-1]))
         if not board.is_terminal():
             raise Exception('Game ended prematurely. Maybe a corrupted file?')
         return board, keys
+    
+    def _update_frequencies(self, board, key):
+        self.frequencies[key] += 1
+        if self.save_serial and self.frequencies[key] == 1:
+            self.serials[key] = board.serialize()
 
     def _update_info_counters(self, board, keys):
         """ Update the turn and value counters.
