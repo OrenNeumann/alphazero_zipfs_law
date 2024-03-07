@@ -39,7 +39,7 @@ n_copies = 3
 # initialize bins to cover a range definitely larger than what you'll need:
 bins = incremental_bin(10**10)
 widths = (bins[1:] - bins[:-1])
-x =  bins[:-1] + widths/2
+x = bins[:-1] + widths/2
 
 for label in data_labels:
     bin_counts = np.zeros(len(x))
@@ -51,12 +51,12 @@ for label in data_labels:
         board_counter, info = process_games(env, model_path, max_file_num=4, save_serial=True, save_value=True)
         noramlize_info(info, board_counter)
 
-        # seems pruning 1's reduces by one OOM, 2's and 3's together by another OOM.
-        #print('Counter length before pruning:', len(board_counter))
+        # Prune states with freq=1. This roughly reduces the data by an OOM. Pruning
+        # states with freq=2,3 will reduce it by another OOM.
         board_counter = Counter({k: c for k, c in board_counter.items() if c >= 2})
-        #print('Counter length after pruning: ', len(board_counter))
 
-        # consider pruning more, and checking that the max rank is more or less similar between all agents with the same label. to avoid averaging different-frequency states together.
+        # consider pruning more, and checking that the max rank is more or less similar between all agents with the
+        # same label. to avoid averaging different-frequency states together.
 
         loss = value_loss(env, model_path,board_count=board_counter, info=info)
 
@@ -64,13 +64,14 @@ for label in data_labels:
         # Calculate histogram.
         # np.histogram counts how many elements of 'ranks' fall in each bin.
         # by specifying 'weights=loss', you can make it sum losses instead of counting.
-        bin_counts += np.histogram(ranks, bins=bins)[0]#, weights=rank_counts)[0]
+        bin_counts += np.histogram(ranks, bins=bins)[0]
         loss_sums += np.histogram(ranks, bins=bins, weights=loss)[0]
     # Divide sum to get average:
     mask = np.nonzero(bin_counts)
     loss_averages = loss_sums[mask] / bin_counts[mask]
 
-    plt.scatter(x[mask], loss_averages,s=6,label=label, color=cm.viridis(color_nums[label]))
+    plt.scatter(x[mask], loss_averages,
+                s=6, label=label, color=cm.viridis(color_nums[label]))
 
 plt.xscale('log')
 plt.yscale('log')

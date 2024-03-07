@@ -13,7 +13,7 @@ class Figure:
         x_label (str): The label for the x-axis.
         y_label (str): The label for the y-axis.
         title (str): The title of the figure.
-        label_font (int): The font size for the labels.
+        text_font (int): The font size for the labels.
         number_font (int): The font size for the numbers.
         legend (bool): Whether to show the legend.
 
@@ -24,11 +24,11 @@ class Figure:
     """
 
     def __init__(self,
-                fig_num=1, 
-                 x_label='', 
-                 y_label='', 
-                 title='', 
-                 text_font=18, 
+                 fig_num=1,
+                 x_label='',
+                 y_label='',
+                 title='',
+                 text_font=18,
                  number_font=16,
                  legend=False):
         self.fig_num = fig_num
@@ -61,6 +61,7 @@ class Figure:
     def save(self, name):
         plt.savefig('plots/' + name + '.png', dpi=900)
 
+
 class BarFigure(Figure):
     """
     Class for bar figures (figures with a colorbar on the side).
@@ -76,7 +77,7 @@ class BarFigure(Figure):
         self.par = par
 
     def figure_preamble(self):
-        super().figure_preamble()
+        super().preamble()
         # ax = plt.gca()
         norm = matplotlib.colors.LogNorm(vmin=self.par.min(), vmax=self.par.max())
         # create a scalarmappable from the colormap
