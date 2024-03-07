@@ -1,8 +1,8 @@
 import numpy as np
 from src.data_analysis.state_frequency.state_counter import StateCounter
 from src.data_analysis.state_value.value_loss import value_loss
-from src.plotting.plot_utils import BarFigure
-from src.general.general_utils import incremental_bin, models_path, game_path
+from src.plotting.plot_utils import BarFigure, incremental_bin
+from src.general.general_utils import models_path, game_path
 import matplotlib.pyplot as plt
 import matplotlib.cm as cm
 

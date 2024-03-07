@@ -91,3 +91,22 @@ class BarFigure(Figure):
         log_par = np.log(self.par)
         color_nums = (log_par - log_par.min()) / (log_par.max() - log_par.min())
         return color_nums
+
+
+def incremental_bin(bin_max):
+    """
+    Creates bin limits that expand exponentially.
+    Bin n has a width of:
+    n^(1+0.02*n)
+    I found that's a good compromise between high detail and low noise.
+    """
+    bins = [1]
+    alpha = 1
+    for n in range(bin_max):
+        new_val = bins[-1] + (n + 1) ** alpha
+        alpha += 0.02
+        if new_val >= bin_max:
+            bins.append(bin_max)
+            break
+        bins.append(new_val)
+    return np.array(bins)
