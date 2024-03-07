@@ -2,7 +2,7 @@ from collections import Counter
 import re
 from tqdm import tqdm
 import pyspiel
-from src.general.general_utils import action_string
+from src.general.general_utils import action_string, training_length
 
 """
 Tools for retrieving information from recorded AlphaZero games.
@@ -13,11 +13,7 @@ Note: This code assumes the logfiles only contain legal moves,
 """
 
 
-def _extract_games(file_name):
-    """ Get the move-list (str) of all games in the file."""
-    with open(file_name, 'r') as file:
-        games = [line.split("Actions: ", 1)[1] for line in file if re.search(r'Game \d+:', line)]
-    return games
+
 
 
 class StateCounter:
@@ -27,11 +23,13 @@ class StateCounter:
                  env: str,
                  save_serial=False,
                  save_turn_num=False,
-                 save_value=False):
+                 save_value=False,
+                 cut_early_games=True):
         self.env = env
         self.save_serial = save_serial
         self.save_turn_num = save_turn_num
         self.save_value = save_value
+        self.cut_early_games = cut_early_games
 
         self.action_formats = {'connect_four': r'[xo][0-6]',
                                'pentago': r'[a-f][1-6][s-z]',
@@ -57,13 +55,25 @@ class StateCounter:
         self.values = dict()
         self.normalized = False
 
+    def _extract_games(self, file_path):
+        """ Get the move-list (str) of all games in the file.
+            If cut_early_games is True, only include the last 70% of games,
+            accounting for short actor files (due to training run crashes)."""
+        with open(file_path, 'r') as file:
+            games = [line.split("Actions: ", 1)[1] for line in file if re.search(r'Game \d+:', line)]
+        if self.cut_early_games:
+            full_length = training_length(self.env)
+            include = int(full_length * 0.7)
+            games = games[-include:]
+        return games
+
     def collect_data(self, path, max_file_num):
         if self.normalized:
             raise Exception('Data already normalized, reset counters to collect new data.')
         # Collect all games from all files
         for i in range(max_file_num):
             file_name = f'/log-actor-{i}.txt'
-            recorded_games = _extract_games(path + file_name)
+            recorded_games = self._extract_games(path + file_name)
             # Get board positions from all games and add them to counter
             for game_record in tqdm(recorded_games, desc=f'Processing actor {i}'):
                 board, keys = self._process_game(game_record)

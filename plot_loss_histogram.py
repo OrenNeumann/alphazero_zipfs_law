@@ -29,8 +29,8 @@ figure = BarFigure(par,
 figure.preamble()
 color_nums = figure.colorbar_colors()
 
-#data_labels = [0, 1, 2, 3, 4, 5, 6] # for oware no 6
-data_labels = [6]
+data_labels = [0, 1, 2, 3, 4, 5, 6] # for oware no 6
+#data_labels = [6]
 n_copies = 4
 
 # initialize bins to cover a range definitely larger than what you'll need:
@@ -48,7 +48,7 @@ for label in data_labels:
         print(model_name)
         model_path = path + game_path(env) + model_name + '/'
         state_counter.reset_counters()
-        state_counter.collect_data(path=model_path, max_file_num=10)
+        state_counter.collect_data(path=model_path, max_file_num=20)
         state_counter.normalize_counters()
 
         state_counter.prune_low_frequencies(2)

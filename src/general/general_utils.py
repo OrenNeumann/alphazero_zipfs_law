@@ -19,6 +19,11 @@ def action_string(game: str):
         config = yaml.load(f, Loader=yaml.FullLoader)
     return config['action_formats'][game]
 
+def training_length(game: str):
+    """ A rough estimate of the number of games (per actor) needed to train a model."""
+    with open("src/config/config.yaml", "r") as f:
+        config = yaml.load(f, Loader=yaml.FullLoader)
+    return config['approx_training_length'][game]
 
 def fit_power_law(freq,
                   up_bound,
