@@ -1,14 +1,28 @@
-import numpy as np
-from collections import Counter, deque
+from collections import Counter
 import re
 from tqdm import tqdm
 import pyspiel
-from random import sample
 from src.general.general_utils import action_string
+
+"""
+Tools for retrieving information from recorded AlphaZero games.
+StateCounter is used for extracting game states and frequencies.
+
+Note: This code assumes the logfiles only contain legal moves, 
+    be careful using it on another dataset.
+"""
+
+
+def _extract_games(file_name):
+    """ Get the move-list (str) of all games in the file."""
+    with open(file_name, 'r') as file:
+        games = [line.split("Actions: ", 1)[1] for line in file if re.search(r'Game \d+:', line)]
+    return games
 
 
 class StateCounter:
-
+    """ Class for collecting and analyzing game states from AlphaZero logfiles.
+    """
     def __init__(self,
                  env: str,
                  save_serial: bool = False,
@@ -47,7 +61,7 @@ class StateCounter:
 
     def _process_game(self, game):
         """Process a single game.
-        Update the board counter and return the fnal board + keys of board positions played.
+        Update the board counter and return the final board + keys of board positions played.
         """
         board = pyspiel.load_game(game).new_initial_state()
         actions = re.findall(self.action_string, game)
@@ -69,7 +83,8 @@ class StateCounter:
         return board, keys
 
     def _update_info_counters(self, board, keys):
-        # turn and value data is summed up, divide the sum by the count to get an average.
+        """ Update the turn and value counters.
+            These counters sum data, divide by count to get average."""
         if self.save_turn_num:
             end = board.move_number() + 1
             for turn, key in enumerate(keys, start=1):
@@ -77,12 +92,18 @@ class StateCounter:
                 self.turns_to_end[key] = self.turns_to_end.get(key, 0) + end - turn
         if self.save_value:
             game_return = board.player_return(0)
-            for turn, key in enumerate(keys, start=1):
+            for key in keys:
                 self.values[key] = self.values.get(key, 0) + game_return
 
-
-def _extract_games(file_name):
-    """ Get the move-list (str) of all games in the file."""
-    with open(file_name, 'r') as file:
-        games = [line.split("Actions: ", 1)[1] for line in file if re.search(r'Game \d+:', line)]
-    return games
+    def normalize_info(self):
+        """ Normalize the entries in info, dividing the sum by the count for all variables that aggregate sums.
+            Currently modifies the original counters rather than create copies (to save space)."""
+        counters = []
+        if self.save_turn_num:
+            counters.append(self.turns_played)
+            counters.append(self.turns_to_end)
+        if self.save_value:
+            counters.append(self.values)
+        for counter in counters:
+            for key, count in self.board_counter.items():
+                counter[key] /= count

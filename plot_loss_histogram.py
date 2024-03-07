@@ -26,8 +26,7 @@ figure = BarFigure(par,
                    y_label='Loss', 
                    title='Value loss on the train set', 
                    text_font=font, 
-                   number_font=font_num, 
-                   legend=True)
+                   number_font=font_num)
 figure.preamble()
 color_nums = figure.colorbar_colors()
 
