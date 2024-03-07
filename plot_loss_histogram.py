@@ -30,11 +30,10 @@ figure = BarFigure(par,
                    legend=True)
 figure.preamble()
 color_nums = figure.colorbar_colors()
-print(color_nums)
 
 data_labels = [0, 1, 2, 3, 4, 5, 6] # for oware no 6
 #data_labels = [6]
-n_copies = 3
+n_copies = 4
 
 # initialize bins to cover a range definitely larger than what you'll need:
 bins = incremental_bin(10**10)
@@ -48,7 +47,7 @@ for label in data_labels:
         model_name = f'q_{label}_{copy}'
         print(model_name)
         model_path = path + game_path(env) + model_name + '/'
-        board_counter, info = process_games(env, model_path, max_file_num=4, save_serial=True, save_value=True)
+        board_counter, info = process_games(env, model_path, max_file_num=10, save_serial=True, save_value=True)
         noramlize_info(info, board_counter)
 
         # Prune states with freq=1. This roughly reduces the data by an OOM. Pruning
@@ -70,8 +69,9 @@ for label in data_labels:
     mask = np.nonzero(bin_counts)
     loss_averages = loss_sums[mask] / bin_counts[mask]
 
+    #plot_label = 'N = 10^{a:.2f}'.format(a=np.log10(par[label]))
     plt.scatter(x[mask], loss_averages,
-                s=6, label=label, color=cm.viridis(color_nums[label]))
+                s=4, color=cm.viridis(color_nums[label]))
 
 plt.xscale('log')
 plt.yscale('log')

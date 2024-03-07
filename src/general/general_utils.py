@@ -8,10 +8,16 @@ def models_path():
     return config['paths']['models_dir']
 
 
-def game_path(game:str):
+def game_path(env: str):
     with open("src/config/config.yaml", "r") as f:
         config = yaml.load(f, Loader=yaml.FullLoader)
-    return config['game_paths'][game]
+    return config['game_paths'][env]
+
+
+def action_string(game: str):
+    with open("src/config/config.yaml", "r") as f:
+        config = yaml.load(f, Loader=yaml.FullLoader)
+    return config['action_formats'][game]
 
 
 def fit_power_law(freq,

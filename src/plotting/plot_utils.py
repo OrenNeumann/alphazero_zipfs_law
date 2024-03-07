@@ -76,8 +76,8 @@ class BarFigure(Figure):
         super().__init__(fig_num, x_label, y_label, title, text_font, number_font, legend)
         self.par = par
 
-    def figure_preamble(self):
-        super().preamble()
+    def preamble(self, fig_aspect=0.6):
+        super().preamble(fig_aspect)
         # ax = plt.gca()
         norm = matplotlib.colors.LogNorm(vmin=self.par.min(), vmax=self.par.max())
         # create a scalarmappable from the colormap

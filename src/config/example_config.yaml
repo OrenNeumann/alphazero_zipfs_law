@@ -10,3 +10,9 @@ game_paths:
   pentago: 'pentago_t5_10000/'
   oware: 'oware_10000/'
   checkers: 'checkers/'
+
+action_formats:
+  connect4': '[xo][0-6]'
+  pentago: '[a-f][1-6][s-z]'
+  oware: '[A-F,a-f]'
+  checkers: '[a-h][1-8][a-h][1-8]'

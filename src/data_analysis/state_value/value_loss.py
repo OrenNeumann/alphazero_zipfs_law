@@ -1,6 +1,7 @@
 import numpy as np
-from data_analysis.state_value.value_prediction import get_model_value_estimator
+from src.data_analysis.state_value.value_prediction import get_model_value_estimator
 from tqdm import tqdm
+
 
 def value_loss(env, path_model, board_count, info, num_chunks=20):
     """

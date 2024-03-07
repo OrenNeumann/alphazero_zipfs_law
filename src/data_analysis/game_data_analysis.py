@@ -146,16 +146,15 @@ def process_games(env: str,
         extra_info['values'] = values
     return board_counter, extra_info
 
+
 # It might be better to return a copy of info, to avoid modifying the original.
-def noramlize_info(extra_info: dict, board_counter:dict):
+def noramlize_info(extra_info: dict, board_counter: dict):
     """ Normalize the entries in info, dividing the sum by the count for all variables that aggregate sums."""
     for info_type in extra_info.keys():
         if info_type not in ['turns_played', 'turns_to_end', 'values']:
             continue
         for key, count in board_counter.items():
             extra_info[info_type][key] /= count
-
-
 
 
 def generate_random_games(env, n=25_000 * 80, save_serial=False):
@@ -242,5 +241,3 @@ def _sample_unique_states(buffer, batch_size):
 
 def _sample_uniformly(buffer, batch_size):
     return sample(buffer, batch_size)
-
-
