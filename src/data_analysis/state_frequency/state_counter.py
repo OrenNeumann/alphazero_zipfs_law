@@ -2,7 +2,7 @@ from collections import Counter
 import re
 from tqdm import tqdm
 import pyspiel
-from src.general.general_utils import action_string, training_length
+from src.general.general_utils import training_length
 
 """
 Tools for retrieving information from recorded AlphaZero games.
@@ -118,6 +118,8 @@ class StateCounter:
     def normalize_counters(self):
         """ Normalize sum counters, dividing the sum by the count for all variables that aggregate sums.
             Currently modifies the original counters rather than create copies (to save space)."""
+        if self.normalized:
+            raise Exception('Data already normalized.')
         counters = []
         if self.save_turn_num:
             counters.append(self.turns_played)
