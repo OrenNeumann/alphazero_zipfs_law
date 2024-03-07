@@ -1,15 +1,6 @@
 ---
-paths:
-  models_dir: '/path/to/models/'
-  plot_data: '/path/to/plot_data/'
  
 games: ['connect_four', 'pentago', 'oware', 'checkers']
-
-game_paths:
-  connect_four: 'connect_four_10000/'
-  pentago: 'pentago_t5_10000/'
-  oware: 'oware_10000/'
-  checkers: 'checkers/'
 
 action_formats:
   connect_four: '[xo][0-6]'

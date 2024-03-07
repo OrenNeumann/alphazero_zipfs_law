@@ -3,13 +3,13 @@ import yaml
 
 
 def models_path():
-    with open("src/config/config.yaml", "r") as f:
+    with open("src/config/paths.yaml", "r") as f:
         config = yaml.load(f, Loader=yaml.FullLoader)
     return config['paths']['models_dir']
 
 
 def game_path(env: str):
-    with open("src/config/config.yaml", "r") as f:
+    with open("src/config/paths.yaml", "r") as f:
         config = yaml.load(f, Loader=yaml.FullLoader)
     return config['game_paths'][env]
 
