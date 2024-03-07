@@ -33,7 +33,7 @@ color_nums = figure.colorbar_colors()
 
 #data_labels = [0, 1, 2, 3, 4, 5, 6] # for oware no 6
 data_labels = [6]
-n_copies = 2
+n_copies = 3
 
 # initialize bins to cover a range definitely larger than what you'll need:
 bins = incremental_bin(10**10)
@@ -49,7 +49,8 @@ for label in data_labels:
         model_name = f'q_{label}_{copy}'
         print(model_name)
         model_path = path + game_path(env) + model_name + '/'
-        state_counter.collect_data(path=model_path, max_file_num=2)
+        state_counter.reset_counters()
+        state_counter.collect_data(path=model_path, max_file_num=4)
         state_counter.normalize_counters()
         #board_counter, info = process_games(env, model_path, max_file_num=10, save_serial=True, save_value=True)
         #noramlize_info(info, board_counter)

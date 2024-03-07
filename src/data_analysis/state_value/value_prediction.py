@@ -11,27 +11,13 @@ Tools for getting an estimate of a state's value. Either from a trained agent, o
 """
 
 
-def _get_game(env):
-    """Return a pyspiel game"""
-    if env == 'connect4':
-        return pyspiel.load_game('connect_four')
-    elif env == 'pentago':
-        return pyspiel.load_game('pentago')
-    elif env == 'oware':
-        return pyspiel.load_game('oware')
-    elif env == 'checkers':
-        return pyspiel.load_game('checkers')
-    else:
-        raise NameError('Environment ' + str(env) + ' not supported.')
-
-
 def get_model_value_estimator(env: str, config_path: str):
     """ Creates an estimator function that uses a trained model to calculate state values.
 
         :param env: Game environment.
         :param config_path: Path to trained model.
     """
-    game = _get_game(env)
+    game = pyspiel.load_game(env)
     config = load_config(config_path)
     model = load_model_from_checkpoint(config=config, path=config_path, checkpoint_number=10_000)
 
@@ -65,7 +51,7 @@ def get_solver_value_estimator(env: str):
     :return: value_loss function.
     """
 
-    if env != 'connect4':
+    if env != 'connect_four':
         raise NameError('Game name provided not supported: ' + env)
 
     # Load solver from solver_bot

@@ -28,24 +28,26 @@ class StateCounter:
                  save_serial=False,
                  save_turn_num=False,
                  save_value=False):
-        if env == 'connect4':
-            env = 'connect_four'
         self.env = env
         self.save_serial = save_serial
         self.save_turn_num = save_turn_num
         self.save_value = save_value
-        """"
-        self.action_formats = {'connect4': r'[xo][0-6]',
+
+        self.action_formats = {'connect_four': r'[xo][0-6]',
                                'pentago': r'[a-f][1-6][s-z]',
                                'oware': r'[A-F,a-f]',
                                'checkers': r'[a-h][1-8][a-h][1-8]'}
-        """
-        self.action_string = action_string(self.env)
+
+        self.action_string = self.action_formats[env]
+
+        #self.action_string = action_string(self.env)
         self.frequencies = Counter()
         self.serials = dict()
         self.turns_played = dict()
         self.turns_to_end = dict()
         self.values = dict()
+        self.game = pyspiel.load_game(self.env)
+        self.normalized = False
 
     def reset_counters(self):
         self.frequencies = Counter()
@@ -53,25 +55,28 @@ class StateCounter:
         self.turns_played = dict()
         self.turns_to_end = dict()
         self.values = dict()
+        self.normalized = False
 
     def collect_data(self, path, max_file_num):
+        if self.normalized:
+            raise Exception('Data already normalized, reset counters to collect new data.')
         # Collect all games from all files
         for i in range(max_file_num):
             file_name = f'/log-actor-{i}.txt'
-            games = _extract_games(path + file_name)
+            recorded_games = _extract_games(path + file_name)
             # Get board positions from all games and add them to counter
-            for game in tqdm(games, desc=f'Processing actor {i}'):
-                board, keys = self._process_game(game)
+            for game_record in tqdm(recorded_games, desc=f'Processing actor {i}'):
+                board, keys = self._process_game(game_record)
                 self._update_info_counters(board, keys)
 
-    def _process_game(self, game):
-        """Process a single game.
-        Update the board counter and return the final board + keys of board positions played.
+    def _process_game(self, game_record):
+        """ Process a single game.
+            Update the board counter and return the final board + keys of board positions played.
         """
-        board = pyspiel.load_game(game).new_initial_state()
-        actions = re.findall(self.action_string, game)
+        board = self.game.new_initial_state()
+        actions = re.findall(self.action_string, game_record)
         keys = list()
-        for action in actions[-1]:
+        for action in actions[:-1]:
             board.apply_action(board.string_to_action(action))
             # Using pyspiel's string as key rather than observation, since asking
             # for an observation of a final board throws an error.
@@ -112,6 +117,7 @@ class StateCounter:
         for counter in counters:
             for key, count in self.frequencies.items():
                 counter[key] /= count
+        self.normalized = True
 
     def prune_low_frequencies(self, threshold):
         """ Remove all states with a frequency below the threshold.
