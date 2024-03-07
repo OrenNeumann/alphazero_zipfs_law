@@ -18,6 +18,28 @@ Note: This code assumes the logfiles only contain legal moves,
 
 class StateCounter:
     """ Class for collecting and analyzing game states from AlphaZero logfiles.
+        Args:
+            env: str, the environment (game).
+            save_serial: bool, whether to save the serialized board state, for recreating state objects.
+            save_turn_num: bool, whether to save the turn number and turns left for each state.
+            save_value: bool, whether to save the value (episode return) of each state.
+            cut_early_games: bool, whether to cut out early-training games from the dataset.   
+
+        Methods:
+            reset_counters: Reset all counters.
+            collect_data: Collect data from logfiles in a directory.
+            normalize_counters: Normalize the counters, use after data collection to get the final results.
+            prune_low_frequencies: Reduce the size of the data by ignoring low-frequency states.
+
+        Notes:
+            Serials: Each board has many serialized forms, so serials can't be used as a key, but they're
+            essential to reconstruct the game state. This is NOT a good approach for non-Markovian games 
+            (like Chess, due to castling and 3-rep-draw rules). So this approach loses information for 
+            Oware and checkers, where the number of turns since start/last capture is relevant.
+            
+            Turn numbers: For some games the number of turns is fixed for each state (e.g. Connect 4
+            and Pentago, where a stone is added every turn). That is not the case for Oware and checkers,
+            which is why we average that number.
     """
     def __init__(self,
                  env: str,
@@ -77,6 +99,7 @@ class StateCounter:
             # Get board positions from all games and add them to counter
             for game_record in tqdm(recorded_games, desc=f'Processing actor {i}'):
                 board, keys = self._process_game(game_record)
+                self._update_frequencies(keys)
                 self._update_info_counters(board, keys)
 
     def _process_game(self, game_record):
@@ -92,17 +115,18 @@ class StateCounter:
             # for an observation of a final board throws an error.
             key = str(board)
             keys.append(key)
-            self._update_frequencies(board, key)
+            if self.save_serial and key not in self.serials.keys():
+                self.serials[key] = board.serialize()
         # Apply final action (not counted, it's not trained on and it messes up value loss)
         board.apply_action(board.string_to_action(actions[-1]))
         if not board.is_terminal():
             raise Exception('Game ended prematurely. Maybe a corrupted file?')
         return board, keys
     
-    def _update_frequencies(self, board, key):
-        self.frequencies[key] += 1
-        if self.save_serial and self.frequencies[key] == 1:
-            self.serials[key] = board.serialize()
+    def _update_frequencies(self, keys):
+        for key in keys:
+            self.frequencies[key] += 1
+            
 
     def _update_info_counters(self, board, keys):
         """ Update the turn and value counters.
