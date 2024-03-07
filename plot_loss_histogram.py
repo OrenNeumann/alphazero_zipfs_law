@@ -48,10 +48,10 @@ for label in data_labels:
         print(model_name)
         model_path = path + game_path(env) + model_name + '/'
         state_counter.reset_counters()
-        state_counter.collect_data(path=model_path, max_file_num=20)
+        state_counter.collect_data(path=model_path, max_file_num=39)
         state_counter.normalize_counters()
 
-        state_counter.prune_low_frequencies(2)
+        state_counter.prune_low_frequencies(4)#2
         # consider pruning more, and checking that the max rank is more or less similar between all agents with the
         # same label. to avoid averaging different-frequency states together.
 
@@ -68,7 +68,9 @@ for label in data_labels:
     loss_averages = loss_sums[mask] / bin_counts[mask]
 
     #plot_label = 'N = 10^{a:.2f}'.format(a=np.log10(par[label]))
-    plt.scatter(x[mask], loss_averages,
+    #plt.scatter(x[mask], loss_averages,
+    #            s=4, color=cm.viridis(color_nums[label]))
+    plt.plot(x[mask], loss_averages,
                 s=4, color=cm.viridis(color_nums[label]))
 
 plt.xscale('log')
