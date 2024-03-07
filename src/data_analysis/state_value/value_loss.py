@@ -4,15 +4,13 @@ from src.data_analysis.state_frequency.state_counter import StateCounter
 from tqdm import tqdm
 
 
-def value_loss(env, path_model, state_counter: StateCounter, num_chunks=20):#board_count, info, num_chunks=20):
+def value_loss(env, path_model, state_counter: StateCounter, num_chunks=20):
     """
     Calculate the value loss of a model on all states, sorted by rank.
     """
     if len(state_counter.serials) == 0 or len(state_counter.values) == 0:
         raise ValueError('Serials and/or values counter are empty.\n'
-                         'Did you forget to call StateCounter with save_serial=True, save_value=True?.')
-    #serials = info['serials']
-    #real_values = info['values']
+                         'Did you forget to call StateCounter with save_serial=True, save_value=True?')
     model_values = get_model_value_estimator(env, path_model)
     sorted_serials = []
     z = []

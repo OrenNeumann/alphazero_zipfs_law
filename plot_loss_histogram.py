@@ -1,12 +1,10 @@
 import numpy as np
-from src.data_analysis.game_data_analysis import process_games, noramlize_info
 from src.data_analysis.state_frequency.state_counter import StateCounter
 from src.data_analysis.state_value.value_loss import value_loss
 from src.plotting.plot_utils import BarFigure
 from src.general.general_utils import incremental_bin, models_path, game_path
 import matplotlib.pyplot as plt
 import matplotlib.cm as cm
-from collections import Counter
 
 """
 Value loss histogram
@@ -33,7 +31,7 @@ color_nums = figure.colorbar_colors()
 
 #data_labels = [0, 1, 2, 3, 4, 5, 6] # for oware no 6
 data_labels = [6]
-n_copies = 3
+n_copies = 4
 
 # initialize bins to cover a range definitely larger than what you'll need:
 bins = incremental_bin(10**10)
@@ -50,20 +48,13 @@ for label in data_labels:
         print(model_name)
         model_path = path + game_path(env) + model_name + '/'
         state_counter.reset_counters()
-        state_counter.collect_data(path=model_path, max_file_num=4)
+        state_counter.collect_data(path=model_path, max_file_num=10)
         state_counter.normalize_counters()
-        #board_counter, info = process_games(env, model_path, max_file_num=10, save_serial=True, save_value=True)
-        #noramlize_info(info, board_counter)
 
         state_counter.prune_low_frequencies(2)
-        # Prune states with freq=1. This roughly reduces the data by an OOM. Pruning
-        # states with freq=2,3 will reduce it by another OOM.
-        #board_counter = Counter({k: c for k, c in board_counter.items() if c >= 2})
-
         # consider pruning more, and checking that the max rank is more or less similar between all agents with the
         # same label. to avoid averaging different-frequency states together.
 
-        #loss = value_loss(env, model_path, board_count=board_counter, info=info)
         loss = value_loss(env, model_path, state_counter=state_counter)
 
         ranks = np.arange(len(loss)) + 1
