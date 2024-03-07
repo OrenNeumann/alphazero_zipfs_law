@@ -25,22 +25,15 @@ class StateCounter:
     """
     def __init__(self,
                  env: str,
-                 save_serial: bool = False,
-                 save_turn_num: bool = False,
-                 save_value: bool = False
-                 ):
+                 save_serial=False,
+                 save_turn_num=False,
+                 save_value=False):
         if env == 'connect4':
             env = 'connect_four'
         self.env = env
         self.save_serial = save_serial
         self.save_turn_num = save_turn_num
         self.save_value = save_value
-
-        self.board_counter = Counter()
-        self.serials = dict()
-        self.turns_played = dict()
-        self.turns_to_end = dict()
-        self.values = dict()
         """"
         self.action_formats = {'connect4': r'[xo][0-6]',
                                'pentago': r'[a-f][1-6][s-z]',
@@ -48,6 +41,18 @@ class StateCounter:
                                'checkers': r'[a-h][1-8][a-h][1-8]'}
         """
         self.action_string = action_string(self.env)
+        self.frequencies = Counter()
+        self.serials = dict()
+        self.turns_played = dict()
+        self.turns_to_end = dict()
+        self.values = dict()
+
+    def reset_counters(self):
+        self.frequencies = Counter()
+        self.serials = dict()
+        self.turns_played = dict()
+        self.turns_to_end = dict()
+        self.values = dict()
 
     def collect_data(self, path, max_file_num):
         # Collect all games from all files
@@ -72,9 +77,9 @@ class StateCounter:
             # for an observation of a final board throws an error.
             key = str(board)
             keys.append(key)
-            self.board_counter[key] += 1
+            self.frequencies[key] += 1
 
-            if self.save_serial and self.board_counter[key] == 1:
+            if self.save_serial and self.frequencies[key] == 1:
                 self.serials[key] = board.serialize()
         # Apply final action (not counted, it's not trained on and it messes up value loss)
         board.apply_action(board.string_to_action(actions[-1]))
@@ -95,8 +100,8 @@ class StateCounter:
             for key in keys:
                 self.values[key] = self.values.get(key, 0) + game_return
 
-    def normalize_info(self):
-        """ Normalize the entries in info, dividing the sum by the count for all variables that aggregate sums.
+    def normalize_counters(self):
+        """ Normalize sum counters, dividing the sum by the count for all variables that aggregate sums.
             Currently modifies the original counters rather than create copies (to save space)."""
         counters = []
         if self.save_turn_num:
@@ -105,5 +110,11 @@ class StateCounter:
         if self.save_value:
             counters.append(self.values)
         for counter in counters:
-            for key, count in self.board_counter.items():
+            for key, count in self.frequencies.items():
                 counter[key] /= count
+
+    def prune_low_frequencies(self, threshold):
+        """ Remove all states with a frequency below the threshold.
+            Pruning states below threshold=2 roughly reduces the data by an OOM. Pruning
+            states below threshold=4 will reduce it by another OOM."""
+        self.frequencies = Counter({k: c for k, c in self.frequencies.items() if c >= threshold})

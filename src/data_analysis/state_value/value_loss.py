@@ -1,20 +1,24 @@
 import numpy as np
 from src.data_analysis.state_value.value_prediction import get_model_value_estimator
+from src.data_analysis.state_frequency.state_counter import StateCounter
 from tqdm import tqdm
 
 
-def value_loss(env, path_model, board_count, info, num_chunks=20):
+def value_loss(env, path_model, state_counter: StateCounter, num_chunks=20):#board_count, info, num_chunks=20):
     """
     Calculate the value loss of a model on all states, sorted by rank.
     """
-    serials = info['serials']
-    real_values = info['values']
+    if len(state_counter.serials) == 0 or len(state_counter.values) == 0:
+        raise ValueError('Serials and/or values counter are empty.\n'
+                         'Did you forget to call StateCounter with save_serial=True, save_value=True?.')
+    #serials = info['serials']
+    #real_values = info['values']
     model_values = get_model_value_estimator(env, path_model)
     sorted_serials = []
     z = []
-    for key, _ in board_count.most_common():
-        sorted_serials.append(serials[key])
-        z.append(real_values[key])
+    for key, _ in state_counter.frequencies.most_common():
+        sorted_serials.append(state_counter.serials[key])
+        z.append(state_counter.values[key])
     z = np.array(z)
 
     # Chunk data to smaller pieces to save memory:
