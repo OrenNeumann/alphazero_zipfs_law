@@ -6,9 +6,24 @@ import pyspiel
 from random import sample
 from src.data_analysis.state_frequency.state_counter import StateCounter
 
+
 class BufferCounter(StateCounter):
-    def __init__(self):
-        super().__init__()
+    def __init__(self,
+                 env: str,
+                 save_serial=False,
+                 save_turn_num=False,
+                 save_value=False,
+                 sample_unique_states=False):
+        super().__init__(env, save_serial, save_turn_num, save_value)
+        self.sample_unique_states = sample_unique_states
+        self.batch_size = 2 ** 10
+        self.buffer_size = 2 ** 16
+        self.buffer_reuse = 10
+        self.sample_threshold = int(self.buffer_size / self.buffer_reuse)
+        self.buffer = deque(maxlen=self.buffer_size)
+
+
+
 
 def process_games_with_buffer(env: str,
                               path: str,
