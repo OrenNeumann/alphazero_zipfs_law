@@ -1,4 +1,5 @@
 from collections import Counter
+import numpy as np
 import re
 from tqdm import tqdm
 import pyspiel
@@ -160,3 +161,40 @@ class StateCounter:
             Pruning states below threshold=2 roughly reduces the data by an OOM. Pruning
             states below threshold=4 will reduce it by another OOM."""
         self.frequencies = Counter({k: c for k, c in self.frequencies.items() if c >= threshold})
+
+
+
+class RandomGamesCounter(StateCounter):
+    """ A StateCounter that collects data from random games, generated on the fly.
+        """
+    def __init__(self,
+                 env: str,
+                 save_serial=False,
+                 save_turn_num=False,
+                 save_value=False):
+        super().__init__(env=env,
+                         save_serial=save_serial,
+                         save_turn_num=save_turn_num,
+                         save_value=save_value)
+        
+        def collect_data(self, n=25_000 * 80):
+            if self.normalized:
+                raise Exception('Data already normalized, reset counters to collect new data.')
+            for episode in tqdm(range(n), desc='Generating games'):
+                board, keys = self._process_game()
+                self._update_frequencies(keys)
+                self._update_info_counters(board, keys)
+
+        def _process_game(self):
+            board = self.game.new_initial_state()
+            keys = list()
+            while not board.is_terminal():
+                board.apply_action(np.random.choice(board.legal_actions()))
+                if board.is_terminal():
+                    break
+                key = str(board)
+                keys.append(key)
+                if self.save_serial and key not in self.serials.keys():
+                    self.serials[key] = board.serialize()
+            return board, keys
+
