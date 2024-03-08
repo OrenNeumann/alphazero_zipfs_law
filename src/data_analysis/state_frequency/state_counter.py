@@ -62,8 +62,8 @@ class StateCounter:
         self.action_string = ACTION_STRINGS[env]
         self.frequencies = Counter()
         self.serials = dict()
-        self.turns_played = defaultdict(lambda:0) #dict()
-        self.turns_to_end = defaultdict(lambda:0)#dict()
+        self.turns_played = defaultdict(int)
+        self.turns_to_end = defaultdict(int)
         self.values = dict()
         self.game = pyspiel.load_game(self.env)
         self.normalized = False
@@ -133,8 +133,6 @@ class StateCounter:
         if self.save_turn_num:
             end = board.move_number() + 1
             for turn, key in enumerate(keys, start=1):
-                #self.turns_played[key] = self.turns_played.get(key, 0) + turn #
-                #self.turns_to_end[key] = self.turns_to_end.get(key, 0) + end - turn 
                 self.turns_played[key] += turn 
                 self.turns_to_end[key] += end - turn
         if self.save_value:
