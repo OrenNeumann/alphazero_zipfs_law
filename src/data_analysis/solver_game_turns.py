@@ -14,7 +14,7 @@ def _get_solver_game_length(env: str):
     """ Creates a function calculating the total length of the game
         if played optimally from the current state.
         uses the solver."""
-    if env == 'connect4':
+    if env == 'connect_four':
         game = pyspiel.load_game('connect_four')
     else:
         raise NameError('Game name provided not supported: ' + env)
@@ -47,7 +47,7 @@ def get_solver_turns(counter, serials, turns, save_data=True):
         This uses the solver and is extremely slow.
         """
     print('Calculating number of turns till end of game (with solver).')
-    game_length = _get_solver_game_length('connect4')
+    game_length = _get_solver_game_length('connect_four')
     n = len(serials)
     y_turns = []
     for entry in tqdm(counter.most_common()):
