@@ -10,7 +10,7 @@ def gather_data(env: str, labels: list[int], max_file_num: int = 1, save_serial:
         Currently just uses agent copy num. 0."""
     print('Collecting ' + env + ' games:')
     path = models_path() + game_path(env) + 'q_'
-    state_counter = StateCounter(env, save_serial=save_serial, save_turn_num=save_turn_num, save_value=save_value,
+    state_counter = StateCounter(env=env, save_serial=save_serial, save_turn_num=save_turn_num, save_value=save_value,
                                  cut_early_games=False)
     for label in labels:
         num = str(label)
