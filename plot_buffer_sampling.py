@@ -1,6 +1,6 @@
 import matplotlib.pyplot as plt
 import numpy as np
-from src.data_analysis.state_frequency.buffer_counter import BufferCounter
+from src.data_analysis.state_frequency.buffer_counter import BufferCounter, UniqueBufferCounter
 from src.general.general_utils import models_path, game_path, fit_power_law
 from src.plotting.plot_utils import Figure
 
@@ -18,7 +18,7 @@ model = 'q_6_2'
 path += model + '/'
 
 print('Collecting ' + env + ' games:')
-num_files = 39
+num_files = 3
 
 fit_colors = ['olivedrab', 'dodgerblue']
 data_colors = ['navy', 'darkviolet']
@@ -28,7 +28,7 @@ fig = Figure(x_label='Board state number',
              legend=True)
 fig.preamble()
 
-state_counter = BufferCounter(sample_unique_states=False, env=env, cut_early_games=False)
+state_counter = BufferCounter(env=env, cut_early_games=False)
 state_counter.collect_data(path, max_file_num=num_files)
 
 # Sort by frequency
@@ -56,7 +56,7 @@ plt.plot(x_fit, y_fit, color=fit_colors[0], linewidth=1.5, label='Uniform sampli
 
 ####### run again to get unique-sampling data: ###############
 
-state_counter = BufferCounter( sample_unique_states=True, env=env, cut_early_games=False)
+state_counter = UniqueBufferCounter(env=env, cut_early_games=False)
 state_counter.collect_data(path, max_file_num=num_files)
 
 # Sort by frequency
