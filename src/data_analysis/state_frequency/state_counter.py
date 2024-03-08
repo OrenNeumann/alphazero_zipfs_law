@@ -163,7 +163,7 @@ class StateCounter:
         self.frequencies = Counter({k: c for k, c in self.frequencies.items() if c >= threshold})
 
 
-
+# check for bugs
 class RandomGamesCounter(StateCounter):
     """ A StateCounter that collects data from random games, generated on the fly.
         A way to check scaling at T = infinity.

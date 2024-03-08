@@ -6,22 +6,14 @@ from src.data_analysis.state_frequency.state_counter import StateCounter
 class BufferCounter(StateCounter):
     """ A StateCounter that samples states from a replay buffer.
         
-        New Args:
+        Args:
             sample_unique_states: bool, whether to sample unique states from the buffer rather
             than sample normally.
     """
     def __init__(self,
-                 env: str,
-                 save_serial=False,
-                 save_turn_num=False,
-                 save_value=False,
-                 cut_early_games=True,
-                 sample_unique_states=False):
-        super().__init__(env=env,
-                         save_serial=save_serial,
-                         save_turn_num=save_turn_num,
-                         save_value=save_value,
-                         cut_early_games=cut_early_games)
+                 sample_unique_states=False,
+                 **kwargs):
+        super().__init__(**kwargs)
         self.sample_unique_states = sample_unique_states
         self.batch_size = 2 ** 10
         self.buffer_size = 2 ** 16

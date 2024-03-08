@@ -73,8 +73,8 @@ class BarFigure(Figure):
         colorbar_colors(): Calculate the color scale for the colorbar.
     """
 
-    def __init__(self, par, fig_num=1, x_label='', y_label='', title='', text_font=18, number_font=16, legend=False):
-        super().__init__(fig_num, x_label, y_label, title, text_font, number_font, legend)
+    def __init__(self, par, **kwargs):
+        super().__init__(**kwargs)
         self.par = par
 
     def preamble(self, fig_aspect=0.6):
