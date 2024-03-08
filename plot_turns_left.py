@@ -43,7 +43,7 @@ def plot_turns(y, name, y_label, y_logscale=False):
     fig.y_label = y_label
     fig.epilogue()
     fig.save(name)
-    plt.show()
+    #plt.show()
 
 
 print('plot turns taken so far')
