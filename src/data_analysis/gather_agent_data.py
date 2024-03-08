@@ -1,5 +1,4 @@
 from collections import Counter
-from src.data_analysis.game_data_analysis import process_games, noramlize_info
 from src.data_analysis.state_frequency.state_counter import StateCounter
 from src.general.general_utils import models_path, game_path
 
@@ -23,11 +22,3 @@ def gather_data(env: str, labels: list[int], max_file_num: int = 1, save_serial:
 
     return state_counter
 
-
-def _update_dict(dictionary: dict, data: dict):
-    """ Updates 'dictionary' by adding the values in 'data' to the existing values.
-        Similar to updating a Counter, but for non-integer numbers."""
-    temp_data = dict()
-    for key in data.keys():
-        temp_data[key] = data[key] + dictionary.get(key, 0)
-    dictionary.update(temp_data)

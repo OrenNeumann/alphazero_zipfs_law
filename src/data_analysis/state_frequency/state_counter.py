@@ -12,7 +12,12 @@ Note: This code assumes the logfiles only contain legal moves,
     be careful using it on another dataset.
 """
 
-
+ACTION_STRINGS = {
+    'connect_four': r'[xo][0-6]',
+    'pentago': r'[a-f][1-6][s-z]',
+    'oware': r'[A-F,a-f]',
+    'checkers': r'[a-h][1-8][a-h][1-8]'
+}
 
 
 
@@ -53,14 +58,7 @@ class StateCounter:
         self.save_value = save_value
         self.cut_early_games = cut_early_games
 
-        self.action_formats = {'connect_four': r'[xo][0-6]',
-                               'pentago': r'[a-f][1-6][s-z]',
-                               'oware': r'[A-F,a-f]',
-                               'checkers': r'[a-h][1-8][a-h][1-8]'}
-
-        self.action_string = self.action_formats[env]
-
-        #self.action_string = action_string(self.env)
+        self.action_string = ACTION_STRINGS[env]
         self.frequencies = Counter()
         self.serials = dict()
         self.turns_played = dict()

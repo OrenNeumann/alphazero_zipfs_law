@@ -1,6 +1,5 @@
 import matplotlib.pyplot as plt
 import numpy as np
-from src.data_analysis.game_data_analysis import process_games_with_buffer
 from src.data_analysis.state_frequency.buffer_counter import BufferCounter
 from src.general.general_utils import models_path, game_path, fit_power_law
 from src.plotting.plot_utils import Figure
@@ -31,7 +30,6 @@ fig.preamble()
 
 state_counter = BufferCounter(env, cut_early_games=False, sample_unique_states=False)
 state_counter.collect_data(path, max_file_num=num_files)
-#board_counter, _ = process_games_with_buffer(env, path, sample_unique_states=False, max_file_num=num_files)
 
 # Sort by frequency
 board_freq = sorted(state_counter.frequencies.items(), key=lambda x: x[1], reverse=True)
@@ -60,7 +58,6 @@ plt.plot(x_fit, y_fit, color=fit_colors[0], linewidth=1.5, label='Uniform sampli
 
 state_counter = BufferCounter(env, cut_early_games=False, sample_unique_states=True)
 state_counter.collect_data(path, max_file_num=num_files)
-#board_counter, _ = process_games_with_buffer(env, path, sample_unique_states=True, max_file_num=num_files)
 
 # Sort by frequency
 board_freq = sorted(state_counter.frequencies.items(), key=lambda x: x[1], reverse=True)
