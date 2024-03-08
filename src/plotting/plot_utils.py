@@ -40,6 +40,7 @@ class Figure:
         self.legend = legend
 
     def preamble(self, fig_aspect=0.6):
+        """ Call axis scaling commands after calling this."""
         w, h = plt.figaspect(fig_aspect)
         plt.figure(self.fig_num, figsize=(w, h))
         plt.style.use(['grid'])
