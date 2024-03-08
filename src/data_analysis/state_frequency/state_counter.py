@@ -166,6 +166,7 @@ class StateCounter:
 
 class RandomGamesCounter(StateCounter):
     """ A StateCounter that collects data from random games, generated on the fly.
+        A way to check scaling at T = infinity.
         """
     def __init__(self,
                  env: str,
