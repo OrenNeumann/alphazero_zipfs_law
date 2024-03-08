@@ -16,7 +16,7 @@ env = games[game_num]
 
 data_labels = [0, 1, 2, 3, 4, 5]  # for oware no 6
 
-state_counter = gather_data(env, data_labels, max_file_num=3, save_turn_num=True)
+state_counter = gather_data(env, data_labels, max_file_num=1, save_turn_num=True)
 turns_played = state_counter.turns_played
 turns_to_end = state_counter.turns_to_end
 board_counter = state_counter.frequencies
@@ -29,11 +29,12 @@ font = 18 - 2
 font_num = 16 - 2
 
 fig = Figure(x_label='State rank',text_font=font, number_font=font_num)
-plt.xscale('log')
+#plt.xscale('log')
 
 def plot_turns(y, name, y_label, y_logscale=False):
     fig.preamble()
     plt.scatter(x, y, s=40 * 3 / (10 + x), alpha=1, color='green')
+    plt.xscale('log')
     if y_logscale:
         plt.yscale('log')
     else:
