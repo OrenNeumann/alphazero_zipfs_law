@@ -27,7 +27,7 @@ def _get_action_string(env: str):
     """ Return the string format used to encode actions, as a 
         regular expression.
     """
-    if env == 'connect4':
+    if env == 'connect_four':
         actions = r'[xo][0-6]'
     elif env == 'pentago':
         actions = r'[a-f][1-6][s-z]'

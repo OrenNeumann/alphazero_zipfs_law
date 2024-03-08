@@ -1,5 +1,6 @@
 from collections import Counter
 from src.data_analysis.game_data_analysis import process_games, noramlize_info
+from src.data_analysis.state_frequency.state_counter import StateCounter
 from src.general.general_utils import models_path, game_path
 
 
@@ -10,43 +11,16 @@ def gather_data(env: str, labels: list[int], max_file_num: int = 1, save_serial:
         Currently just uses agent copy num. 0."""
     print('Collecting ' + env + ' games:')
     path = models_path() + game_path(env) + 'q_'
-    board_counter = Counter()
-    serial_states = dict()
-    turns_played = dict()
-    turns_to_end = dict()
-    values = dict()
+    state_counter = StateCounter(env, save_serial=save_serial, save_turn_num=save_turn_num, save_value=save_value)
     for label in labels:
         num = str(label)
         print("label " + num)
-        agent_path = path + num + '_2'
-        temp_counter, info = process_games(env, agent_path, max_file_num=max_file_num, save_serial=save_serial,
-                                           save_turn_num=save_turn_num, save_value=save_value)
-        # add counts to the counter:
-        board_counter.update(temp_counter)
+        agent_path = path + num + '_2/'
+        state_counter.collect_data(path=agent_path, max_file_num=max_file_num)
 
-        if save_serial:
-            serial_states.update(info['serials'])
-        if save_turn_num:
-            _update_dict(turns_played, info['turns_played'])
-            _update_dict(turns_to_end, info['turns_to_end'])
-        if save_value:
-            _update_dict(values, info['values'])
-    """
-    if save_turn_num:
-        for key, n in board_counter.items():
-            turns_played[key] /= n
-            turns_to_end[key] /= n
-    if save_value:
-        for key, n in board_counter.items():
-            values[key] /= n
-    """
-    total_info = {'serials': serial_states,
-                  'turns_played': turns_played,
-                  'turns_to_end': turns_to_end,
-                  'values': values}
-    noramlize_info(total_info, board_counter)
+    state_counter.normalize_counters()
 
-    return board_counter, total_info
+    return state_counter
 
 
 def _update_dict(dictionary: dict, data: dict):

@@ -1,6 +1,7 @@
 import matplotlib.pyplot as plt
 import numpy as np
 from src.data_analysis.game_data_analysis import process_games_with_buffer
+from src.data_analysis.state_frequency.buffer_counter import BufferCounter
 from src.general.general_utils import models_path, game_path, fit_power_law
 from src.plotting.plot_utils import Figure
 
@@ -10,7 +11,7 @@ Plot state frequency with a buffer.
 
 # Choose game type:
 game_num = 0
-games = ['connect4', 'pentago', 'oware', 'checkers']
+games = ['connect_four', 'pentago', 'oware', 'checkers']
 env = games[game_num]
 
 path = models_path() + game_path(env)
@@ -28,14 +29,16 @@ fig = Figure(x_label='Board state number',
              legend=True)
 fig.preamble()
 
-board_counter, _ = process_games_with_buffer(env, path, sample_unique_states=False, max_file_num=num_files)
+state_counter = BufferCounter(env, cut_early_games=False, sample_unique_states=False)
+state_counter.collect_data(path, max_file_num=num_files)
+#board_counter, _ = process_games_with_buffer(env, path, sample_unique_states=False, max_file_num=num_files)
 
 # Sort by frequency
-board_freq = sorted(board_counter.items(), key=lambda x: x[1], reverse=True)
+board_freq = sorted(state_counter.frequencies.items(), key=lambda x: x[1], reverse=True)
 freq = [item[1] for item in board_freq]
 
 # Fit a power-law
-if env == 'connect4':
+if env == 'connect_four':
     low = 5 * 10 ** 2  # lower fit bound
     up = 10 ** 5  # upper fit bound
 elif env == 'pentago':
@@ -55,10 +58,12 @@ plt.plot(x_fit, y_fit, color=fit_colors[0], linewidth=1.5, label='Uniform sampli
 
 ####### run again to get unique-sampling data: ###############
 
-board_counter, _ = process_games_with_buffer(env, path, sample_unique_states=True, max_file_num=num_files)
+state_counter = BufferCounter(env, cut_early_games=False, sample_unique_states=True)
+state_counter.collect_data(path, max_file_num=num_files)
+#board_counter, _ = process_games_with_buffer(env, path, sample_unique_states=True, max_file_num=num_files)
 
 # Sort by frequency
-board_freq = sorted(board_counter.items(), key=lambda x: x[1], reverse=True)
+board_freq = sorted(state_counter.frequencies.items(), key=lambda x: x[1], reverse=True)
 freq = [item[1] for item in board_freq]
 
 # set fitting limits to capture the tail power-law:
