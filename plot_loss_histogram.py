@@ -74,6 +74,7 @@ for label in data_labels:
     #            color=cm.viridis(color_nums[label]))
     plt.plot(ranks, loss,
                 color=cm.viridis(color_nums[label]))
+    plt.show()
 
 plt.xscale('log')
 plt.yscale('log')
