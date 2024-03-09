@@ -40,6 +40,7 @@ x = bins[:-1] + widths/2
 
 state_counter = StateCounter(env, save_serial=True, save_value=True)
 total_loss = np.zeros([len(data_labels),n_copies])
+total_counts = np.zeros([len(data_labels),n_copies])
 
 for label in data_labels:
     bin_counts = np.zeros(len(x))
@@ -61,6 +62,7 @@ for label in data_labels:
 
         loss = value_loss(env, model_path, state_counter=state_counter)
         total_loss[label, copy] = np.sum(loss * freq)
+        total_counts[label, copy] = np.sum(freq)
 
         ranks = np.arange(len(loss)) + 1
         # Calculate histogram.
@@ -83,6 +85,11 @@ for label in data_labels:
     #             s=40 * 3 / (10 + ranks),color=cm.viridis(color_nums[label]))
 
 print('Total loss L:', total_loss)
+print('Total counts:', total_counts)
+for copy in range(n_copies):
+    total_loss[:, copy] /= total_counts[:, copy]
+print('Average loss L:', total_loss)
+    
 
 plt.xscale('log')
 plt.yscale('log')
