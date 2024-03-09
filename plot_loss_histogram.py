@@ -29,9 +29,9 @@ figure = BarFigure(par,
 figure.preamble()
 color_nums = figure.colorbar_colors()
 
-data_labels = [0, 1, 2, 3, 4, 5, 6] # for oware no 6
-#data_labels = [6]
-n_copies = 6
+#data_labels = [0, 1, 2, 3, 4, 5, 6] # for oware no 6
+data_labels = [6]
+n_copies = 1
 
 # initialize bins to cover a range definitely larger than what you'll need:
 bins = incremental_bin(10**10)
@@ -66,11 +66,13 @@ for label in data_labels:
     # Divide sum to get average:
     mask = np.nonzero(bin_counts)
     loss_averages = loss_sums[mask] / bin_counts[mask]
-
-    #plot_label = 'N = 10^{a:.2f}'.format(a=np.log10(par[label]))
+    # scatter plot:
     #plt.scatter(x[mask], loss_averages,
     #            s=4, color=cm.viridis(color_nums[label]))
-    plt.plot(x[mask], loss_averages,
+    # Line plot:
+    #plt.plot(x[mask], loss_averages,
+    #            color=cm.viridis(color_nums[label]))
+    plt.plot(ranks, loss,
                 color=cm.viridis(color_nums[label]))
 
 plt.xscale('log')
