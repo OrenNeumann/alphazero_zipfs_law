@@ -74,7 +74,7 @@ for label in data_labels:
     #            color=cm.viridis(color_nums[label]))
     plt.scatter(ranks, loss,
                  s=40 * 3 / (10 + ranks),color=cm.viridis(color_nums[label]))
-    plt.show()
+
 
 plt.xscale('log')
 plt.yscale('log')
