@@ -15,7 +15,7 @@ def gather_data(env: str, labels: list[int], max_file_num: int = 1, save_serial:
     for label in labels:
         num = str(label)
         print("label " + num)
-        agent_path = path + num + '_2'
+        agent_path = path + num + '_0'
         state_counter.collect_data(path=agent_path, max_file_num=max_file_num)
 
     state_counter.normalize_counters()
