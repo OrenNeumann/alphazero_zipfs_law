@@ -31,7 +31,7 @@ color_nums = figure.colorbar_colors()
 
 data_labels = [0, 1, 2, 3, 4, 5, 6] # for oware no 6
 #data_labels = [0]
-n_copies = 1
+n_copies = 6
 
 # initialize bins to cover a range definitely larger than what you'll need:
 bins = incremental_bin(10**10)
@@ -53,7 +53,7 @@ for label in data_labels:
         state_counter.collect_data(path=model_path, max_file_num=39)
         state_counter.normalize_counters()
 
-        state_counter.prune_low_frequencies(4)#2
+        state_counter.prune_low_frequencies(10)#4
         # consider pruning more, and checking that the max rank is more or less similar between all agents with the
         # same label. to avoid averaging different-frequency states together.
 
