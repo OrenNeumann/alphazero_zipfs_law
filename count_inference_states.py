@@ -1,12 +1,12 @@
-from src.data_analysis.game_data_analysis import process_games, generate_random_games
+from src.data_analysis.state_frequency.state_counter import StateCounter, RandomGamesCounter
 import matplotlib.pyplot as plt
 import numpy as np
 
-env = 'connect4'
+env = 'connect_four'
 random = True
 temp = 0.25
 #env = 'pentago'
-if env == 'connect4':
+if env == 'connect_four':
     print('Collecting Connect Four games:')
     if temp == 1:
         path = '/mnt/ceph/neumann/zipfs_law/inference_matches/' \
@@ -27,14 +27,16 @@ else:
 
 if not random:
     # Process all games
-    board_counter = process_games(env, path, max_file_num=80)  # max_file_num=40)
+    state_counter = StateCounter(env=env)
+    state_counter.collect_data(path=path, max_file_num=80) # max_file_num=40)
 else:
     # Generate random games:
-    board_counter = generate_random_games(env, n=3*25_000*80)
+    state_counter = RandomGamesCounter(env=env)
+    state_counter.collect_data(n=3*25_000*80)
     filename = 'random2'
 
 # Sort by frequency
-board_freq = sorted(board_counter.items(), key=lambda x: x[1], reverse=True)
+board_freq = sorted(state_counter.frequencies.items(), key=lambda x: x[1], reverse=True)
 
 # Extract the keys and the frequencies
 # keys = [item[0] for item in board_freq]

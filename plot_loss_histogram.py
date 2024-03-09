@@ -100,3 +100,8 @@ plt.yscale('linear')
 figure.epilogue()   
 figure.save('value_loss_scatter_semilog')
 
+"""
+#old code for plotting cumulative average of loss.
+#It works exactly like binning! but go explain that to reviewers :(
+y = np.cumsum(loss) / (np.arange(len(loss)) + 1)
+"""

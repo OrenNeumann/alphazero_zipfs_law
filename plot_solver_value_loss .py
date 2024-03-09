@@ -1,7 +1,7 @@
 import numpy as np
 import pickle
-from src.data_analysis.game_data_analysis import process_games
-from src.data_analysis.data_utils import get_model_value_estimator
+from src.data_analysis.state_frequency.state_counter import StateCounter
+from src.data_analysis.state_value.value_prediction import get_model_value_estimator
 import collections
 import matplotlib
 import matplotlib.cm as cm
@@ -20,20 +20,20 @@ I changed the model evaluator function to work with data chunks rather than indi
 
 """
 
-env = 'connect4'
+env = 'connect_four'
 
 data_labels = [0, 2, 4, 6]
 solver_values = dict()
 board_counter = collections.Counter()
 serial_states = dict()
+state_counter = StateCounter(env, save_serial=True, save_value=True)
 for label in data_labels:
     num = str(label)
     path = '/mnt/ceph/neumann/alphazero/scratch_backup/models/connect_four_10000/q_' + num + '_0/log-actor'
-    temp_counter, temp_info = process_games(env, path, save_serial=True, max_file_num=1)
-    temp_serials = temp_info['serials']
+    state_counter.collect_data(path=path, max_file_num=1)
     # add counts to the counter, and update new serial states:
-    board_counter.update(temp_counter)
-    serial_states.update(temp_serials)
+    board_counter.update(state_counter.frequencies)
+    serial_states.update(state_counter.serials)
 
     with open('solver_values_' + num + '0_1.pkl', "rb") as input_file:
         solver_values.update(pickle.load(input_file))
