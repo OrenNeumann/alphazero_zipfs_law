@@ -39,6 +39,7 @@ widths = (bins[1:] - bins[:-1])
 x = bins[:-1] + widths/2
 
 state_counter = StateCounter(env, save_serial=True, save_value=True)
+total_loss = np.zeros([data_labels,n_copies])
 
 for label in data_labels:
     bin_counts = np.zeros(len(x))
@@ -55,14 +56,19 @@ for label in data_labels:
         # consider pruning more, and checking that the max rank is more or less similar between all agents with the
         # same label. to avoid averaging different-frequency states together.
 
+        freq = sorted(state_counter.frequencies.items(), key=lambda x: x[1], reverse=True)
+        freq = np.array([item[1] for item in freq])
+
         loss = value_loss(env, model_path, state_counter=state_counter)
+        total_loss[label, copy] = np.sum(loss * freq)
 
         ranks = np.arange(len(loss)) + 1
         # Calculate histogram.
         # np.histogram counts how many elements of 'ranks' fall in each bin.
         # by specifying 'weights=loss', you can make it sum losses instead of counting.
         bin_counts += np.histogram(ranks, bins=bins)[0]
-        loss_sums += np.histogram(ranks, bins=bins, weights=loss)[0]
+        #loss_sums += np.histogram(ranks, bins=bins, weights=loss)[0]
+        loss_sums += np.histogram(ranks, bins=bins, weights=loss*freq)[0]
     # Divide sum to get average:
     mask = np.nonzero(bin_counts)
     loss_averages = loss_sums[mask] / bin_counts[mask]
@@ -70,14 +76,13 @@ for label in data_labels:
     #plt.scatter(x[mask], loss_averages,
     #            s=4, color=cm.viridis(color_nums[label]))
     # Line plot:
-    #plt.plot(x[mask], loss_averages,
-    #            color=cm.viridis(color_nums[label]))
-    freq = sorted(state_counter.frequencies.items(), key=lambda x: x[1], reverse=True)
-    freq = np.array([item[1] for item in freq])
-    weighted_loss = loss * freq 
-    plt.scatter(ranks, weighted_loss,
-                 s=40 * 3 / (10 + ranks),color=cm.viridis(color_nums[label]))
+    plt.plot(x[mask], loss_averages,
+                color=cm.viridis(color_nums[label]))
+    #weighted_loss = loss * freq 
+    #plt.scatter(ranks, weighted_loss,
+    #             s=40 * 3 / (10 + ranks),color=cm.viridis(color_nums[label]))
 
+print('Total loss L:', total_loss)
 
 plt.xscale('log')
 plt.yscale('log')
