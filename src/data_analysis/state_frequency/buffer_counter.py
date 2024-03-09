@@ -24,11 +24,14 @@ class BufferCounter(StateCounter):
     def _update_frequencies(self, keys):
         """ Store keys in the buffer, performing updates when hitting the sample threshold."""
         for key in keys:
-            self.buffer.append(key)
-            self.states_added += 1
+            self._add_to_buffer(key)
             if self.states_added == self.sample_threshold:
                 self.states_added = 0
                 super()._update_frequencies(keys=self._sample_buffer())
+
+    def _add_to_buffer(self, key):
+        self.buffer.append(key)
+        self.states_added += 1
 
     def _sample_buffer(self):
         return sample(self.buffer, self.batch_size)
@@ -46,3 +49,25 @@ class UniqueBufferCounter(BufferCounter):
         if len(unique_keys) < self.batch_size:
             raise Exception(f'Batch size ({self.batch_size}) is larger than number of unique keys ({len(unique_keys)}).')
         return sample(unique_keys, self.batch_size)
+    
+
+class ValueSurpriseCounter(BufferCounter):
+    def __init__(self, inference_model=None,**kwargs):
+        super().__init__(**kwargs)
+        self.inference_model = inference_model
+
+    def collect_data(self, **kwargs):
+        if self.inference_model is None:
+            raise Exception('Please provide an inference model.')
+        super().collect_data(**kwargs)
+
+    def _add_to_buffer(self, key):
+        """ Only add states that have high surprise (= model value prediction is far from ground truth value)."""
+        surprise = 0
+        if surprise > 0.5:
+            self.buffer.append(key)
+        self.states_added += 1   
+
+    
+        
+
