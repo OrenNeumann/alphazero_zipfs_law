@@ -39,7 +39,7 @@ widths = (bins[1:] - bins[:-1])
 x = bins[:-1] + widths/2
 
 state_counter = StateCounter(env, save_serial=True, save_value=True)
-total_loss = np.zeros([data_labels,n_copies])
+total_loss = np.zeros([len(data_labels),n_copies])
 
 for label in data_labels:
     bin_counts = np.zeros(len(x))
