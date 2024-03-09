@@ -69,8 +69,8 @@ for label in data_labels:
         # np.histogram counts how many elements of 'ranks' fall in each bin.
         # by specifying 'weights=loss', you can make it sum losses instead of counting.
         bin_counts += np.histogram(ranks, bins=bins)[0]
-        #loss_sums += np.histogram(ranks, bins=bins, weights=loss)[0]
-        loss_sums += np.histogram(ranks, bins=bins, weights=loss*freq)[0]
+        loss_sums += np.histogram(ranks, bins=bins, weights=loss)[0]
+        #loss_sums += np.histogram(ranks, bins=bins, weights=loss*freq)[0]
     # Divide sum to get average:
     mask = np.nonzero(bin_counts)
     loss_averages = loss_sums[mask] / bin_counts[mask]
