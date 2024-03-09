@@ -72,7 +72,10 @@ for label in data_labels:
     # Line plot:
     #plt.plot(x[mask], loss_averages,
     #            color=cm.viridis(color_nums[label]))
-    plt.scatter(ranks, loss,
+    freq = sorted(state_counter.frequencies.items(), key=lambda x: x[1], reverse=True)
+    freq = np.array([item[1] for item in freq])
+    weighted_loss = loss * freq 
+    plt.scatter(ranks, weighted_loss,
                  s=40 * 3 / (10 + ranks),color=cm.viridis(color_nums[label]))
 
 
