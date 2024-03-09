@@ -9,7 +9,7 @@ Plot turn related data: how late/early in the game do states appear.
 """
 
 # Choose game type:
-game_num = 1
+game_num = 3
 games = ['connect_four', 'pentago', 'oware', 'checkers']
 
 env = games[game_num]
