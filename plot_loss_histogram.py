@@ -72,8 +72,8 @@ for label in data_labels:
     # Line plot:
     #plt.plot(x[mask], loss_averages,
     #            color=cm.viridis(color_nums[label]))
-    plt.plot(ranks, loss,
-                color=cm.viridis(color_nums[label]))
+    plt.scatter(ranks, loss,
+                 s=40 * 3 / (10 + ranks),color=cm.viridis(color_nums[label]))
     plt.show()
 
 plt.xscale('log')
