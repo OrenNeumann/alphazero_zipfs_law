@@ -31,7 +31,7 @@ def get_model_value_estimator(env: str, config_path: str):
 
         observations = []
         masks = []
-        for i, serial in enumerate(serial_states):
+        for serial in serial_states:
             state = game.deserialize_state(serial)
             observations.append(state.observation_tensor())
             masks.append(state.legal_actions_mask())
