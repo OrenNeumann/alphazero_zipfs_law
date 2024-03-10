@@ -123,9 +123,7 @@ class StateCounter(object):
         return board, keys
     
     def _update_frequencies(self, keys):
-        for key in keys:
-            self.frequencies[key] += 1
-            
+        self.frequencies.update(keys)          
 
     def _update_info_counters(self, board, keys):
         """ Update the turn and value counters.
