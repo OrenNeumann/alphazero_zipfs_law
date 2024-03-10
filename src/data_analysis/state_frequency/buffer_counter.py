@@ -50,7 +50,7 @@ class UniqueBufferCounter(BufferCounter):
             raise Exception(f'Batch size ({self.batch_size}) is larger than number of unique keys ({len(unique_keys)}).')
         return sample(unique_keys, self.batch_size)
     
-
+"""
 class ValueSurpriseCounter(BufferCounter):
     def __init__(self, inference_model=None,**kwargs):
         super().__init__(**kwargs)
@@ -62,11 +62,12 @@ class ValueSurpriseCounter(BufferCounter):
         super().collect_data(**kwargs)
 
     def _add_to_buffer(self, key):
-        """ Only add states that have high surprise (= model value prediction is far from ground truth value)."""
+        "" Only add states that have high surprise (= model value prediction is far from ground truth value).""
         surprise = 0
         if surprise > 0.5:
             self.buffer.append(key)
         self.states_added += 1   
+"""
 
     
         

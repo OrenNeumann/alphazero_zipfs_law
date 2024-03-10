@@ -22,7 +22,7 @@ ACTION_STRINGS = {
 
 
 
-class StateCounter:
+class StateCounter(object):
     """ Class for collecting and analyzing game states from AlphaZero logfiles.
         Args:
             env: str, the environment (game).

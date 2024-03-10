@@ -4,7 +4,7 @@ import scienceplots
 import numpy as np
 
 
-class Figure:
+class Figure(object):
     """
     Class for plotting a figure.
 
@@ -59,7 +59,8 @@ class Figure:
         plt.yticks(fontsize=self.number_font)
         plt.tight_layout()
 
-    def save(self, name):
+    @staticmethod
+    def save(name):
         plt.savefig('plots/' + name + '.png', dpi=900)
 
 
