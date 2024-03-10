@@ -32,8 +32,8 @@ state_counter = BufferCounter(env=env, cut_early_games=False)
 state_counter.collect_data(path, max_file_num=num_files)
 
 # Sort by frequency
-board_freq = sorted(state_counter.frequencies.items(), key=lambda x: x[1], reverse=True)
-freq = [item[1] for item in board_freq]
+#board_freq = sorted(state_counter.frequencies.items(), key=lambda x: x[1], reverse=True)
+freq = [item[1] for item in state_counter.frequencies.most_common()]
 
 # Fit a power-law
 if env == 'connect_four':
@@ -60,8 +60,8 @@ state_counter = UniqueBufferCounter(env=env, cut_early_games=False)
 state_counter.collect_data(path, max_file_num=num_files)
 
 # Sort by frequency
-board_freq = sorted(state_counter.frequencies.items(), key=lambda x: x[1], reverse=True)
-freq = [item[1] for item in board_freq]
+#board_freq = sorted(state_counter.frequencies.items(), key=lambda x: x[1], reverse=True)
+freq = [item[1] for item in state_counter.frequencies.most_common()]
 
 # set fitting limits to capture the tail power-law:
 # omit last two plateaus (freq=1 or 2)
