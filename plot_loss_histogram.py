@@ -57,8 +57,9 @@ for label in data_labels:
         # consider pruning more, and checking that the max rank is more or less similar between all agents with the
         # same label. to avoid averaging different-frequency states together.
 
-        freq = sorted(state_counter.frequencies.items(), key=lambda x: x[1], reverse=True)
-        freq = np.array([item[1] for item in freq])
+        #freq = sorted(state_counter.frequencies.items(), key=lambda x: x[1], reverse=True)
+        #freq = np.array([item[1] for item in freq])
+        freq = np.array([item[1] for item in state_counter.frequencies.most_common()])
 
         loss = value_loss(env, model_path, state_counter=state_counter)
         total_loss[label, copy] = np.sum(loss * freq)

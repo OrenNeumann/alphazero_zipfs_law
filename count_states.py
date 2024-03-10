@@ -27,11 +27,7 @@ state_counter = StateCounter(env=env)
 state_counter.collect_data(path=path, max_file_num=39)
 
 # Sort by frequency
-board_freq = sorted(state_counter.frequencies.items(), key=lambda x: x[1], reverse=True)
-
-# Extract the keys and the frequencies
-# keys = [item[0] for item in board_freq]
-freq = [item[1] for item in board_freq]
+freq = np.array([item[1] for item in state_counter.frequencies.most_common()])
 
 # Fit a power-law
 if env == 'connect4':
