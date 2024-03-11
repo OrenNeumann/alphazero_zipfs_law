@@ -88,15 +88,19 @@ def learner(*, game, config, actors, evaluators, broadcast_fn, logger, count_sta
                 outcomes.add(2)
 
             ###
-            sampled_trajectory = sampler.kl_sampling(trajectory, model)
+            sampled_states = sampler.kl_sampling(trajectory, model)
             if count_states:
                 played_counter.update(s.observation for s in trajectory.states)
-                sample_counter.update(s.observation for s in sampled_trajectory.states)
+                sample_counter.update(s.observation for s in sampled_states)
+
+            # Warm-up, ignore the sampled states on the first step:
+            if len(replay_buffer) < learn_rate:
+                sampled_states = trajectory.states
 
             replay_buffer.extend(
                 model_lib.TrainInput(
                     s.observation, s.legals_mask, s.policy, p1_outcome)
-                for s in sampled_trajectory)
+                for s in sampled_states)
             ###
 
             for stage in range(stage_count):
