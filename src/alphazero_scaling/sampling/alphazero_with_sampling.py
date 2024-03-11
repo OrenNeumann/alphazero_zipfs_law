@@ -90,8 +90,8 @@ def learner(*, game, config, actors, evaluators, broadcast_fn, logger, count_sta
             ###
             sampled_states = sampler.kl_sampling(trajectory, model)
             if count_states:
-                played_counter.update(s.observation for s in trajectory.states)
-                sample_counter.update(s.observation for s in sampled_states)
+                played_counter.update(str(s.observation) for s in trajectory.states)
+                sample_counter.update(str(s.observation) for s in sampled_states)
 
             # Warm-up, ignore the sampled states on the first step:
             if len(replay_buffer) < learn_rate:
@@ -169,7 +169,7 @@ def learner(*, game, config, actors, evaluators, broadcast_fn, logger, count_sta
         logger.print("Sampler ratio: {:.5f}. Coeff.: {:.5f}, Target coeff.: {:.5f}.".format(
             ratio, a, target))
         if count_states:
-            logger.print("Unique states seen: {}.".format(
+            logger.print("Unique states played: {}.".format(
                 len(played_counter)))
         ###
 

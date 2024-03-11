@@ -109,7 +109,7 @@ def main():
             quiet=FLAGS.quiet,
         )
 
-        alpha_zero_sampling(config)
+        alpha_zero_sampling(config,count_states=True, b=0.01)
 
     timer = Timer()
     try:
