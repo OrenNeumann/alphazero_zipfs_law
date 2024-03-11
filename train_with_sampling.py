@@ -10,7 +10,7 @@ from open_spiel.python.algorithms.alpha_zero import model as model_lib
 from open_spiel.python.utils import spawn
 
 import sys
-from src.alphazero_scaling.sampling.alphazero_with_sampling import alpha_zero
+from src.alphazero_scaling.sampling.alphazero_with_sampling import alpha_zero as alpha_zero_sampling
 from src.general.general_utils import Timer
 
 flags.DEFINE_integer("uct_c", 2, "UCT's exploration constant.")
@@ -62,7 +62,7 @@ print(psutil.cpu_count())
 def main():
     game = 'oware'  # <========== Change here
 
-    actors = 79  # 39 oware #19quoridor #30go  # best is num. cores -1
+    actors = 3#79  # 39 oware #19quoridor #30go  # best is num. cores -1
     evaluators = 1
     i = int(sys.argv[1])
     iteration = int(sys.argv[2])
@@ -73,7 +73,7 @@ def main():
 
     print('~~~~~~~~~~~~~~~~~~~~~  MODEL NUM. ' + str(i) + '  ~~~~~~~~~~~~~~~~~~~~~')
     dir_name = "q_" + str(i) + "_" + str(iteration)
-    path = '/scratch/compmatsc/neumann/models/oware/' + dir_name  # <============ Change here
+    path = '/mnt/ceph/neumann/zipf/test/'+ dir_name#'/scratch/compmatsc/neumann/models/oware/' + dir_name  # <============ Change here
     nn_width = 2 ** (i + 2)
     print('nn_width: ', nn_width)
 
@@ -109,7 +109,7 @@ def main():
             quiet=FLAGS.quiet,
         )
 
-        alpha_zero(config)
+        alpha_zero_sampling(config)
 
     timer = Timer()
     try:

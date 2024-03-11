@@ -96,7 +96,7 @@ def learner(*, game, config, actors, evaluators, broadcast_fn, logger, count_sta
             replay_buffer.extend(
                 model_lib.TrainInput(
                     s.observation, s.legals_mask, s.policy, p1_outcome)
-                for s in sampled_trajectory.states)
+                for s in sampled_trajectory)
             ###
 
             for stage in range(stage_count):
