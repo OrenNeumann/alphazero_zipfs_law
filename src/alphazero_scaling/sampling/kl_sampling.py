@@ -44,7 +44,7 @@ class Sampler(object):
     """ A class for sampling states from a trajectory based on their KL divergence.
         States are over/undersampled if DKL(pi||p) is large/small, respectively."""
 
-    def __init__(self, a=2, b=0.01, gamma=0.8):
+    def __init__(self, a=10, b=0.01, gamma=0.8):
         self.a = a
         self.b = b
         self.gamma = gamma
