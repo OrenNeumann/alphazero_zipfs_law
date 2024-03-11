@@ -23,10 +23,13 @@ import random
 def dkl(p, q):
     """
     The Kullback-Leibler divergence between p and q.
-    p_i*log(p_i) is 0 if p_i is close to 0.
+    p_i*log(p_i) = 0,  if p_i is almost 0.
+    Values are clipped above 10.
     """
-    v = p * np.log(p / q, out=np.zeros_like(p), where=(p > 1e-15))
-    return np.sum(v, axis=v.ndim - 1)
+    eps = 1e-15
+    v = p * np.log(p / (q+eps), out=np.zeros_like(p), where=(p > eps))
+    divergence = np.sum(v, axis=p.ndim - 1)
+    return np.minimum(divergence, 10)
 
 
 def duplicate(trajectory, duplicates):
