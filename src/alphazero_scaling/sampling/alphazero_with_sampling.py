@@ -166,8 +166,11 @@ def learner(*, game, config, actors, evaluators, broadcast_fn, logger, count_sta
         logger.print("Buffer size: {}. States seen: {}".format(
             len(replay_buffer), replay_buffer.total_seen))
         ###
-        logger.print("Sampler ratio: {:.5f}. Coeff.: {:.5f}, Target coeff.: {:.5f}".format(
+        logger.print("Sampler ratio: {:.5f}. Coeff.: {:.5f}, Target coeff.: {:.5f}.".format(
             ratio, a, target))
+        if count_states:
+            logger.print("Unique states seen: {}.".format(
+                len(played_counter)))
         ###
 
         save_path, losses = learn(step)
