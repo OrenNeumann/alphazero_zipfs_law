@@ -49,7 +49,6 @@ class Sampler(object):
         self.b = b
         self.gamma = gamma
         self.dkl_vals = []
-        self.n_states = 0
 
     def kl_sampling(self, trajectory, model):
         """
@@ -76,8 +75,9 @@ class Sampler(object):
 
     def update_hyperparameters(self):
         """ Anneal 'a' to the value that keeps the sampling ratio = 1 (neither over- or undersample)."""
+        print(self.dkl_vals)
         av_dkl = np.mean(self.dkl_vals)
-        sampling_ratio = (self.a * av_dkl + self.b) / self.n_states
+        sampling_ratio = self.a * av_dkl + self.b
         target = (1 - self.b) / av_dkl
         old_a = self.a
         self.a = self.gamma * self.a + (1 - self.gamma) * target
@@ -86,4 +86,3 @@ class Sampler(object):
 
     def reset(self):
         self.dkl_vals = []
-        self.n_states = 0
