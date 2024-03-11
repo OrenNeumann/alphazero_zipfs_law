@@ -18,6 +18,16 @@ from src.alphazero_scaling.sampling.kl_sampling import Sampler
 from collections import Counter
 import pickle
 
+"""
+Wrapper for alpha_zero.py, adding states to the buffer in an amount proportional to the KL divergence between the
+model prior and the MCTS policy.
+
+Calling alpha_zero() with count_states=True will save counters of the frequencies of states played, and frequencies of
+states sampled. 
+Calling the function with b will change the minimal sampling probability.
+"""
+
+
 # Time to wait for processes to join.
 JOIN_WAIT_DELAY = 0.001
 
