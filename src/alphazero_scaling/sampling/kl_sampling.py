@@ -1,21 +1,3 @@
-"""
-from src.alphazero_scaling.loading import load_model_from_checkpoint, load_config
-path = '/mnt/ceph/neumann/alphazero/scratch_backup/models/connect_four_10000/q_0_0/'
-config = load_config(path)
-model = load_model_from_checkpoint(config=config, path=path, checkpoint_number=10_000)
-#game = pyspiel.load_game('connect_four')
-"""
-
-"""
-changes lines 384-385 in alpha_zero, and feeds the buffer a modified batch of states with
-different frequencies:
-sampler_trajectory = sampler.kl_sampling(trajectory, model)
-replay_buffer.extend(model_lib.TrainInput(s.observation, s.legals_mask, s.policy, p1_outcome) for s in sampler_trajectory.states)
-
-Change line 396 to update a,b
-plot in line 440
-"""
-
 import numpy as np
 import random
 
@@ -27,7 +9,7 @@ def dkl(p, q):
     Values are clipped above 10.
     """
     eps = 1e-15
-    v = p * np.log(p / (q+eps), out=np.zeros_like(p), where=(p > eps))
+    v = p * np.log(p / (q + eps), out=np.zeros_like(p), where=(p > eps))
     divergence = np.sum(v, axis=p.ndim - 1)
     return np.minimum(divergence, 10)
 
@@ -44,7 +26,7 @@ class Sampler(object):
     """ A class for sampling states from a trajectory based on their KL divergence.
         States are over/undersampled if DKL(pi||p) is large/small, respectively."""
 
-    def __init__(self, a=10, b=0.01, gamma=0.8):
+    def __init__(self, a=15, b=0.01, gamma=0.8):
         self.a = a
         self.b = b
         self.gamma = gamma
@@ -75,7 +57,6 @@ class Sampler(object):
 
     def update_hyperparameters(self):
         """ Anneal 'a' to the value that keeps the sampling ratio = 1 (neither over- or undersample)."""
-        print(self.dkl_vals)
         av_dkl = np.mean(self.dkl_vals)
         sampling_ratio = self.a * av_dkl + self.b
         target = (1 - self.b) / av_dkl
