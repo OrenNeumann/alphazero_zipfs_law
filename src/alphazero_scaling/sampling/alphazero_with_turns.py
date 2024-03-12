@@ -576,9 +576,9 @@ def alpha_zero(config: Config, count_states=False, b=None):  ###
     except (KeyboardInterrupt, EOFError):
         print("Caught a KeyboardInterrupt, stopping early.")
     finally:
-        for counter in counters:
-            with open(config.path + '/' + counter + '.pkl', 'wb') as f:
-                pickle.dump(counters[counter], f)
+        for name in counters._fields:
+            with open(config.path + '/' + name + '.pkl', 'wb') as f:
+                pickle.dump(getattr(counters,name), f)
         broadcast("")
         # for actor processes to join we have to make sure that their q_in is empty,
         # including backed up items
