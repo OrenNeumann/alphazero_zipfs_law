@@ -32,11 +32,13 @@ from open_spiel.python.utils import stats
 
 from src.alphazero_scaling.sampling.kl_sampling import Sampler
 #from sampling.kl_sampling import Sampler
-from collections import Counter, defaultdict
+from collections import Counter, defaultdict, namedtuple
 import pickle
 
 # Time to wait for processes to join.
 JOIN_WAIT_DELAY = 0.001
+
+COUNTERS = namedtuple('COUNTERS', ['played', 'sampled', 'turns_played', 'turns_sampled'])
 
 
 class TrajectoryState(object):
@@ -304,16 +306,12 @@ def evaluator(*, game, config, logger, queue):
         len(results), np.mean(results.data)))
 
 @watcher
-def learner(*, game, config, actors, evaluators, broadcast_fn, logger, count_states=False, b=None):
+def learner(*, game, config, actors, evaluators, broadcast_fn, logger, counters=None, b=None):
     """A learner that consumes the replay buffer and trains the network."""
     ###
     sampler = Sampler()
     if b is not None:
         sampler.b = b
-    played_counter = Counter()
-    sample_counter = Counter()
-    turns_played = defaultdict(int)
-    turns_sampled = defaultdict(int)
     ###
     logger.also_to_stdout = True
     replay_buffer = Buffer(config.replay_buffer_size)
@@ -372,13 +370,13 @@ def learner(*, game, config, actors, evaluators, broadcast_fn, logger, count_sta
 
             ###
             sampled_states = sampler.kl_sampling(trajectory, model)
-            if count_states:
-                played_counter.update(str(s.observation) for s in trajectory.states)
-                sample_counter.update(str(s.observation) for s in sampled_states)
+            if counters is not None:
+                counters.played.update(str(s.observation) for s in trajectory.states)
+                counters.sampled.update(str(s.observation) for s in sampled_states)
                 for s in trajectory.states:
-                    turns_played[str(s.observation)] += s.move_number
+                    counters.turns_played[str(s.observation)] += s.move_number
                 for s in sampled_states:
-                    turns_sampled[str(s.observation)] += s.move_number
+                    counters.turns_sampled[str(s.observation)] += s.move_number
 
             # Warm-up, ignore the sampled states on the first step:
             if len(replay_buffer) < learn_rate:
@@ -404,16 +402,6 @@ def learner(*, game, config, actors, evaluators, broadcast_fn, logger, count_sta
 
     def learn(step):
         """Sample from the replay buffer, update weights and save a checkpoint."""
-        ###
-        with open(config.path + '/played_counts.pkl', 'wb') as f:
-            pickle.dump(played_counter, f)
-        with open(config.path + '/sample_counts.pkl', 'wb') as f:
-            pickle.dump(sample_counter, f)
-        with open(config.path + '/turns_played.pkl', 'wb') as f:
-            pickle.dump(turns_played, f)
-        with open(config.path + '/turns_sampled.pkl', 'wb') as f:
-            pickle.dump(turns_sampled, f)
-        ###
         losses = []
         for _ in range(len(replay_buffer) // config.train_batch_size):
             data = replay_buffer.sample(config.train_batch_size)
@@ -459,9 +447,9 @@ def learner(*, game, config, actors, evaluators, broadcast_fn, logger, count_sta
         ###
         logger.print("Sampling ratio: {:.5f}. Coeff.: {:.5f}, Target coeff.: {:.5f}.".format(
             ratio, a, target))
-        if count_states:
-            logger.print("Unique states played: {}.".format(
-                len(played_counter)))
+        if counters is not None:
+            logger.print("Unique states played: {}, unique states sampled: {}.".format(
+                len(counters.played), len(counters.sampled)))
         ###
 
         save_path, losses = learn(step)
@@ -567,12 +555,30 @@ def alpha_zero(config: Config, count_states=False, b=None):  ###
         for proc in actors + evaluators:
             proc.queue.put(msg)
 
+    ###
+    sampler = Sampler()
+    if b is not None:
+        sampler.b = b
+    played_counter = Counter()
+    sample_counter = Counter()
+    turns_played = defaultdict(int)
+    turns_sampled = defaultdict(int)    
+    counters = COUNTERS(played_counter, sample_counter, turns_played, turns_sampled)
+    ###
+
     try:
-        learner(game=game, config=config, actors=actors,  # pylint: disable=missing-kwoa
-                evaluators=evaluators, broadcast_fn=broadcast, count_states=count_states, b=b)  ###
+        if count_states:
+            learner(game=game, config=config, actors=actors,  # pylint: disable=missing-kwoa
+                    evaluators=evaluators, broadcast_fn=broadcast, counters=counters, b=b)
+        else:
+            learner(game=game, config=config, actors=actors,  # pylint: disable=missing-kwoa
+                    evaluators=evaluators, broadcast_fn=broadcast, b=b)  ###
     except (KeyboardInterrupt, EOFError):
         print("Caught a KeyboardInterrupt, stopping early.")
     finally:
+        for counter in counters:
+            with open(config.path + '/' + counter + '.pkl', 'wb') as f:
+                pickle.dump(counters[counter], f)
         broadcast("")
         # for actor processes to join we have to make sure that their q_in is empty,
         # including backed up items
