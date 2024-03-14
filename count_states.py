@@ -9,13 +9,13 @@ Count board states played from actor logfiles of AlphaZero agents.
 
 # Choose game type:
 game_num = 0
-games = ['connect4', 'pentago', 'oware', 'checkers']
+games = ['connect_four', 'pentago', 'oware', 'checkers']
 
 env = games[game_num]
 #path = '/mnt/ceph/neumann/alphazero/scratch_backup/models/'
 #path = '/home/oren/zipf/scratch_backup/models/connect_four_10000/'
 path = models_path()
-data_paths = {'connect4': 'connect_four_10000/q_0_0',#'connect_four_10000/f_4_2',
+data_paths = {'connect_four': 'connect_four_10000/q_0_0',#'connect_four_10000/f_4_2',
               'pentago': 'pentago_t5_10000/q_0_0',
               'oware': 'oware_10000/q_1_0',
               'checkers': 'checkers/q_6_0'}
@@ -24,7 +24,7 @@ print('Collecting '+env+' games:')
 
 # Process all games
 state_counter = StateCounter(env=env)
-state_counter.collect_data(path=path, max_file_num=39)
+state_counter.collect_data(path=path, max_file_num=1)
 
 # Sort by frequency
 freq = np.array([item[1] for item in state_counter.frequencies.most_common()])
