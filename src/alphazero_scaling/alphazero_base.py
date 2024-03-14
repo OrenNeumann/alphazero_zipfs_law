@@ -194,20 +194,19 @@ class AlphaZero(object):
             config.learning_rate,
             config.path)
 
-    @staticmethod
-    def watcher(fn):
+    def watcher(self, fn):
         """A decorator to fn/processes that gives a logger and logs exceptions."""
         @functools.wraps(fn)
-        def _watcher(*, config, num=None, **kwargs):
+        def _watcher(*, num=None, **kwargs):
             """Wrap the decorated function."""
             name = fn.__name__
             if num is not None:
                 name += "-" + str(num)
-            with file_logger.FileLogger(config.path, name, config.quiet) as logger:
+            with file_logger.FileLogger(self.config.path, name, self.config.quiet) as logger:
                 print("{} started".format(name))
             logger.print("{} started".format(name))
             try:
-                return fn(config=config, logger=logger, **kwargs)
+                return fn(logger=logger, **kwargs)
             except Exception as e:
                 logger.print("\n".join([
                     "",
