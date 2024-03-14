@@ -4,6 +4,10 @@ import pickle
 from src.data_analysis.data_utils import sort_by_frequency
 from src.plotting.plot_utils import Figure
 
+"""
+Plot data from dkl sampling experiment
+"""
+
 data_dir = r"/mnt/ceph/neumann/zipf/plot_data/erase/che_test/"
 with open(data_dir + "played.pkl", "rb") as input_file:
     played = pickle.load(input_file)
@@ -28,56 +32,53 @@ for key, count in sampled.items():
 font = 18 - 2
 font_num = 16 - 2
 
-fig = Figure(x_label='State rank', text_font=font, number_font=font_num)
-
-
-def new_fig(y_label):
-    fig.fig_num += 1
-    fig.preamble()
-
-    fig.y_label = y_label
-
+fig = Figure(x_label='State rank',
+             y_label='Frequency',
+             text_font=font,
+             number_font=font_num,
+             legend=True)
 
 print('plotting zipfs law')
-new_fig('Frequency')
+fig.preamble()
 freq = np.array([item[1] for item in played.most_common()])
-#freq = freq[:10**4]
+
 x = np.arange(len(freq)) + 1
-plt.scatter(x, np.array(freq), s=40 / (10 + x), label=played)
+plt.scatter(x, np.array(freq), s=40 / (10 + x), label='played')
 
 freq = np.array([item[1] for item in sampled.most_common()])
-#freq = freq[:10**4]
-x = np.arange(len(freq)) + 1
-plt.scatter(x, np.array(freq), s=40 / (10 + x), label=sampled)
-#plt.legend(loc="upper right")
 
-if fig.x_label != '':
-    plt.xlabel(fig.x_label, fontsize=fig.text_font)
-if fig.y_label != '':
-    plt.ylabel(fig.y_label, fontsize=fig.text_font)
-if fig.title != '':
-    plt.title(fig.title, fontsize=fig.text_font)
-if fig.legend:
-    plt.legend(fontsize=fig.text_font - 3)
-plt.xticks(fontsize=fig.number_font)
-plt.yticks(fontsize=fig.number_font)
+x = np.arange(len(freq)) + 1
+plt.scatter(x, np.array(freq), s=40 / (10 + x), label='sampled')
+
 plt.xscale('log')
 plt.yscale('log')
-
-#fig.epilogue()
+fig.epilogue()
 fig.save('zipfs_law')
 
 print('plotting turns')
-new_fig('Turn')
-y = sort_by_frequency(data=turns_played, counter=sampled)
-x = np.arange(len(y)) + 1
-plt.scatter(x, y, s=40 * 3 / (10 + x), alpha=1, color='green')
+
+fig = Figure(fig_num=2,
+             x_label='State rank',
+             y_label='Turn',
+             text_font=font,
+             number_font=font_num)
+
+fig.preamble()
+y = sort_by_frequency(data=turns_played, counter=played)
+x = np.arange(len(y)-1) + 1
+plt.scatter(x, y[1:], s=40 * 3 / (10 + x), alpha=1, color='green')
+plt.xscale('log')
+plt.yscale('log')
 fig.epilogue()
 fig.save('turns_played')
 
-new_fig('Turn')
+fig.fig_num = 3
+fig.preamble()
 y = sort_by_frequency(data=turns_sampled, counter=sampled)
-x = np.arange(len(y)) + 1
-plt.scatter(x, y, s=40 * 3 / (10 + x), alpha=1, color='green')
+
+x = np.arange(len(y)-1) + 1
+plt.scatter(x, y[1:], s=40 * 3 / (10 + x), alpha=1, color='green')
+plt.xscale('log')
+plt.yscale('log')
 fig.epilogue()
 fig.save('turns_sampled')
