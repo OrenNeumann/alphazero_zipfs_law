@@ -151,7 +151,7 @@ class AlphaZero(object):
         self._set_path()
         
         self.learn_rate = self.config.replay_buffer_size // self.config.replay_buffer_reuse
-        self.model = self._init_model_from_config(self.config)
+        self.training_model = self._init_model_from_config(self.config)
 
     def _assert_compatiblity(self):
         if self.game.num_players() != 2:
@@ -413,11 +413,11 @@ class AlphaZero(object):
         losses = []
         for _ in range(len(self.replay_buffer) // self.config.train_batch_size):
             data = self.replay_buffer.sample(self.config.train_batch_size)
-        losses.append(self.model.update(data))
+        losses.append(self.training_model.update(data))
 
         # Always save a checkpoint, either for keeping or for loading the weights to
         # the actors. It only allows numbers, so use -1 as "latest".
-        save_path = self.model.save_checkpoint(
+        save_path = self.training_model.save_checkpoint(
             step if step % self.config.checkpoint_freq == 0 else -1)
         losses = sum(losses, model_lib.Losses(0, 0, 0)) / len(losses)
         logger.print(losses)
@@ -431,8 +431,8 @@ class AlphaZero(object):
         logger.print("Initializing model")
         logger.print("Model type: %s(%s, %s)" % (self.config.nn_model, self.config.nn_width,
                                                 self.config.nn_depth))
-        logger.print("Model size:", self.model.num_trainable_variables, "variables")
-        save_path = self.model.save_checkpoint(0)
+        logger.print("Model size:", self.training_model.num_trainable_variables, "variables")
+        save_path = self.training_model.save_checkpoint(0)
         logger.print("Initial checkpoint:", save_path)
         broadcast_fn(save_path)
 
