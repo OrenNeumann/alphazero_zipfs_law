@@ -135,7 +135,7 @@ def watcher(fn):
             print("{} started".format(name))
         logger.print("{} started".format(name))
         try:
-            return fn(logger=logger, **kwargs)
+            return fn(self, logger=logger, **kwargs)
         except Exception as e:
             logger.print("\n".join([
                 "",
