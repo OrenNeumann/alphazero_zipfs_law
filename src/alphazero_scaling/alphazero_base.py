@@ -123,7 +123,32 @@ class Config(collections.namedtuple(
   """A config for the model/experiment."""
   pass
 
-
+def watcher(fn):
+    """A decorator to fn/processes that gives a logger and logs exceptions."""
+    @functools.wraps(fn)
+    def _watcher(self, *, num=None, **kwargs):
+        """Wrap the decorated function."""
+        name = fn.__name__
+        if num is not None:
+            name += "-" + str(num)
+        with file_logger.FileLogger(self.config.path, name, self.config.quiet) as logger:
+            print("{} started".format(name))
+        logger.print("{} started".format(name))
+        try:
+            return fn(logger=logger, **kwargs)
+        except Exception as e:
+            logger.print("\n".join([
+                "",
+                " Exception caught ".center(60, "="),
+                traceback.format_exc(),
+                "=" * 60,
+            ]))
+            print("Exception caught in {}: {}".format(name, e))
+            raise
+        finally:
+            logger.print("{} exiting".format(name))
+            print("{} exiting".format(name))
+    return _watcher
 
 class AlphaZero(object):
 
@@ -194,32 +219,7 @@ class AlphaZero(object):
             config.learning_rate,
             config.path)
 
-    def watcher(fn):
-        """A decorator to fn/processes that gives a logger and logs exceptions."""
-        @functools.wraps(fn)
-        def _watcher(self, *, num=None, **kwargs):
-            """Wrap the decorated function."""
-            name = fn.__name__
-            if num is not None:
-                name += "-" + str(num)
-            with file_logger.FileLogger(self.config.path, name, self.config.quiet) as logger:
-                print("{} started".format(name))
-            logger.print("{} started".format(name))
-            try:
-                return fn(logger=logger, **kwargs)
-            except Exception as e:
-                logger.print("\n".join([
-                    "",
-                    " Exception caught ".center(60, "="),
-                    traceback.format_exc(),
-                    "=" * 60,
-                ]))
-                print("Exception caught in {}: {}".format(name, e))
-                raise
-            finally:
-                logger.print("{} exiting".format(name))
-                print("{} exiting".format(name))
-        return _watcher
+
 
     @staticmethod
     def _init_bot(config, game, evaluator_, evaluation):
