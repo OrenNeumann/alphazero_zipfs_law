@@ -194,10 +194,10 @@ class AlphaZero(object):
             config.learning_rate,
             config.path)
 
-    def watcher(self, fn):
+    def watcher(fn):
         """A decorator to fn/processes that gives a logger and logs exceptions."""
         @functools.wraps(fn)
-        def _watcher(*, num=None, **kwargs):
+        def _watcher(self, *, num=None, **kwargs):
             """Wrap the decorated function."""
             name = fn.__name__
             if num is not None:
