@@ -1,16 +1,6 @@
 
-
-import collections
-import datetime
-import functools
 import itertools
-import json
-import os
-import random
-import sys
-import tempfile
 import time
-import traceback
 from open_spiel.python.algorithms.alpha_zero import model as model_lib
 from open_spiel.python.utils import data_logger
 from open_spiel.python.utils import spawn
@@ -19,7 +9,7 @@ from open_spiel.python.utils import stats
 from src.alphazero_scaling.alphazero_base import AlphaZero, watcher, Buffer, JOIN_WAIT_DELAY
 from src.alphazero_scaling.sampling.kl_sampling import Sampler
 #from sampling.kl_sampling import Sampler
-from collections import Counter, defaultdict, namedtuple
+from collections import Counter, defaultdict
 import pickle
 
 """
@@ -29,8 +19,6 @@ model prior and the MCTS policy.
 If count_states==True, will save counters of the frequencies of states played, 
 and frequencies of states sampled. It will also save dicts for the turn number of each state played and sampled. 
 Calling the function with b will change the minimal sampling probability. """
-
-COUNTERS = namedtuple('COUNTERS', ['played', 'sampled', 'turns_played', 'turns_sampled'])
 
 
 class AlphaZeroKLSampling(AlphaZero):
@@ -171,7 +159,6 @@ class AlphaZeroKLSampling(AlphaZero):
 
     def alpha_zero(self):
         """Start all the worker processes for a full alphazero setup."""
-
         actors = [spawn.Process(self.actor, kwargs={"num": i})
                   for i in range(self.config.actors)]
         evaluators = [spawn.Process(self.evaluator, kwargs={"num": i})
