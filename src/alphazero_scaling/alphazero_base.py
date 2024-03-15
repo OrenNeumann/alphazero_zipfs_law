@@ -159,6 +159,7 @@ class AlphaZero(object):
     def __init__(self, config: Config):
         self.config = config
         self.actors = None
+        self.TrajectoryState = TrajectoryState
 
         print("Starting game", self.config.game)
         self.game = pyspiel.load_game(self.config.game)
@@ -235,8 +236,7 @@ class AlphaZero(object):
             verbose=False,
             dont_return_chance_node=True)
 
-    @staticmethod
-    def _play_game(logger, game_num, game, bots, temperature, temperature_drop):
+    def _play_game(self, logger, game_num, game, bots, temperature, temperature_drop):
         """Play one game, return the trajectory."""
         trajectory = Trajectory()
         actions = []
@@ -264,7 +264,7 @@ class AlphaZero(object):
                 else:
                     action = np.random.choice(len(policy), p=policy)
                 trajectory.states.append(
-                    TrajectoryState(state.observation_tensor(), state.current_player(),
+                    self.TrajectoryState(state.observation_tensor(), state.current_player(),
                                     state.legal_actions_mask(), action, policy,
                                     root.total_reward / root.explore_count))
                 action_str = state.action_to_string(state.current_player(), action)
