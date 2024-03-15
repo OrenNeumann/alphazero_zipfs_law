@@ -39,54 +39,54 @@ JOIN_WAIT_DELAY = 0.001
 
 
 class TrajectoryState(object):
-  """A particular point along a trajectory."""
+    """A particular point along a trajectory."""
 
-  def __init__(self, observation, current_player, legals_mask, action, policy,
-               value):
-    self.observation = observation
-    self.current_player = current_player
-    self.legals_mask = legals_mask
-    self.action = action
-    self.policy = policy
-    self.value = value
+    def __init__(self, observation, current_player, legals_mask, action, policy,
+                 value):
+        self.observation = observation
+        self.current_player = current_player
+        self.legals_mask = legals_mask
+        self.action = action
+        self.policy = policy
+        self.value = value
 
 
 class Trajectory(object):
-  """A sequence of observations, actions and policies, and the outcomes."""
+    """A sequence of observations, actions and policies, and the outcomes."""
 
-  def __init__(self):
-    self.states = []
-    self.returns = None
+    def __init__(self):
+        self.states = []
+        self.returns = None
 
-  def add(self, information_state, action, policy):
-    self.states.append((information_state, action, policy))
+    def add(self, information_state, action, policy):
+        self.states.append((information_state, action, policy))
 
 
 class Buffer(object):
-  """A fixed size buffer that keeps the newest values."""
+    """A fixed size buffer that keeps the newest values."""
 
-  def __init__(self, max_size):
-    self.max_size = max_size
-    self.data = []
-    self.total_seen = 0  # The number of items that have passed through.
+    def __init__(self, max_size):
+        self.max_size = max_size
+        self.data = []
+        self.total_seen = 0  # The number of items that have passed through.
 
-  def __len__(self):
-    return len(self.data)
+    def __len__(self):
+        return len(self.data)
 
-  def __bool__(self):
-    return bool(self.data)
+    def __bool__(self):
+        return bool(self.data)
 
-  def append(self, val):
-    return self.extend([val])
+    def append(self, val):
+        return self.extend([val])
 
-  def extend(self, batch):
-    batch = list(batch)
-    self.total_seen += len(batch)
-    self.data.extend(batch)
-    self.data[:-self.max_size] = []
+    def extend(self, batch):
+        batch = list(batch)
+        self.total_seen += len(batch)
+        self.data.extend(batch)
+        self.data[:-self.max_size] = []
 
-  def sample(self, count):
-    return random.sample(self.data, count)
+    def sample(self, count):
+        return random.sample(self.data, count)
 
 
 class Config(collections.namedtuple(
@@ -120,11 +120,13 @@ class Config(collections.namedtuple(
 
         "quiet",
     ])):
-  """A config for the model/experiment."""
-  pass
+    """A config for the model/experiment."""
+    pass
+
 
 def watcher(fn):
     """A decorator to fn/processes that gives a logger and logs exceptions."""
+
     @functools.wraps(fn)
     def _watcher(self, *, num=None, **kwargs):
         """Wrap the decorated function."""
@@ -133,22 +135,24 @@ def watcher(fn):
             name += "-" + str(num)
         with file_logger.FileLogger(self.config.path, name, self.config.quiet) as logger:
             print("{} started".format(name))
-        logger.print("{} started".format(name))
-        try:
-            return fn(self, logger=logger, **kwargs)
-        except Exception as e:
-            logger.print("\n".join([
-                "",
-                " Exception caught ".center(60, "="),
-                traceback.format_exc(),
-                "=" * 60,
-            ]))
-            print("Exception caught in {}: {}".format(name, e))
-            raise
-        finally:
-            logger.print("{} exiting".format(name))
-            print("{} exiting".format(name))
+            logger.print("{} started".format(name))
+            try:
+                return fn(self, logger=logger, **kwargs)
+            except Exception as e:
+                logger.print("\n".join([
+                    "",
+                    " Exception caught ".center(60, "="),
+                    traceback.format_exc(),
+                    "=" * 60,
+                ]))
+                print("Exception caught in {}: {}".format(name, e))
+                raise
+            finally:
+                logger.print("{} exiting".format(name))
+                print("{} exiting".format(name))
+
     return _watcher
+
 
 class AlphaZero(object):
 
@@ -158,25 +162,16 @@ class AlphaZero(object):
 
         print("Starting game", self.config.game)
         self.game = pyspiel.load_game(self.config.game)
-        
-        self.game_lengths = stats.BasicStats()
-        self.game_lengths_hist = stats.HistogramNumbered(self.game.max_game_length() + 1)
-        self.outcomes = stats.HistogramNamed(["Player1", "Player2", "Draw"])
-        self.replay_buffer = Buffer(self.config.replay_buffer_size)
-        self.stage_count = 7
-        self.value_accuracies = [stats.BasicStats() for _ in range(self.stage_count)]
-        self.value_predictions = [stats.BasicStats() for _ in range(self.stage_count)]
-
 
         self.config = self.config._replace(
             observation_shape=self.game.observation_tensor_shape(),
             output_size=self.game.num_distinct_actions())
         self._assert_compatiblity()
 
-        self._set_path()
-        
         self.learn_rate = self.config.replay_buffer_size // self.config.replay_buffer_reuse
-        self.training_model = self._init_model_from_config(self.config)
+        self.stage_count = 7
+
+        self._set_path()
 
     def _assert_compatiblity(self):
         if self.game.num_players() != 2:
@@ -193,7 +188,7 @@ class AlphaZero(object):
         path = self.config.path
         if not path:
             path = tempfile.mkdtemp(prefix="az-{}-{}-".format(
-            datetime.datetime.now().strftime("%Y-%m-%d-%H-%M"), self.config.game))
+                datetime.datetime.now().strftime("%Y-%m-%d-%H-%M"), self.config.game))
         self.config = self.config._replace(path=path)
 
         if not os.path.exists(path):
@@ -202,7 +197,7 @@ class AlphaZero(object):
             sys.exit("{} isn't a directory".format(path))
         print("Writing logs and checkpoints to:", path)
         print("Model type: %s(%s, %s)" % (self.config.nn_model, self.config.nn_width,
-                                        self.config.nn_depth))
+                                          self.config.nn_depth))
 
         with open(os.path.join(self.config.path, "config.json"), "w") as fp:
             fp.write(json.dumps(self.config._asdict(), indent=2, sort_keys=True) + "\n")
@@ -218,8 +213,6 @@ class AlphaZero(object):
             config.weight_decay,
             config.learning_rate,
             config.path)
-
-
 
     @staticmethod
     def _init_bot(config, game, evaluator_, evaluation):
@@ -258,7 +251,7 @@ class AlphaZero(object):
                 policy = np.zeros(game.num_distinct_actions())
                 for c in root.children:
                     policy[c.action] = c.explore_count
-                policy = policy**(1 / temperature)
+                policy = policy ** (1 / temperature)
                 policy /= policy.sum()
                 if len(actions) >= temperature_drop:
                     action = root.best_child().action
@@ -298,7 +291,6 @@ class AlphaZero(object):
             return False
         return True
 
-
     @watcher
     def actor(self, *, logger, queue):
         """An actor process runner that generates games and returns trajectories."""
@@ -314,8 +306,7 @@ class AlphaZero(object):
             if not self.update_checkpoint(logger, queue, model, az_evaluator):
                 return
             queue.put(self._play_game(logger, game_num, self.game, bots, self.config.temperature,
-                                self.config.temperature_drop))
-
+                                      self.config.temperature_drop))
 
     @watcher
     def evaluator(self, *, logger, queue):
@@ -349,7 +340,7 @@ class AlphaZero(object):
                 bots = list(reversed(bots))
 
             trajectory = self._play_game(logger, game_num, self.game, bots, temperature=1,
-                                    temperature_drop=0)
+                                         temperature_drop=0)
             results.append(trajectory.returns[az_player])
             queue.put((difficulty, trajectory.returns[az_player]))
 
@@ -358,40 +349,40 @@ class AlphaZero(object):
                 trajectory.returns[1 - az_player],
                 len(results), np.mean(results.data)))
 
-
     def trajectory_generator(self):
-            """Merge all the actor queues into a single generator."""
-            while True:
-                found = 0
-                for actor_process in self.actors:
-                    try:
-                        yield actor_process.queue.get_nowait()
-                    except spawn.Empty:
-                        pass
-                    else:
-                        found += 1
-                if found == 0:
-                    time.sleep(0.01)  # 10ms
+        """Merge all the actor queues into a single generator."""
+        while True:
+            found = 0
+            for actor_process in self.actors:
+                try:
+                    yield actor_process.queue.get_nowait()
+                except spawn.Empty:
+                    pass
+                else:
+                    found += 1
+            if found == 0:
+                time.sleep(0.01)  # 10ms
 
-    def collect_trajectories(self):
+    def collect_trajectories(self, game_lengths, game_lengths_hist, outcomes, replay_buffer,
+                             value_accuracies, value_predictions):
         """Collects the trajectories from actors into the replay buffer."""
         num_trajectories = 0
         num_states = 0
         for trajectory in self.trajectory_generator():
             num_trajectories += 1
             num_states += len(trajectory.states)
-            self.game_lengths.add(len(trajectory.states))
-            self.game_lengths_hist.add(len(trajectory.states))
+            game_lengths.add(len(trajectory.states))
+            game_lengths_hist.add(len(trajectory.states))
 
             p1_outcome = trajectory.returns[0]
             if p1_outcome > 0:
-                self.outcomes.add(0)
+                outcomes.add(0)
             elif p1_outcome < 0:
-                self.outcomes.add(1)
+                outcomes.add(1)
             else:
-                self.outcomes.add(2)
+                outcomes.add(2)
 
-            self.replay_buffer.extend( 
+            replay_buffer.extend(
                 model_lib.TrainInput(
                     s.observation, s.legals_mask, s.policy, p1_outcome)
                 for s in trajectory.states)
@@ -401,23 +392,23 @@ class AlphaZero(object):
                 index = (len(trajectory.states) - 1) * stage // (self.stage_count - 1)
                 n = trajectory.states[index]
                 accurate = (n.value >= 0) == (trajectory.returns[n.current_player] >= 0)
-                self.value_accuracies[stage].add(1 if accurate else 0)
-                self.value_predictions[stage].add(abs(n.value))
+                value_accuracies[stage].add(1 if accurate else 0)
+                value_predictions[stage].add(abs(n.value))
 
-            if num_states >= self.learn_rate: 
+            if num_states >= self.learn_rate:
                 break
         return num_trajectories, num_states
-    
-    def learn(self, step, logger):
+
+    def learn(self, step, logger, replay_buffer, model):
         """Sample from the replay buffer, update weights and save a checkpoint."""
         losses = []
-        for _ in range(len(self.replay_buffer) // self.config.train_batch_size):
-            data = self.replay_buffer.sample(self.config.train_batch_size)
-        losses.append(self.training_model.update(data))
+        for _ in range(len(replay_buffer) // self.config.train_batch_size):
+            data = replay_buffer.sample(self.config.train_batch_size)
+        losses.append(model.update(data))
 
         # Always save a checkpoint, either for keeping or for loading the weights to
         # the actors. It only allows numbers, so use -1 as "latest".
-        save_path = self.training_model.save_checkpoint(
+        save_path = model.save_checkpoint(
             step if step % self.config.checkpoint_freq == 0 else -1)
         losses = sum(losses, model_lib.Losses(0, 0, 0)) / len(losses)
         logger.print(losses)
@@ -428,30 +419,38 @@ class AlphaZero(object):
     def learner(self, *, evaluators, broadcast_fn, logger):
         """A learner that consumes the replay buffer and trains the network."""
         logger.also_to_stdout = True
+        replay_buffer = Buffer(self.config.replay_buffer_size)
         logger.print("Initializing model")
+        model = self._init_model_from_config(self.config)
         logger.print("Model type: %s(%s, %s)" % (self.config.nn_model, self.config.nn_width,
-                                                self.config.nn_depth))
-        logger.print("Model size:", self.training_model.num_trainable_variables, "variables")
-        save_path = self.training_model.save_checkpoint(0)
+                                                 self.config.nn_depth))
+        logger.print("Model size:", model.num_trainable_variables, "variables")
+        save_path = model.save_checkpoint(0)
         logger.print("Initial checkpoint:", save_path)
         broadcast_fn(save_path)
 
         data_log = data_logger.DataLoggerJsonLines(self.config.path, "learner", True)
 
+        value_accuracies = [stats.BasicStats() for _ in range(self.stage_count)]
+        value_predictions = [stats.BasicStats() for _ in range(self.stage_count)]
+        game_lengths = stats.BasicStats()
+        game_lengths_hist = stats.HistogramNumbered(self.game.max_game_length() + 1)
+        outcomes = stats.HistogramNamed(["Player1", "Player2", "Draw"])
         evals = [Buffer(self.config.evaluation_window) for _ in range(self.config.eval_levels)]
         total_trajectories = 0
 
         last_time = time.time() - 60
         for step in itertools.count(1):
-            for value_accuracy in self.value_accuracies:
+            for value_accuracy in value_accuracies:
                 value_accuracy.reset()
-            for value_prediction in self.value_predictions:
+            for value_prediction in value_predictions:
                 value_prediction.reset()
-            self.game_lengths.reset()
-            self.game_lengths_hist.reset()
-            self.outcomes.reset()
+            game_lengths.reset()
+            game_lengths_hist.reset()
+            outcomes.reset()
 
-            num_trajectories, num_states = self.collect_trajectories()
+            num_trajectories, num_states = self.collect_trajectories(game_lengths, game_lengths_hist, outcomes,
+                                                                     replay_buffer, value_accuracies, value_predictions)
             total_trajectories += num_trajectories
             now = time.time()
             seconds = now - last_time
@@ -460,14 +459,14 @@ class AlphaZero(object):
             logger.print("Step:", step)
             logger.print(
                 ("Collected {:5} states from {:3} games, {:.1f} states/s. "
-                "{:.1f} states/(s*actor), game length: {:.1f}").format(
+                 "{:.1f} states/(s*actor), game length: {:.1f}").format(
                     num_states, num_trajectories, num_states / seconds,
-                    num_states / (self.config.actors * seconds),
-                    num_states / num_trajectories))
+                                                  num_states / (self.config.actors * seconds),
+                                                  num_states / num_trajectories))
             logger.print("Buffer size: {}. States seen: {}".format(
-                len(self.replay_buffer), self.replay_buffer.total_seen))
+                len(replay_buffer), replay_buffer.total_seen))
 
-            save_path, losses = self.learn(step, logger)
+            save_path, losses = self.learn(step, logger, replay_buffer, model)
 
             for eval_process in evaluators:
                 while True:
@@ -481,17 +480,17 @@ class AlphaZero(object):
             batch_size_stats.add(1)
             data_log.write({
                 "step": step,
-                "total_states": self.replay_buffer.total_seen,
+                "total_states": replay_buffer.total_seen,
                 "states_per_s": num_states / seconds,
                 "states_per_s_actor": num_states / (self.config.actors * seconds),
                 "total_trajectories": total_trajectories,
                 "trajectories_per_s": num_trajectories / seconds,
                 "queue_size": 0,  # Only available in C++.
-                "game_length": self.game_lengths.as_dict,
-                "game_length_hist": self.game_lengths_hist.data,
-                "outcomes": self.outcomes.data,
-                "value_accuracy": [v.as_dict for v in self.value_accuracies],
-                "value_prediction": [v.as_dict for v in self.value_predictions],
+                "game_length": game_lengths.as_dict,
+                "game_length_hist": game_lengths_hist.data,
+                "outcomes": outcomes.data,
+                "value_accuracy": [v.as_dict for v in value_accuracies],
+                "value_prediction": [v.as_dict for v in value_predictions],
                 "eval": {
                     "count": evals[0].total_seen,
                     "results": [sum(e.data) / len(e) if e else 0 for e in evals],
@@ -518,19 +517,18 @@ class AlphaZero(object):
             })
             logger.print()
 
-            if self.config.max_steps > 0 and step >= self.config.max_steps:
+            if 0 < self.config.max_steps <= step:
                 break
 
             broadcast_fn(save_path)
-
 
     def alpha_zero(self):
         """Start all the worker processes for a full alphazero setup."""
 
         actors = [spawn.Process(self.actor, kwargs={"num": i})
-                for i in range(self.config.actors)]
+                  for i in range(self.config.actors)]
         evaluators = [spawn.Process(self.evaluator, kwargs={"num": i})
-                    for i in range(self.config.evaluators)]
+                      for i in range(self.config.evaluators)]
 
         def broadcast(msg):
             for proc in actors + evaluators:
