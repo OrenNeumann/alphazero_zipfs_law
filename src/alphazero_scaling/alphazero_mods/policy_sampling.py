@@ -4,11 +4,10 @@ import time
 from open_spiel.python.algorithms.alpha_zero import model as model_lib
 from open_spiel.python.utils import data_logger
 from open_spiel.python.utils import spawn
-from open_spiel.python.utils import stats
 
 from src.alphazero_scaling.alphazero_base import AlphaZero, watcher, Buffer, JOIN_WAIT_DELAY
 from src.alphazero_scaling.sampling.kl_sampling import Sampler
-#from sampling.kl_sampling import Sampler
+#from src.sampling.kl_sampling import Sampler
 from collections import Counter, defaultdict
 import pickle
 
