@@ -159,7 +159,6 @@ class AlphaZero(object):
     def __init__(self, config: Config):
         self.config = config
         self.actors = None
-        self.TrajectoryState = TrajectoryState
 
         print("Starting game", self.config.game)
         self.game = pyspiel.load_game(self.config.game)
@@ -235,6 +234,12 @@ class AlphaZero(object):
             child_selection_fn=mcts.SearchNode.puct_value,
             verbose=False,
             dont_return_chance_node=True)
+    
+    @staticmethod
+    def _create_trajectory_state(state, action, policy, root):
+        return TrajectoryState(state.observation_tensor(), state.current_player(),
+                                state.legal_actions_mask(), action, policy,
+                                root.total_reward / root.explore_count)
 
     def _play_game(self, logger, game_num, game, bots, temperature, temperature_drop):
         """Play one game, return the trajectory."""
@@ -263,10 +268,7 @@ class AlphaZero(object):
                     action = root.best_child().action
                 else:
                     action = np.random.choice(len(policy), p=policy)
-                trajectory.states.append(
-                    self.TrajectoryState(state.observation_tensor(), state.current_player(),
-                                    state.legal_actions_mask(), action, policy,
-                                    root.total_reward / root.explore_count))
+                trajectory.states.append(self._create_trajectory_state(trajectory, state, action, policy, root))
                 action_str = state.action_to_string(state.current_player(), action)
                 actions.append(action_str)
                 logger.opt_print("Player {} sampled action: {}".format(
