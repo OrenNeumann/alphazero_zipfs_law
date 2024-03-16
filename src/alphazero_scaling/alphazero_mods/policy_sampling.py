@@ -7,7 +7,6 @@ from open_spiel.python.utils import spawn
 
 from src.alphazero_scaling.alphazero_base import AlphaZero, watcher, Buffer, JOIN_WAIT_DELAY, TrajectoryState
 from src.alphazero_scaling.sampling.kl_sampling import Sampler
-#from src.sampling.kl_sampling import Sampler
 from collections import Counter, defaultdict
 import pickle
 
