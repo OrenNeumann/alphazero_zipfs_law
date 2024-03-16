@@ -268,7 +268,7 @@ class AlphaZero(object):
                     action = root.best_child().action
                 else:
                     action = np.random.choice(len(policy), p=policy)
-                trajectory.states.append(self._create_trajectory_state(trajectory, state, action, policy, root))
+                trajectory.states.append(self._create_trajectory_state(state, action, policy, root))
                 action_str = state.action_to_string(state.current_player(), action)
                 actions.append(action_str)
                 logger.opt_print("Player {} sampled action: {}".format(
