@@ -37,10 +37,9 @@ class AlphaZeroKLSampling(AlphaZero):
 
     @staticmethod
     def _create_trajectory_state(state, action, policy, root):
-        return TrajectoryStateWithMoves(state.observation_tensor(), state.current_player(),
+        return TrajectoryStateWithMoves(state.move_number(), state.observation_tensor(), state.current_player(),
                                 state.legal_actions_mask(), action, policy,
-                                root.total_reward / root.explore_count,
-                                move_number=state.move_number())
+                                root.total_reward / root.explore_count)
 
     def collect_trajectories(self, model):
         """Collects the trajectories from actors into the replay buffer."""
