@@ -8,7 +8,7 @@ from src.plotting.plot_utils import Figure
 Plot data from dkl sampling experiment
 """
 
-data_dir = r"/mnt/ceph/neumann/zipf/plot_data/erase/che_test/"
+data_dir = r"/mnt/ceph/neumann/zipf/plot_data/sampling_counters/oware/s_3_2/"
 with open(data_dir + "played.pkl", "rb") as input_file:
     played = pickle.load(input_file)
 with open(data_dir + "sampled.pkl", "rb") as input_file:
