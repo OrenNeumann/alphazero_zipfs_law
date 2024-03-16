@@ -7,27 +7,17 @@ from src.plotting.plot_utils import Figure
 """
 Plot data from dkl sampling experiment
 """
-
+print('loading data')
 data_dir = r"/mnt/ceph/neumann/zipf/plot_data/sampling_counters/oware/s_3_2/"
 with open(data_dir + "played.pkl", "rb") as input_file:
     played = pickle.load(input_file)
 with open(data_dir + "sampled.pkl", "rb") as input_file:
     sampled = pickle.load(input_file)
-with open(data_dir + "turns_played.pkl", "rb") as input_file:
-    turns_played = pickle.load(input_file)
-with open(data_dir + "turns_sampled.pkl", "rb") as input_file:
-    turns_sampled = pickle.load(input_file)
-
-print(len(played))
-print(len(sampled))
-print(len(turns_played))
-print(len(turns_sampled))
 
 print('done loading')
-for key, count in played.items():
-    turns_played[key] /= count
-for key, count in sampled.items():
-    turns_sampled[key] /= count
+print(len(played))
+print(len(sampled))
+
 
 font = 18 - 2
 font_num = 16 - 2
@@ -57,6 +47,15 @@ fig.save('zipfs_law')
 
 print('plotting turns')
 
+with open(data_dir + "turns_played.pkl", "rb") as input_file:
+    turns = pickle.load(input_file)
+
+
+print(len(turns))
+for key, count in played.items():
+    turns[key] /= count
+
+
 fig = Figure(fig_num=2,
              x_label='State rank',
              y_label='Turn',
@@ -64,7 +63,7 @@ fig = Figure(fig_num=2,
              number_font=font_num)
 
 fig.preamble()
-y = sort_by_frequency(data=turns_played, counter=played)
+y = sort_by_frequency(data=turns, counter=played)
 x = np.arange(len(y)-1) + 1
 plt.scatter(x, y[1:], s=40 * 3 / (10 + x), alpha=1, color='green')
 plt.xscale('log')
@@ -72,9 +71,17 @@ plt.yscale('log')
 fig.epilogue()
 fig.save('turns_played')
 
+
+with open(data_dir + "turns_sampled.pkl", "rb") as input_file:
+    turns = pickle.load(input_file)
+print(len(turns))
+for key, count in sampled.items():
+    turns[key] /= count
+
+
 fig.fig_num = 3
 fig.preamble()
-y = sort_by_frequency(data=turns_sampled, counter=sampled)
+y = sort_by_frequency(data=turns, counter=sampled)
 
 x = np.arange(len(y)-1) + 1
 plt.scatter(x, y[1:], s=40 * 3 / (10 + x), alpha=1, color='green')
