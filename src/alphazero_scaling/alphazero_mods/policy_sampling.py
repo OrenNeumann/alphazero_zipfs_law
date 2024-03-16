@@ -20,8 +20,8 @@ and frequencies of states sampled. It will also save dicts for the turn number o
 Calling the function with b will change the minimal sampling probability. """
 
 class TrajectoryStateWithMoves(TrajectoryState):
-  def __init__(self, move_number, *args):
-    super().__init__(*args)
+  def __init__(self, move_number, *args, **kwargs):
+    super().__init__(*args, **kwargs)
     self.move_number = move_number
 
 class AlphaZeroKLSampling(AlphaZero):
