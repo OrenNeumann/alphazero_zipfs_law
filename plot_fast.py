@@ -68,16 +68,12 @@ fig = Figure(fig_num=2,
              number_font=font_num)
 
 fig.preamble()
-y = sort_by_frequency(data=turns, counter=counts)
-x = np.arange(len(y)-1) + 1
-plt.scatter(x, y[1:], s=40 * 3 / (10 + x), alpha=1, color='green')
+x = np.arange(len(counts)-1) + 1
+plt.scatter(x, sort_by_frequency(data=turns, counter=counts)[1:], s=40 * 3 / (10 + x), alpha=1, color='green')
 plt.xscale('log')
 plt.yscale('log')
 fig.epilogue()
 fig.save('turns_sampled')
-
-del(y)
-del(x)
 
 print('loading turns played')
 turns = load_data("turns_played")
@@ -92,10 +88,9 @@ for key, count in counts.items():
 
 fig.fig_num = 3
 fig.preamble()
-y = sort_by_frequency(data=turns, counter=counts)
 
-x = np.arange(len(y)-1) + 1
-plt.scatter(x, y[1:], s=40 * 3 / (10 + x), alpha=1, color='green')
+x = np.arange(len(counts)-1) + 1
+plt.scatter(x, sort_by_frequency(data=turns, counter=counts)[1:], s=40 * 3 / (10 + x), alpha=1, color='green')
 plt.xscale('log')
 plt.yscale('log')
 fig.epilogue()
