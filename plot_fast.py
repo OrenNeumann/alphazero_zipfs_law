@@ -23,7 +23,7 @@ fig = Figure(x_label='State rank',
              number_font=font_num,
              legend=True)
 fig.preamble()
-print('plotting zipfs law')
+print('plotting zipfs law ~~~~~~~~~~~~')
 
 print('loading played')
 counts = load_data("played")
@@ -38,6 +38,7 @@ plt.scatter(x, np.array([item[1] for item in counts.most_common()]),
 
 print('loading sampled')
 counts = load_data("sampled")
+print('length: ', len(counts))
 print('plotting sampled')
 
 x = np.arange(len(counts)) + 1
@@ -49,12 +50,13 @@ plt.yscale('log')
 fig.epilogue()
 fig.save('zipfs_law')
 
-print('plotting turns')
+print('plotting turns ~~~~~~~~~~~~')
 
-
+print('loading turns sampled')
 turns = load_data("turns_sampled")
+print('length: ', len(turns))
+print('plotting turns sampled')
 
-print(len(turns))
 for key, count in counts.items():
     turns[key] /= count
 
@@ -74,8 +76,15 @@ plt.yscale('log')
 fig.epilogue()
 fig.save('turns_sampled')
 
+del(y)
+del(x)
+
+print('loading turns played')
 turns = load_data("turns_played")
+print(len(turns))
 counts = load_data("played")
+print('plotting turns played')
+
 print(len(turns))
 for key, count in counts.items():
     turns[key] /= count
