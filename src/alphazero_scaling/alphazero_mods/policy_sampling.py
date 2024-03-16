@@ -5,7 +5,7 @@ from open_spiel.python.algorithms.alpha_zero import model as model_lib
 from open_spiel.python.utils import data_logger
 from open_spiel.python.utils import spawn
 
-from src.alphazero_scaling.alphazero_base import AlphaZero, watcher, Buffer, JOIN_WAIT_DELAY
+from src.alphazero_scaling.alphazero_base import AlphaZero, watcher, Buffer, JOIN_WAIT_DELAY, TrajectoryState
 from src.alphazero_scaling.sampling.kl_sampling import Sampler
 #from src.sampling.kl_sampling import Sampler
 from collections import Counter, defaultdict
@@ -19,6 +19,10 @@ If count_states==True, will save counters of the frequencies of states played,
 and frequencies of states sampled. It will also save dicts for the turn number of each state played and sampled. 
 Calling the function with b will change the minimal sampling probability. """
 
+class TrajectoryStateWithMoves(TrajectoryState):
+  def __init__(self, move_number, *args):
+    super().__init__(*args)
+    self.move_number = move_number
 
 class AlphaZeroKLSampling(AlphaZero):
     def __init__(self, count_states=False, b=0.01, **kwargs):
@@ -31,6 +35,13 @@ class AlphaZeroKLSampling(AlphaZero):
         self.sample_counter = Counter()
         self.turns_played = defaultdict(int)
         self.turns_sampled = defaultdict(int)
+
+    @staticmethod
+    def _create_trajectory_state(state, action, policy, root):
+        return TrajectoryStateWithMoves(state.observation_tensor(), state.current_player(),
+                                state.legal_actions_mask(), action, policy,
+                                root.total_reward / root.explore_count,
+                                state.move_number())
 
     def collect_trajectories(self, model):
         """Collects the trajectories from actors into the replay buffer."""
