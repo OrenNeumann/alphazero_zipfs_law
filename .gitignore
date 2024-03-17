@@ -14,3 +14,4 @@ plots/
 alphazero_scaling_full/
 7x6.book
 src/config/paths.yaml
+.vscode/
