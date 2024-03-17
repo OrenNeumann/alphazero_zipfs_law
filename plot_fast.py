@@ -74,6 +74,7 @@ plt.xscale('log')
 plt.yscale('log')
 fig.epilogue()
 fig.save('turns_sampled')
+plt.clf()
 
 print('loading turns played')
 turns = load_data("turns_played")
