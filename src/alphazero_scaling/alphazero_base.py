@@ -421,6 +421,17 @@ class AlphaZero(object):
         logger.print(losses)
         logger.print("Checkpoint saved:", save_path)
         return save_path, losses
+    
+    def _print_step(self, logger, step, num_states, num_trajectories, seconds):
+        logger.print("Step:", step)
+        logger.print(
+            ("Collected {:5} states from {:3} games, {:.1f} states/s. "
+                "{:.1f} states/(s*actor), game length: {:.1f}").format(
+                num_states, num_trajectories, num_states / seconds,
+                                                num_states / (self.config.actors * seconds),
+                                                num_states / num_trajectories))
+        logger.print("Buffer size: {}. States seen: {}".format(
+            len(self.replay_buffer), self.replay_buffer.total_seen))
 
     @watcher
     def learner(self, *, evaluators, broadcast_fn, logger):
@@ -457,15 +468,7 @@ class AlphaZero(object):
             seconds = now - last_time
             last_time = now
 
-            logger.print("Step:", step)
-            logger.print(
-                ("Collected {:5} states from {:3} games, {:.1f} states/s. "
-                 "{:.1f} states/(s*actor), game length: {:.1f}").format(
-                    num_states, num_trajectories, num_states / seconds,
-                                                  num_states / (self.config.actors * seconds),
-                                                  num_states / num_trajectories))
-            logger.print("Buffer size: {}. States seen: {}".format(
-                len(self.replay_buffer), self.replay_buffer.total_seen))
+            self._print_step(logger, step, num_states, num_trajectories, seconds)
 
             save_path, losses = self.learn(step, logger, model)
 
