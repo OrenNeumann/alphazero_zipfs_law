@@ -1,11 +1,8 @@
 
-import itertools
-import time
 from open_spiel.python.algorithms.alpha_zero import model as model_lib
-from open_spiel.python.utils import data_logger
 from open_spiel.python.utils import spawn
 
-from src.alphazero_scaling.alphazero_base import AlphaZero, watcher, Buffer, JOIN_WAIT_DELAY, TrajectoryState
+from src.alphazero_scaling.alphazero_base import AlphaZero, JOIN_WAIT_DELAY, TrajectoryState
 from src.alphazero_scaling.sampling.kl_sampling import Sampler
 from collections import Counter, defaultdict
 import pickle
@@ -90,80 +87,16 @@ class AlphaZeroKLSampling(AlphaZero):
             if num_states >= self.learn_rate:
                 break
         return num_trajectories, num_states
-
-    @watcher
-    def learner(self, *, evaluators, broadcast_fn, logger):
-        """A learner that consumes the replay buffer and trains the network."""
-        logger.also_to_stdout = True
-        # Model must be initialized here, making it a class variable makes the run freeze
-        logger.print("Initializing model")
-        model = self._init_model_from_config(self.config)
-        logger.print("Model type: %s(%s, %s)" % (self.config.nn_model, self.config.nn_width,
-                                                 self.config.nn_depth))
-        logger.print("Model size:", model.num_trainable_variables, "variables")
-        save_path = model.save_checkpoint(0)
-        logger.print("Initial checkpoint:", save_path)
-        broadcast_fn(save_path)
-
-        data_log = data_logger.DataLoggerJsonLines(self.config.path, "learner", True)
-
-        evals = [Buffer(self.config.evaluation_window) for _ in range(self.config.eval_levels)]
-        total_trajectories = 0
-
-        last_time = time.time() - 60
-        for step in itertools.count(1):
-            for value_accuracy in self.value_accuracies:
-                value_accuracy.reset()
-            for value_prediction in self.value_predictions:
-                value_prediction.reset()
-            self.game_lengths.reset()
-            self.game_lengths_hist.reset()
-            self.outcomes.reset()
-
-            num_trajectories, num_states = self.collect_trajectories(model)
-            total_trajectories += num_trajectories
-            now = time.time()
-            seconds = now - last_time
-            last_time = now
-
-            ###
-            ratio, a, target = self.sampler.update_hyperparameters()
-            ###
-
-            logger.print("Step:", step)
-            logger.print(
-                ("Collected {:5} states from {:3} games, {:.1f} states/s. "
-                 "{:.1f} states/(s*actor), game length: {:.1f}").format(
-                    num_states, num_trajectories, num_states / seconds,
-                                                  num_states / (self.config.actors * seconds),
-                                                  num_states / num_trajectories))
-            logger.print("Buffer size: {}. States seen: {}".format(
-                len(self.replay_buffer), self.replay_buffer.total_seen))
-            ###
-            logger.print("Sampling ratio: {:.5f}. Coeff.: {:.5f}, Target coeff.: {:.5f}.".format(
+    
+    def _print_step(self, logger, step, num_states, num_trajectories, seconds):
+        """ Update the sampler and print stats."""
+        ratio, a, target = self.sampler.update_hyperparameters()
+        super()._print_step(logger, step, num_states, num_trajectories, seconds)
+        logger.print("Sampling ratio: {:.5f}. Coeff.: {:.5f}, Target coeff.: {:.5f}.".format(
                 ratio, a, target))
-            if self.count_states:
-                logger.print("Unique states played: {}, unique states sampled: {}.".format(
-                    len(self.played_counter), len(self.sample_counter)))
-            ###
-
-            save_path, losses = self.learn(step, logger, model)
-
-            for eval_process in evaluators:
-                while True:
-                    try:
-                        difficulty, outcome = eval_process.queue.get_nowait()
-                        evals[difficulty].append(outcome)
-                    except spawn.Empty:
-                        break
-
-            self._dump_statistics(logger, data_log, step, num_states, seconds, total_trajectories,
-                                  num_trajectories, evals, losses)
-
-            if 0 < self.config.max_steps <= step:
-                break
-
-            broadcast_fn(save_path)
+        if self.count_states:
+            logger.print("Unique states played: {}, unique states sampled: {}.".format(
+                len(self.played_counter), len(self.sample_counter)))
 
     def alpha_zero(self):
         """Start all the worker processes for a full alphazero setup."""
