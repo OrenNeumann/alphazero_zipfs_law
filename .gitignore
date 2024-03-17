@@ -10,6 +10,7 @@ src/alphazero_scaling/__pycache__
 src/general/__pycache__
 src/plotting/__pycache__
 src/alphazero_scaling/connect4-master/
+src/alphazero_scaling/elo/Bayesian_Elo/
 plots/
 alphazero_scaling_full/
 7x6.book
