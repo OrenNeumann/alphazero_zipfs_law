@@ -6,6 +6,7 @@ distance to terminal state.
 """
 import re
 import numpy as np
+from tqdm import tqdm
 from src.data_analysis.state_frequency.state_counter import StateCounter
 from src.alphazero_scaling.loading import load_model_from_checkpoint, load_config
 
