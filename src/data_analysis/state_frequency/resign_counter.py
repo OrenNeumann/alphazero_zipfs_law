@@ -4,6 +4,12 @@ Count states if player resignation is implemented.
 """
 import re
 from src.data_analysis.state_frequency.state_counter import StateCounter
+from src.alphazero_scaling.loading import load_model_from_checkpoint, load_config
+
+
+def get_model(path):
+    config = load_config(path)
+    return load_model_from_checkpoint(config=config, path=path, checkpoint_number=10_000)
 
 class ResignationCounter(StateCounter):
     def __init__(self, model,**kwargs):
