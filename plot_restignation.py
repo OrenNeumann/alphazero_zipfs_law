@@ -67,6 +67,9 @@ fig = Figure(x_label='State rank',
 fig.preamble()
 
 # Sort by frequency
+lowest = 2
+regular_counter.prune_low_frequencies(lowest)
+counter.prune_low_frequencies(lowest)
 freq_regular = np.array([item[1] for item in regular_counter.frequencies.most_common()])
 freq_resignation = np.array([item[1] for item in counter.frequencies.most_common()])
 
