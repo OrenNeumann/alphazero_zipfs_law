@@ -39,7 +39,7 @@ fig = Figure(x_label='State rank',text_font=font, number_font=font_num,fig_num=1
 
 def plot_turns(y, name, y_label):
     fig.preamble()
-    plt.scatter(x, y, s=40 * 3 / (10 + x), alpha=1, color='green')
+    plt.scatter(np.arange(len(y)) + 1, y, s=40 * 3 / (10 + x), alpha=1, color='green')
     plt.xscale('log')
     plt.yscale('log')
     fig.y_label = y_label
