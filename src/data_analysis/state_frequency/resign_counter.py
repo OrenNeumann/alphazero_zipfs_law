@@ -57,7 +57,7 @@ class ResignationCounter(StateCounter):
         if not board.is_terminal():
             raise Exception('Game ended prematurely. Maybe a corrupted file?')
         
-        decisions = self._should_resign([board])
+        decisions = self._should_resign(boards)
         keys = list()
         for board, resigned in zip(boards, decisions):
             if resigned:
