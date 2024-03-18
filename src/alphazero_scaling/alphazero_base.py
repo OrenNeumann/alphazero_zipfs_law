@@ -195,7 +195,7 @@ class AlphaZero(object):
         if not path:
             path = tempfile.mkdtemp(prefix="az-{}-{}-".format(
                 datetime.datetime.now().strftime("%Y-%m-%d-%H-%M"), self.config.game))
-        self.config = self.config._replace(path=path)
+            self.config = self.config._replace(path=path)
 
         if not os.path.exists(path):
             os.makedirs(path)
@@ -411,7 +411,7 @@ class AlphaZero(object):
         losses = []
         for _ in range(len(self.replay_buffer) // self.config.train_batch_size):
             data = self.replay_buffer.sample(self.config.train_batch_size)
-        losses.append(model.update(data))
+            losses.append(model.update(data))
 
         # Always save a checkpoint, either for keeping or for loading the weights to
         # the actors. It only allows numbers, so use -1 as "latest".
@@ -550,12 +550,12 @@ class AlphaZero(object):
             print("Caught a KeyboardInterrupt, stopping early.")
         finally:
             broadcast("")
-        # for actor processes to join we have to make sure that their q_in is empty,
-        # including backed up items
-        for proc in actors:
-            while proc.exitcode is None:
-                while not proc.queue.empty():
-                    proc.queue.get_nowait()
-                proc.join(JOIN_WAIT_DELAY)
-        for proc in evaluators:
-            proc.join()
+            # for actor processes to join we have to make sure that their q_in is empty,
+            # including backed up items
+            for proc in actors:
+                while proc.exitcode is None:
+                    while not proc.queue.empty():
+                        proc.queue.get_nowait()
+                    proc.join(JOIN_WAIT_DELAY)
+            for proc in evaluators:
+                proc.join()
