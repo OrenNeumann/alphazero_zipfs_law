@@ -1,6 +1,7 @@
 import matplotlib.pyplot as plt
 import numpy as np
 from src.data_analysis.state_frequency.state_counter import StateCounter
+from src.data_analysis.state_frequency.resign_counter import ResignationCounter, get_model
 from src.general.general_utils import models_path
 
 """
@@ -15,16 +16,18 @@ env = games[game_num]
 #path = '/mnt/ceph/neumann/alphazero/scratch_backup/models/'
 #path = '/home/oren/zipf/scratch_backup/models/connect_four_10000/'
 path = models_path()
-data_paths = {'connect_four': 'connect_four_10000/q_0_0',#'connect_four_10000/f_4_2',
-              'pentago': 'pentago_t5_10000/q_0_0',
-              'oware': 'oware_10000/q_1_0',
-              'checkers': 'checkers/q_6_0'}
+data_paths = {'connect_four': 'connect_four_10000/q_0_0/',#'connect_four_10000/f_4_2/',
+              'pentago': 'pentago_t5_10000/q_0_0/',
+              'oware': 'oware_10000/q_1_0/',
+              'checkers': 'checkers/q_6_0/'}
 path += data_paths[env]
 print('Collecting '+env+' games:')
 
 # Process all games
-state_counter = StateCounter(env=env)
-state_counter.collect_data(path=path, max_file_num=1)
+#state_counter = StateCounter(env=env)
+state_counter = ResignationCounter(env=env, model=get_model(path))
+
+state_counter.collect_data(path=path, max_file_num=20)
 
 # Sort by frequency
 freq = np.array([item[1] for item in state_counter.frequencies.most_common()])
