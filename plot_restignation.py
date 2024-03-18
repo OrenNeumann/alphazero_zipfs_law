@@ -30,7 +30,7 @@ counter = ResignationCounter(env=env, model=get_model(path), save_serial=True,
                  save_turn_num=True)
 
 counter.collect_data(path=path, max_file_num=file_num)
-
+counter.normalize_counters()
 
 font = 18 - 2
 font_num = 16 - 2
