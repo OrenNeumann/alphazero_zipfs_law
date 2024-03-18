@@ -78,6 +78,6 @@ class ResignationCounter(StateCounter):
             obs.append(board.observation_tensor())
             masks.append(board.legal_actions_mask())
 
-        values = self.model.inference(obs, masks)[0]
+        values = self.model.inference(obs, masks)[0].flatten()
         values *= np.array([(-1)**n for n in range(len(boards))])
         return values <= self.v_resign
