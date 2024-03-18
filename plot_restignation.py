@@ -23,7 +23,7 @@ data_paths = {'connect_four': 'connect_four_10000/q_0_0/',#'connect_four_10000/f
 path += data_paths[env]
 print('Collecting '+env+' games:')
 
-file_num = 1
+file_num = 39
 
 # Process all games
 counter = ResignationCounter(env=env, model=get_model(path), save_serial=True,
@@ -49,7 +49,7 @@ def plot_turns(y, name, y_label):
 
 print('Plot turns')
 y = sort_by_frequency(data=counter.turns_played, counter=counter.frequencies)
-plot_turns(y, name='turns_takenr_resignation', y_label='Turn num.')
+plot_turns(y, name='turns_taken_resignation', y_label='Turn num.')
 
 
 
@@ -71,7 +71,7 @@ freq_regular = np.array([item[1] for item in regular_counter.frequencies.most_co
 freq_resignation = np.array([item[1] for item in counter.frequencies.most_common()])
 
 x = np.arange(len(freq_regular)) + 1
-plt.scatter(x, freq_regular, s=40 / (10 + x), label='With resignation')
+plt.scatter(x, freq_regular, s=40 / (10 + x), label='Without resignation')
 x = np.arange(len(freq_resignation)) + 1
 plt.scatter(x, freq_resignation, s=40 / (10 + x), label='With resignation')
 
