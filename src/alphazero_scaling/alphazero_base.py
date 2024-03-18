@@ -371,8 +371,9 @@ class AlphaZero(object):
             if found == 0:
                 time.sleep(0.01)  # 10ms
 
-    def collect_trajectories(self):
-        """Collects the trajectories from actors into the replay buffer."""
+    def collect_trajectories(self, model):
+        """Collects the trajectories from actors into the replay buffer.
+            'model' may be used in derived classes."""
         num_trajectories = 0
         num_states = 0
         for trajectory in self.trajectory_generator():
@@ -462,7 +463,7 @@ class AlphaZero(object):
             self.game_lengths_hist.reset()
             self.outcomes.reset()
 
-            num_trajectories, num_states = self.collect_trajectories()
+            num_trajectories, num_states = self.collect_trajectories(model)
             total_trajectories += num_trajectories
             now = time.time()
             seconds = now - last_time
