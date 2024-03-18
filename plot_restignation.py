@@ -37,26 +37,26 @@ font_num = 16 - 2
 
 fig = Figure(x_label='State rank',text_font=font, number_font=font_num,fig_num=1)
 
-def plot_turns(y, name, y_label):
+def plot_turns():
     fig.preamble()
+    y = sort_by_frequency(data=counter.turns_played, counter=counter.frequencies)
     x = np.arange(len(y)) + 1
     plt.scatter(x, y, s=40 * 3 / (10 + x), alpha=1, color='green')
     plt.xscale('log')
     plt.yscale('log')
-    fig.y_label = y_label
+    fig.y_label = 'Turn num.'
     fig.epilogue()
-    fig.save(name)
+    fig.save('turns_taken_resignation')
 
 print('Plot turns')
-y = sort_by_frequency(data=counter.turns_played, counter=counter.frequencies)
-plot_turns(y, name='turns_taken_resignation', y_label='Turn num.')
-
-
+plot_turns()
+plt.clf()
 
 print('Plot zipf distributions')
 regular_counter = StateCounter(env=env, save_serial=True,
                  save_turn_num=True)
 regular_counter.collect_data(path=path, max_file_num=file_num)
+
 
 fig = Figure(x_label='State rank',
              y_label='Frequency',
@@ -64,7 +64,7 @@ fig = Figure(x_label='State rank',
              number_font=font_num,
              legend=True,
              fig_num=2)
-fig.preamble()
+
 
 # Sort by frequency
 lowest = 2
