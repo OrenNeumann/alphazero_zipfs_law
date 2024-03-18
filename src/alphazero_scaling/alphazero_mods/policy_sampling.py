@@ -126,12 +126,12 @@ class AlphaZeroKLSampling(AlphaZero):
                     pickle.dump(self.turns_sampled, f)
             
             broadcast("")
-        # for actor processes to join we have to make sure that their q_in is empty,
-        # including backed up items
-        for proc in actors:
-            while proc.exitcode is None:
-                while not proc.queue.empty():
-                    proc.queue.get_nowait()
-                proc.join(JOIN_WAIT_DELAY)
-        for proc in evaluators:
-            proc.join()
+            # for actor processes to join we have to make sure that their q_in is empty,
+            # including backed up items
+            for proc in actors:
+                while proc.exitcode is None:
+                    while not proc.queue.empty():
+                        proc.queue.get_nowait()
+                    proc.join(JOIN_WAIT_DELAY)
+            for proc in evaluators:
+                proc.join()
