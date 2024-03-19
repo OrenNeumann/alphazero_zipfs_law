@@ -1,14 +1,7 @@
 
-import imp
-import itertools
-import time
 from open_spiel.python.algorithms.alpha_zero import model as model_lib
-from open_spiel.python.utils import data_logger
-from open_spiel.python.utils import spawn
-
 import src.alphazero_scaling.alphazero_base as base
-from collections import Counter, defaultdict
-import pickle
+from collections import deque
 import numpy as np
 
 
@@ -28,22 +21,33 @@ class Trajectory(base.Trajectory):
         self.test_run = False
         self.resigning_player = None
         self.min_value = 1
+        self.test_values = deque(maxlen=1000)
+        self.test_mask = deque(maxlen=1000)
 
 
 class AlphaZeroWithResignation(base.AlphaZero):
     def __init__(self, gamma=0.9, **kwargs):
         super().__init__(**kwargs)
-        #self.v_resign = -0.8
         self.gamma = gamma
-        self.false_positive_rate = 0
+        self.v_resign = -0.8
+        self.target_v = -0.8
+        self.n_tests = 0
         self.target_rate = 0.05
         self.disable_resign_rate = 0.1
 
-    def _update_cutoff(self):
-        delta = self.target_rate - self.false_positive_rate
-        target = 0
-        self.cutoff = self.gamma * self.cutoff + (1 - self.gamma) * target
-
+    def _update_v_resign(self):
+        """ Calculate target for v_resign, then anneal to it.
+        """
+        fp_values = np.array(self.test_values[self.test_mask]).sort()
+        target_fp_num = self.target_rate * len(self.test_values)
+        if len(fp_values) < target_fp_num: 
+            # total num. of wins smaller than 5% of all (tested) resigned games - v_resign is too low.
+            # (even if all wins are resigned, it's below 5%)
+            target_v = self.v_resign  + 0.02
+        else: #wins are more than 5% of all (tested) resigned games - find v below which non-losses are exactly 5%.
+            target_v = fp_values[int(target_fp_num)]
+        self.v_resign = self.gamma * self.v_resign + (1 - self.gamma) * target_v
+        
 
     def _play_game(self, logger, game_num, game, bots, temperature, temperature_drop, v_resign=-1):
         """Play one game, return the trajectory."""
@@ -61,23 +65,7 @@ class AlphaZeroWithResignation(base.AlphaZero):
                 action_list, prob_list = zip(*outcomes)
                 action = random_state.choice(action_list, p=prob_list)
                 state.apply_action(action)
-            else:
-                """
-                if model is not None:
-                    # estimate v
-                    obs = state.observation_tensor()
-                    mask = state.legal_actions_mask()
-                    value = model.inference([obs], [mask])[0][0][0] 
-                    if state.current_player() == 1:
-                        value = -value
-                    if value <= self.v_resign:
-                        resigned = True
-                        if np.random.uniform() < self.disable_resign_rate:
-                            pass
-                        else:
-                            break
-                """
-                
+            else:           
                 root = bots[state.current_player()].mcts_search(state)
                 ###
                 # Check resignation threshold, then roll for making a test run:
@@ -124,8 +112,7 @@ class AlphaZeroWithResignation(base.AlphaZero):
             'model' may be used in derived classes."""
         num_trajectories = 0
         num_states = 0
-        num_false_positives = 0
-        min_values = list()
+        num_tests = 0
         for trajectory in self.trajectory_generator():
             num_trajectories += 1
             num_states += len(trajectory.states)
@@ -134,9 +121,12 @@ class AlphaZeroWithResignation(base.AlphaZero):
 
             ###
             if trajectory.test_run:
-                if trajectory.returns[trajectory.resigning_player] >= 0:
-                    num_false_positives += 1
-            min_values.append(trajectory.min_value)
+                num_tests += 1 # maybe for logger
+                self.test_values.append(trajectory.min_value)
+                is_false_positive = trajectory.returns[trajectory.resigning_player] >= 0
+                self.test_mask.append(is_false_positive)
+                #if trajectory.returns[trajectory.resigning_player] >= 0: # False positive
+                    #fp_values.append(trajectory.min_value)
             ###
 
             p1_outcome = trajectory.returns[0]
@@ -162,5 +152,11 @@ class AlphaZeroWithResignation(base.AlphaZero):
 
             if num_states >= self.learn_rate:
                 break
+        self._update_v_resign()
+        self.n_tests = num_tests
         return num_trajectories, num_states
 
+    def _print_step(self, logger, *args, **kwargs):
+        super()._print_step(logger, *args, **kwargs)
+        logger.print("v_resign: {:.1f}. Target: {:.1f}. New tests: {}. False positive fraction:  {:.4f}.".format(
+            self.v_resign, self.target_v, self.n_tests, sum(self.test_mask) / len(self.test_mask)))
