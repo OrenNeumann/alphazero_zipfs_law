@@ -21,8 +21,6 @@ class Trajectory(base.Trajectory):
         self.test_run = False
         self.resigning_player = None
         self.min_value = 1
-        self.test_values = deque(maxlen=1000)
-        self.test_mask = deque(maxlen=1000)
 
 
 class AlphaZeroWithResignation(base.AlphaZero):
@@ -33,6 +31,8 @@ class AlphaZeroWithResignation(base.AlphaZero):
         self.n_tests = 0
         self.target_rate = 0.05
         self.disable_resign_rate = 0.1
+        self.test_values = deque(maxlen=1000)
+        self.test_mask = deque(maxlen=1000)
 
         self.v_resign = -0.8
         self.v_resign_path = self.config.path + 'v_resign.npy'
@@ -51,7 +51,7 @@ class AlphaZeroWithResignation(base.AlphaZero):
             # (even if all wins are resigned, it's below 5%)
             target_v = self.v_resign  + 0.02
         else: #wins are more than 5% of all (tested) resigned games - find v below which non-losses are exactly 5%.
-            target_v = fp_values[int(target_fp_num)]
+            target_v = fp_values[int(target_fp_num)] # use percentile instead
         self.v_resign = self.gamma * self.v_resign + (1 - self.gamma) * target_v
         with open(self.v_resign_path, 'wb') as f:
             np.save(f, self.v_resign)
