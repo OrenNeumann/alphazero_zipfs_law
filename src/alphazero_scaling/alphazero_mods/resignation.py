@@ -46,8 +46,8 @@ class AlphaZeroWithResignation(base.AlphaZero):
         """
         fp_values = np.array(self.test_values)[self.test_mask]
         #fp_values.sort()
-        if len(fp_values) == 0:
-            return
+        #if len(fp_values) == 0:
+        #    return
         """
         target_fp_num = self.target_rate * len(self.test_values)
         if len(fp_values) < target_fp_num: 
@@ -57,7 +57,7 @@ class AlphaZeroWithResignation(base.AlphaZero):
             self.target_v = self.target_v * 0.97
         else: #wins are more than 5% of all (tested) resigned games - find v below which non-losses are exactly 5%.
             self.target_v = fp_values[int(target_fp_num)] # use percentile instead """
-        target_percent = 100 * self.target_rate * (len(self.test_values) / len(fp_values))
+        target_percent = 100 * self.target_rate * (len(self.test_values) / min(len(fp_values),1))
         if target_percent > 100:
             # too few positives (even if all are false, it's below 5% of all tests)
             self.target_v = self.target_v * 0.97
@@ -70,8 +70,12 @@ class AlphaZeroWithResignation(base.AlphaZero):
 
     def _play_game(self, logger, game_num, game, bots, temperature, temperature_drop):
         """Play one game, return the trajectory."""
-        with open(self.v_resign_path, 'rb') as f:
-            v_resign = np.load(f)
+        try:
+            with open(self.v_resign_path, 'rb') as f:
+                v_resign = np.load(f)
+        except:
+            v_resign = -1
+            logger.print("Failed to load v_resign from file.")
         trajectory = Trajectory()
         actions = []
         state = game.new_initial_state()
