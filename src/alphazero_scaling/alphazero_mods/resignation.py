@@ -172,4 +172,4 @@ class AlphaZeroWithResignation(base.AlphaZero):
     def _print_step(self, logger, *args, **kwargs):
         super()._print_step(logger, *args, **kwargs)
         logger.print("v_resign: {:.2f}. Target: {:.2f}. New tests: {}. False positive fraction:  {:.4f}.".format(
-            self.v_resign, self.target_v, self.n_tests, sum(self.test_mask) / len(self.test_mask)))
+            self.v_resign, self.target_v, self.n_tests, sum(self.test_mask) / max(len(self.test_mask),1)))
