@@ -29,14 +29,20 @@ class AlphaZeroWithResignation(base.AlphaZero):
     def __init__(self, gamma=0.9, **kwargs):
         super().__init__(**kwargs)
         self.gamma = gamma
-        self.v_resign = -0.8
         self.target_v = -0.8
         self.n_tests = 0
         self.target_rate = 0.05
         self.disable_resign_rate = 0.1
 
+        self.v_resign = -0.8
+        self.v_resign_path = self.config.path + 'v_resign.npy'
+        with open(self.v_resign_path, 'wb') as f:
+            np.save(f, self.v_resign)
+
     def _update_v_resign(self):
-        """ Calculate target for v_resign, then anneal to it.
+        """ Calculate target for v_resign, then anneal.
+            The self.v_resign variable is available only to the learner, and shared 
+            with the actors through the v_resign_path file.
         """
         fp_values = np.array(self.test_values[self.test_mask]).sort()
         target_fp_num = self.target_rate * len(self.test_values)
@@ -47,10 +53,14 @@ class AlphaZeroWithResignation(base.AlphaZero):
         else: #wins are more than 5% of all (tested) resigned games - find v below which non-losses are exactly 5%.
             target_v = fp_values[int(target_fp_num)]
         self.v_resign = self.gamma * self.v_resign + (1 - self.gamma) * target_v
+        with open(self.v_resign_path, 'wb') as f:
+            np.save(f, self.v_resign)
         
 
-    def _play_game(self, logger, game_num, game, bots, temperature, temperature_drop, v_resign=-1):
+    def _play_game(self, logger, game_num, game, bots, temperature, temperature_drop):
         """Play one game, return the trajectory."""
+        with open(self.v_resign_path, 'rb') as f:
+            v_resign = np.load(f)
         trajectory = Trajectory()
         actions = []
         state = game.new_initial_state()
