@@ -27,7 +27,6 @@ class AlphaZeroWithResignation(base.AlphaZero):
     def __init__(self, gamma=0.9, **kwargs):
         super().__init__(**kwargs)
         self.gamma = gamma
-        self.target_v = -0.8
         self.n_tests = 0
         self.target_rate = 0.05
         self.disable_resign_rate = 0.1
@@ -35,6 +34,7 @@ class AlphaZeroWithResignation(base.AlphaZero):
         self.test_mask = deque(maxlen=1000)
 
         self.v_resign = -0.8
+        self.target_v = self.v_resign
         self.v_resign_path = self.config.path + 'v_resign.npy'
         with open(self.v_resign_path, 'wb') as f:
             np.save(f, self.v_resign)
@@ -50,10 +50,10 @@ class AlphaZeroWithResignation(base.AlphaZero):
         if len(fp_values) < target_fp_num: 
             # total num. of wins smaller than 5% of all (tested) resigned games - v_resign is too low.
             # (even if all wins are resigned, it's below 5%)
-            target_v = self.v_resign  + 0.02
+            self.target_v = self.v_resign * 0.97
         else: #wins are more than 5% of all (tested) resigned games - find v below which non-losses are exactly 5%.
-            target_v = fp_values[int(target_fp_num)] # use percentile instead
-        self.v_resign = self.gamma * self.v_resign + (1 - self.gamma) * target_v
+            self.target_v = fp_values[int(target_fp_num)] # use percentile instead
+        self.v_resign = self.gamma * self.v_resign + (1 - self.gamma) * self.target_v
         with open(self.v_resign_path, 'wb') as f:
             np.save(f, self.v_resign)
         
@@ -169,5 +169,5 @@ class AlphaZeroWithResignation(base.AlphaZero):
 
     def _print_step(self, logger, *args, **kwargs):
         super()._print_step(logger, *args, **kwargs)
-        logger.print("v_resign: {:.1f}. Target: {:.1f}. New tests: {}. False positive fraction:  {:.4f}.".format(
+        logger.print("v_resign: {:.2f}. Target: {:.2f}. New tests: {}. False positive fraction:  {:.4f}.".format(
             self.v_resign, self.target_v, self.n_tests, sum(self.test_mask) / len(self.test_mask)))
