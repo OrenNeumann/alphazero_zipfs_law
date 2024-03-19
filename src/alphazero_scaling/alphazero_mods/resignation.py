@@ -44,7 +44,8 @@ class AlphaZeroWithResignation(base.AlphaZero):
             The self.v_resign variable is available only to the learner, and shared 
             with the actors through the v_resign_path file.
         """
-        fp_values = np.array(self.test_values)[self.test_mask].sort()
+        fp_values = np.array(self.test_values)[self.test_mask]
+        fp_values.sort()
         target_fp_num = self.target_rate * len(self.test_values)
         if len(fp_values) < target_fp_num: 
             # total num. of wins smaller than 5% of all (tested) resigned games - v_resign is too low.
