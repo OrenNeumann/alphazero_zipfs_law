@@ -24,7 +24,7 @@ class Trajectory(base.Trajectory):
 
 
 class AlphaZeroWithResignation(base.AlphaZero):
-    def __init__(self, gamma=0.9, **kwargs):
+    def __init__(self, gamma=0.8, **kwargs):
         super().__init__(**kwargs)
         self.gamma = gamma
         self.n_tests = 0
