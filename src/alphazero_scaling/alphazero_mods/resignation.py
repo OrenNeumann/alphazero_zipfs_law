@@ -9,7 +9,7 @@ An AlphaZero training process that uses resignation to cut off games when the ag
 The implementation is based on the one described in the AlphaGo Zero paper, where they cut-off games that 
 were a clear loss, keeping a false-positive fraction of 5% (out of all resigned games).
 The false positive estimate is obtained by playing out 10% of the games after the cut-off point.
-"""  # add warmup phase where all resigns are played out. so the model can learn and the dques get stats. also disable updates.
+"""
 
 
 class Trajectory(base.Trajectory):
@@ -33,6 +33,9 @@ class AlphaZeroWithResignation(base.AlphaZero):
         self.warmup = True
         self.end_warmup_step = 30
         self.n_resigned = 0
+        self.warmup_path = self.config.path + 'warmup_flag.npy'
+        with open(self.warmup_path, 'wb') as f:
+            np.save(f, self.warmup)
 
         self.v_resign = -0.8
         self.target_v = self.v_resign
@@ -65,6 +68,12 @@ class AlphaZeroWithResignation(base.AlphaZero):
         except ValueError:
             v_resign = -1
             logger.print("Failed to load v_resign from file.")
+        try:
+            with open(self.warmup_path, 'rb') as f:
+                warmup = np.load(f)
+        except ValueError:
+            warmup = True
+            logger.print("Failed to load warmup flag from file.")
         ###
         trajectory = Trajectory()
         actions = []
@@ -87,7 +96,7 @@ class AlphaZeroWithResignation(base.AlphaZero):
                 value = root.total_reward / root.explore_count  # seems like it's current player's value
                 if (not trajectory.test_run) and (value <= v_resign):
                     trajectory.resigned = True
-                    if np.random.uniform() < self.disable_resign_rate or self.warmup:
+                    if np.random.uniform() < self.disable_resign_rate or warmup:
                         trajectory.test_run = True
                         trajectory.resigning_player = state.current_player()
                     else:
@@ -175,6 +184,8 @@ class AlphaZeroWithResignation(base.AlphaZero):
         if self.warmup and step >= self.end_warmup_step:
             self.warmup = False
             logger.print("Warmup finished.")
+            with open(self.warmup_path, 'wb') as f:
+                np.save(f, self.warmup)
         return super().learn(step, logger, model)
 
     def _print_step(self, logger, *args, **kwargs):
