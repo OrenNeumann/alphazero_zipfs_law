@@ -1,9 +1,7 @@
-
 from open_spiel.python.algorithms.alpha_zero import model as model_lib
 import src.alphazero_scaling.alphazero_base as base
 from collections import deque
 import numpy as np
-
 
 """
 An AlphaZero training process that uses resignation to cut off games when the agent is sure it will lose.
@@ -11,7 +9,9 @@ An AlphaZero training process that uses resignation to cut off games when the ag
 The implementation is based on the one described in the AlphaGo Zero paper, where they cut-off games that 
 were a clear loss, keeping a false-positive fraction of 5% (out of all resigned games).
 The false positive estimate is obtained by playing out 10% of the games after the cut-off point.
-"""# add warmup phase where all resigns are played out. so the model can learn and the dques get stats. also disable updates.
+"""  # add warmup phase where all resigns are played out. so the model can learn and the dques get stats. also disable updates.
+
+
 # Disable resignation for evaluator!!! (call super)
 
 
@@ -45,16 +45,15 @@ class AlphaZeroWithResignation(base.AlphaZero):
             with the actors through a file.
         """
         fp_values = np.array(self.test_values)[self.test_mask]
-        target_percent = 100 * self.target_rate * (len(self.test_values) / max(len(fp_values),1))
+        target_percent = 100 * self.target_rate * (len(self.test_values) / max(len(fp_values), 1))
         if target_percent > 100 or len(fp_values) == 0:
             # too few positives (even if all are false, it's below 5% of all tests)
             self.target_v = self.target_v * 0.97
-        else: # find v that gives exactly 5% false positive fraction.
+        else:  # find v that gives exactly 5% false positive fraction.
             self.target_v = np.percentile(fp_values, q=target_percent)
         self.v_resign = self.gamma * self.v_resign + (1 - self.gamma) * self.target_v
         with open(self.v_resign_path, 'wb') as f:
             np.save(f, self.v_resign)
-        
 
     def _play_game(self, logger, game_num, game, bots, temperature, temperature_drop):
         """Play one game, return the trajectory."""
@@ -78,11 +77,11 @@ class AlphaZeroWithResignation(base.AlphaZero):
                 action_list, prob_list = zip(*outcomes)
                 action = random_state.choice(action_list, p=prob_list)
                 state.apply_action(action)
-            else:           
+            else:
                 root = bots[state.current_player()].mcts_search(state)
                 ###
                 # Check resignation threshold, then roll for making a test run:
-                value = root.total_reward / root.explore_count #seems like it's current player's value
+                value = root.total_reward / root.explore_count  # seems like it's current player's value
                 if (not trajectory.test_run) and (value <= v_resign):
                     if np.random.uniform() < self.disable_resign_rate:
                         trajectory.test_run = True
@@ -119,7 +118,7 @@ class AlphaZeroWithResignation(base.AlphaZero):
         logger.print("Game {}: Returns: {}; Actions: {}".format(
             game_num, " ".join(map(str, trajectory.returns)), " ".join(actions)))
         return trajectory
-    
+
     def collect_trajectories(self, model):
         """Collects the trajectories from actors into the replay buffer.
             'model' may be used in derived classes."""
@@ -134,7 +133,7 @@ class AlphaZeroWithResignation(base.AlphaZero):
 
             ###
             if trajectory.test_run:
-                num_tests += 1 
+                num_tests += 1
                 self.test_values.append(trajectory.min_value)
                 is_false_positive = trajectory.returns[trajectory.resigning_player] >= 0
                 self.test_mask.append(is_false_positive)
@@ -170,4 +169,4 @@ class AlphaZeroWithResignation(base.AlphaZero):
     def _print_step(self, logger, *args, **kwargs):
         super()._print_step(logger, *args, **kwargs)
         logger.print("v_resign: {:.2f}. Target: {:.2f}. New tests: {}. False-positive fraction: {:.1f}%.".format(
-            self.v_resign, self.target_v, self.n_tests, 100 * sum(self.test_mask) / max(len(self.test_mask),1)))
+            self.v_resign, self.target_v, self.n_tests, 100 * sum(self.test_mask) / max(len(self.test_mask), 1)))

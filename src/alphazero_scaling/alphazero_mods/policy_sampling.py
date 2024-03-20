@@ -1,4 +1,3 @@
-
 from open_spiel.python.algorithms.alpha_zero import model as model_lib
 from open_spiel.python.utils import spawn
 
@@ -15,10 +14,12 @@ If count_states==True, will save counters of the frequencies of states played,
 and frequencies of states sampled. It will also save dicts for the turn number of each state played and sampled. 
 Calling the function with b will change the minimal sampling probability. """
 
+
 class TrajectoryStateWithMoves(TrajectoryState):
-  def __init__(self, move_number, *args, **kwargs):
-    super().__init__(*args, **kwargs)
-    self.move_number = move_number
+    def __init__(self, move_number, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.move_number = move_number
+
 
 class AlphaZeroKLSampling(AlphaZero):
     def __init__(self, count_states=False, b=0.01, **kwargs):
@@ -35,8 +36,8 @@ class AlphaZeroKLSampling(AlphaZero):
     @staticmethod
     def _create_trajectory_state(state, action, policy, root):
         return TrajectoryStateWithMoves(state.move_number(), state.observation_tensor(), state.current_player(),
-                                state.legal_actions_mask(), action, policy,
-                                root.total_reward / root.explore_count)
+                                        state.legal_actions_mask(), action, policy,
+                                        root.total_reward / root.explore_count)
 
     def collect_trajectories(self, model):
         """Collects the trajectories from actors into the replay buffer."""
@@ -87,13 +88,13 @@ class AlphaZeroKLSampling(AlphaZero):
             if num_states >= self.learn_rate:
                 break
         return num_trajectories, num_states
-    
+
     def _print_step(self, logger, step, num_states, num_trajectories, seconds):
         """ Update the sampler and print stats."""
         ratio, a, target = self.sampler.update_hyperparameters()
         super()._print_step(logger, step, num_states, num_trajectories, seconds)
         logger.print("Sampling ratio: {:.5f}. Coeff.: {:.5f}, Target coeff.: {:.5f}.".format(
-                ratio, a, target))
+            ratio, a, target))
         if self.count_states:
             logger.print("Unique states played: {}, unique states sampled: {}.".format(
                 len(self.played_counter), len(self.sample_counter)))
@@ -124,7 +125,7 @@ class AlphaZeroKLSampling(AlphaZero):
                     pickle.dump(self.turns_played, f)
                 with open(self.config.path + '/turns_sampled.pkl', 'wb') as f:
                     pickle.dump(self.turns_sampled, f)
-            
+
             broadcast("")
             # for actor processes to join we have to make sure that their q_in is empty,
             # including backed up items
