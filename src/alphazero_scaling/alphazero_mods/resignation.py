@@ -37,7 +37,7 @@ class AlphaZeroWithResignation(base.AlphaZero):
         with open(self.warmup_path, 'wb') as f:
             np.save(f, self.warmup)
 
-        self.v_resign = -0.8
+        self.v_resign = -0.5
         self.target_v = self.v_resign
         self.v_resign_path = self.config.path + 'v_resign.npy'
         with open(self.v_resign_path, 'wb') as f:
@@ -93,7 +93,7 @@ class AlphaZeroWithResignation(base.AlphaZero):
                 root = bots[state.current_player()].mcts_search(state)
                 ###
                 # Check resignation threshold, then roll for making a test run:
-                value = root.total_reward / root.explore_count  # seems like it's current player's value
+                value = root.total_reward / root.explore_count  # current player's value
                 if (not trajectory.test_run) and (value <= v_resign):
                     trajectory.resigned = True
                     if np.random.uniform() < self.disable_resign_rate or warmup:
