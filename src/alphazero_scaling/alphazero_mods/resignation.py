@@ -7,8 +7,11 @@ import numpy as np
 An AlphaZero training process that uses resignation to cut off games when the agent is sure it will lose.
 
 The implementation is based on the one described in the AlphaGo Zero paper, where they cut-off games that 
-were a clear loss, keeping a false-positive fraction of 5% (out of all resigned games).
-The false positive estimate is obtained by playing out 10% of the games after the cut-off point.
+are a clear loss, keeping a false-positive fraction of 5% (out of all resigned games).
+The false positive estimate is obtained by playing out 10% of the games after resignation. These games
+are part of the training data.
+
+TODO: add option of saving counters.
 """
 
 
@@ -100,7 +103,7 @@ class AlphaZeroWithResignation(base.AlphaZero):
                         trajectory.test_run = True
                         trajectory.resigning_player = state.current_player()
                     else:
-                        trajectory.returns = [-1, 1] if state.current_player() == 0 else [1, -1]
+                        trajectory.returns = [-1., 1.] if state.current_player() == 0 else [1., -1.]
                         break
                 if trajectory.test_run and state.current_player() == trajectory.resigning_player:
                     trajectory.min_value = min(trajectory.min_value, value)
