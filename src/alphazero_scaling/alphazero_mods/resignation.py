@@ -1,4 +1,5 @@
 from open_spiel.python.algorithms.alpha_zero import model as model_lib
+from open_spiel.python.algorithms.alpha_zero import evaluator as evaluator_lib
 import src.alphazero_scaling.alphazero_base as base
 from collections import deque
 import numpy as np
@@ -63,7 +64,7 @@ class AlphaZeroWithResignation(base.AlphaZero):
             np.save(f, self.v_resign)
 
     def _play_game(self, logger, game_num, game, bots, temperature, temperature_drop):
-        """Play one game, return the trajectory."""
+        """Play one game with resignation. Only AlphaZeroEvaluator players can resign."""
         ###
         try:
             with open(self.v_resign_path, 'rb') as f:
@@ -97,16 +98,18 @@ class AlphaZeroWithResignation(base.AlphaZero):
                 ###
                 # Check resignation threshold, then roll for making a test run:
                 value = root.total_reward / root.explore_count  # current player's value
-                if (not trajectory.test_run) and (value <= v_resign):
-                    trajectory.resigned = True
-                    if np.random.uniform() < self.disable_resign_rate or warmup:
-                        trajectory.test_run = True
-                        trajectory.resigning_player = state.current_player()
-                    else:
-                        trajectory.returns = [-1., 1.] if state.current_player() == 0 else [1., -1.]
-                        break
-                if trajectory.test_run and state.current_player() == trajectory.resigning_player:
-                    trajectory.min_value = min(trajectory.min_value, value)
+                is_az_agent = bots[state.current_player()].evaluator.__class__ == evaluator_lib.AlphaZeroEvaluator
+                if is_az_agent:
+                    if (not trajectory.test_run) and (value <= v_resign):
+                        trajectory.resigned = True
+                        if np.random.uniform() < self.disable_resign_rate or warmup:
+                            trajectory.test_run = True
+                            trajectory.resigning_player = state.current_player()
+                        else:
+                            trajectory.returns = [-1., 1.] if state.current_player() == 0 else [1., -1.]
+                            break
+                    if trajectory.test_run and state.current_player() == trajectory.resigning_player:
+                        trajectory.min_value = min(trajectory.min_value, value)
                 ###
                 policy = np.zeros(game.num_distinct_actions())
                 for c in root.children:
