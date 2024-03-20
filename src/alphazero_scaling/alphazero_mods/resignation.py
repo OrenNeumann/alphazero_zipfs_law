@@ -36,13 +36,13 @@ class AlphaZeroWithResignation(base.AlphaZero):
         self.warmup = True
         self.end_warmup_step = 30
         self.n_resigned = 0
-        self.warmup_path = self.config.path + 'warmup_flag.npy'
+        self.warmup_path = self.config.path + '/warmup_flag.npy'
         with open(self.warmup_path, 'wb') as f:
             np.save(f, self.warmup)
 
         self.v_resign = -0.5
         self.target_v = self.v_resign
-        self.v_resign_path = self.config.path + 'v_resign.npy'
+        self.v_resign_path = self.config.path + '/v_resign.npy'
         with open(self.v_resign_path, 'wb') as f:
             np.save(f, self.v_resign)
 
@@ -55,7 +55,7 @@ class AlphaZeroWithResignation(base.AlphaZero):
         target_percent = 100 * self.target_rate * (len(self.test_values) / max(len(fp_values), 1))
         if target_percent > 100 or len(fp_values) == 0:
             # too few positives (even if all are false, it's below 5% of all tests)
-            self.target_v = self.target_v * 0.97
+            self.target_v = self.target_v * 0.98
         else:  # find v that gives exactly 5% false positive fraction.
             self.target_v = np.percentile(fp_values, q=target_percent)
         self.v_resign = self.gamma * self.v_resign + (1 - self.gamma) * self.target_v
