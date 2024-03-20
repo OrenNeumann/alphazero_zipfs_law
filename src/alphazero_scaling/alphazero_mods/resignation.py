@@ -18,6 +18,7 @@ class Trajectory(base.Trajectory):
         self.test_run = False
         self.resigning_player = None
         self.min_value = 1
+        self.resigned = False
 
 
 class AlphaZeroWithResignation(base.AlphaZero):
@@ -28,7 +29,10 @@ class AlphaZeroWithResignation(base.AlphaZero):
         self.target_rate = 0.05
         self.disable_resign_rate = 0.1
         self.test_values = deque(maxlen=400)
-        self.test_mask = deque(maxlen=400)
+        self.fp_mask = deque(maxlen=400)
+        self.warmup = True
+        self.end_warmup_step = 30
+        self.n_resigned = 0
 
         self.v_resign = -0.8
         self.target_v = self.v_resign
@@ -41,7 +45,7 @@ class AlphaZeroWithResignation(base.AlphaZero):
             The self.v_resign variable is available only to the learner, and shared 
             with the actors through a file.
         """
-        fp_values = np.array(self.test_values)[self.test_mask]
+        fp_values = np.array(self.test_values)[self.fp_mask]
         target_percent = 100 * self.target_rate * (len(self.test_values) / max(len(fp_values), 1))
         if target_percent > 100 or len(fp_values) == 0:
             # too few positives (even if all are false, it's below 5% of all tests)
@@ -58,7 +62,7 @@ class AlphaZeroWithResignation(base.AlphaZero):
         try:
             with open(self.v_resign_path, 'rb') as f:
                 v_resign = np.load(f)
-        except FileNotFoundError: # change this
+        except ValueError:
             v_resign = -1
             logger.print("Failed to load v_resign from file.")
         ###
@@ -82,14 +86,12 @@ class AlphaZeroWithResignation(base.AlphaZero):
                 # Check resignation threshold, then roll for making a test run:
                 value = root.total_reward / root.explore_count  # seems like it's current player's value
                 if (not trajectory.test_run) and (value <= v_resign):
-                    if np.random.uniform() < self.disable_resign_rate:
+                    trajectory.resigned = True
+                    if np.random.uniform() < self.disable_resign_rate or self.warmup:
                         trajectory.test_run = True
                         trajectory.resigning_player = state.current_player()
                     else:
-                        if state.current_player() == 0:
-                            trajectory.returns = [-1, 1]
-                        else:
-                            trajectory.returns = [1, -1]
+                        trajectory.returns = [-1, 1] if state.current_player() == 0 else [1, -1]
                         break
                 if trajectory.test_run and state.current_player() == trajectory.resigning_player:
                     trajectory.min_value = min(trajectory.min_value, value)
@@ -124,6 +126,7 @@ class AlphaZeroWithResignation(base.AlphaZero):
         num_trajectories = 0
         num_states = 0
         num_tests = 0
+        num_resigned = 0
         for trajectory in self.trajectory_generator():
             num_trajectories += 1
             num_states += len(trajectory.states)
@@ -131,11 +134,13 @@ class AlphaZeroWithResignation(base.AlphaZero):
             self.game_lengths_hist.add(len(trajectory.states))
 
             ###
+            if trajectory.resigned:
+                num_resigned += 1
             if trajectory.test_run:
                 num_tests += 1
                 self.test_values.append(trajectory.min_value)
                 is_false_positive = trajectory.returns[trajectory.resigning_player] >= 0
-                self.test_mask.append(is_false_positive)
+                self.fp_mask.append(is_false_positive)
             ###
 
             p1_outcome = trajectory.returns[0]
@@ -163,9 +168,16 @@ class AlphaZeroWithResignation(base.AlphaZero):
                 break
         self._update_v_resign()
         self.n_tests = num_tests
+        self.n_resigned = num_resigned
         return num_trajectories, num_states
+
+    def learn(self, step, logger, model):
+        if self.warmup and step >= self.end_warmup_step:
+            self.warmup = False
+            logger.print("Warmup finished.")
+        return super().learn(step, logger, model)
 
     def _print_step(self, logger, *args, **kwargs):
         super()._print_step(logger, *args, **kwargs)
-        logger.print("v_resign: {:.2f}. Target: {:.2f}. New tests: {}. False-positive fraction: {:.1f}%.".format(
-            self.v_resign, self.target_v, self.n_tests, 100 * sum(self.test_mask) / max(len(self.test_mask), 1)))
+        logger.print("v_resign: {:.2f}. Target: {:.2f}. Resignations: {}. New tests: {}. False-positive fraction: {:.1f}%.".format(
+            self.v_resign, self.target_v, self.n_resigned, self.n_tests, 100 * sum(self.fp_mask) / max(len(self.fp_mask), 1)))
