@@ -10,7 +10,7 @@ import numpy as np
 In AlphaGo Zero, they cut-off games that were a clear loss, with a false-positive rate of 5%.
 They kept an estimate of the false positive rate by playing out 10% of the games after the cutoff point.
 
-actors have an object for keeping track of v_resign. updated in update_checkpoint.
+actors get v_resign in _play_game by loading it from file.
 learner takes info from trajectories to update v_resign.
 """
 
