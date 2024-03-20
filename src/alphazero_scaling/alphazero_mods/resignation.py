@@ -11,7 +11,8 @@ An AlphaZero training process that uses resignation to cut off games when the ag
 The implementation is based on the one described in the AlphaGo Zero paper, where they cut-off games that 
 were a clear loss, keeping a false-positive fraction of 5% (out of all resigned games).
 The false positive estimate is obtained by playing out 10% of the games after the cut-off point.
-"""
+"""# add warmup phase where all resigns are played out. so the model can learn and the dques get stats. also disable updates.
+# Disable resignation for evaluator!!! (call super)
 
 
 class Trajectory(base.Trajectory):
@@ -29,8 +30,8 @@ class AlphaZeroWithResignation(base.AlphaZero):
         self.n_tests = 0
         self.target_rate = 0.05
         self.disable_resign_rate = 0.1
-        self.test_values = deque(maxlen=1000)
-        self.test_mask = deque(maxlen=1000)
+        self.test_values = deque(maxlen=400)
+        self.test_mask = deque(maxlen=400)
 
         self.v_resign = -0.8
         self.target_v = self.v_resign
@@ -133,12 +134,10 @@ class AlphaZeroWithResignation(base.AlphaZero):
 
             ###
             if trajectory.test_run:
-                num_tests += 1 # maybe for logger
+                num_tests += 1 
                 self.test_values.append(trajectory.min_value)
                 is_false_positive = trajectory.returns[trajectory.resigning_player] >= 0
                 self.test_mask.append(is_false_positive)
-                #if trajectory.returns[trajectory.resigning_player] >= 0: # False positive
-                    #fp_values.append(trajectory.min_value)
             ###
 
             p1_outcome = trajectory.returns[0]
