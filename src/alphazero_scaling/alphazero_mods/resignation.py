@@ -6,12 +6,11 @@ import numpy as np
 
 
 """
+An AlphaZero training process that uses resignation to cut off games when the agent is sure it will lose.
 
-In AlphaGo Zero, they cut-off games that were a clear loss, with a false-positive rate of 5%.
-They kept an estimate of the false positive rate by playing out 10% of the games after the cutoff point.
-
-actors get v_resign in _play_game by loading it from file.
-learner takes info from trajectories to update v_resign.
+The implementation is based on the one described in the AlphaGo Zero paper, where they cut-off games that 
+were a clear loss, keeping a false-positive fraction of 5% (out of all resigned games).
+The false positive estimate is obtained by playing out 10% of the games after the cut-off point.
 """
 
 
@@ -42,7 +41,7 @@ class AlphaZeroWithResignation(base.AlphaZero):
     def _update_v_resign(self):
         """ Calculate target for v_resign, then anneal.
             The self.v_resign variable is available only to the learner, and shared 
-            with the actors through the v_resign_path file.
+            with the actors through a file.
         """
         fp_values = np.array(self.test_values)[self.test_mask]
         target_percent = 100 * self.target_rate * (len(self.test_values) / max(len(fp_values),1))
