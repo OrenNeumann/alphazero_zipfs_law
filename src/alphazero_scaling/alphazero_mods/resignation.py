@@ -12,9 +12,6 @@ The false positive estimate is obtained by playing out 10% of the games after th
 """  # add warmup phase where all resigns are played out. so the model can learn and the dques get stats. also disable updates.
 
 
-# Disable resignation for evaluator!!! (call super)
-
-
 class Trajectory(base.Trajectory):
     def __init__(self):
         super().__init__()
@@ -57,12 +54,14 @@ class AlphaZeroWithResignation(base.AlphaZero):
 
     def _play_game(self, logger, game_num, game, bots, temperature, temperature_drop):
         """Play one game, return the trajectory."""
+        ###
         try:
             with open(self.v_resign_path, 'rb') as f:
                 v_resign = np.load(f)
-        except:
+        except FileNotFoundError: # change this
             v_resign = -1
             logger.print("Failed to load v_resign from file.")
+        ###
         trajectory = Trajectory()
         actions = []
         state = game.new_initial_state()
@@ -87,8 +86,10 @@ class AlphaZeroWithResignation(base.AlphaZero):
                         trajectory.test_run = True
                         trajectory.resigning_player = state.current_player()
                     else:
-                        player_one_value = value * (1 - state.current_player() * 2)
-                        returns = [player_one_value, -player_one_value]
+                        if state.current_player() == 0:
+                            trajectory.returns = [-1, 1]
+                        else:
+                            trajectory.returns = [1, -1]
                         break
                 if trajectory.test_run and state.current_player() == trajectory.resigning_player:
                     trajectory.min_value = min(trajectory.min_value, value)
@@ -112,8 +113,6 @@ class AlphaZeroWithResignation(base.AlphaZero):
         ###
         if state.is_terminal():
             trajectory.returns = state.returns()
-        else:
-            trajectory.returns = returns
         ###
         logger.print("Game {}: Returns: {}; Actions: {}".format(
             game_num, " ".join(map(str, trajectory.returns)), " ".join(actions)))
