@@ -49,7 +49,8 @@ class AlphaZeroUniformSampling(base.AlphaZero):
         self.replay_buffer = UniqueBuffer(self.config.replay_buffer_size)
 
     def _print_step(self, logger, *args, **kwargs):
-        n_duplicates, n_repeating = self.replay_buffer.count_duplicates()
+        #n_duplicates, n_repeating = self.replay_buffer.count_duplicates()
+        n_duplicates, n_repeating = [0, 0]
         super()._print_step(logger, *args, **kwargs)
         logger.print("Duplicates: {}. Repeating states: {}.".format(
             n_duplicates, n_repeating))
