@@ -21,7 +21,7 @@ class UniqueBuffer(base.Buffer):
         super().__init__(max_size)
         self.unique_states = list()
 
-    def sample(self, count):
+    def sample(self, count=None):
         """ Sample without repetitions, using the most recent copy of each state but averaging the value."""
         counter = defaultdict(lambda: [None, 0, 0])
         for state in self.data:
@@ -31,6 +31,8 @@ class UniqueBuffer(base.Buffer):
         # Calculate average value for each unique state
         states = [model_lib.TrainInput(s.observation, s.legals_mask, s.policy, sum_value / count) 
                        for (s, sum_value, count) in counter.values()]
+        if count is None:
+            count = len(states)
         return random.sample(states, count)
     
     def count_duplicates(self):
@@ -55,7 +57,7 @@ class AlphaZeroUniformSampling(base.AlphaZero):
         losses = []
         batch_size = self.config.train_batch_size
         # Sample the entire (shuffled) buffer:
-        buffer_data = self.replay_buffer.sample(len(self.replay_buffer))
+        buffer_data = self.replay_buffer.sample()
         # Feed batches to the model:
         for i in range(len(buffer_data) // batch_size):
             data = buffer_data[i * batch_size: (i + 1) * batch_size]
