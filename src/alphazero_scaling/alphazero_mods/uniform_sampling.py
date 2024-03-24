@@ -28,8 +28,9 @@ class UniqueBuffer(base.Buffer):
         for state in self.data:
             key = str(state.observation)
             # Update the latest state, the sum of value, and the count of duplicates
-            _, sum_value, count = counter[key]
-            counter[key] = [state, sum_value + state.value, count + 1]
+            counter[key] = [state, counter[key][1] + state.value, counter[key][2] + 1]
+            #_, sum_value, count = counter[key]
+            #counter[key] = [state, sum_value + state.value, count + 1]
         # Calculate average value for each unique state
         states = [TrainInput(s.observation, s.legals_mask, s.policy, sum_value / count) 
                        for (s, sum_value, count) in counter.values()]
