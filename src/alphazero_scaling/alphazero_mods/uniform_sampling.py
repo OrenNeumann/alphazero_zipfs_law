@@ -8,15 +8,12 @@ class UniqueBuffer(base.Buffer):
 
     def sample(self, count):
         """ Convert data to a dict, keeping only the latest copy of each state."""
-        unique_dict = {}
-        for state in self.data:
-            unique_dict[str(state.observation)] = state
+        unique_dict = {str(state.observation): state for state in self.data}
         return random.sample(list(unique_dict.values()), count)
     
     def count_duplicates(self):
         """ Count the number of duplicate states in the buffer."""
-        observations = [str(state.observation) for state in self.data]
-        counts = Counter(observations)
+        counts = Counter(str(state.observation) for state in self.data)
         duplicates = sum(val - 1 for val in counts.values() if val > 1)
         repeat_observations = sum(1 for val in counts.values() if val > 1)
         return duplicates, repeat_observations
