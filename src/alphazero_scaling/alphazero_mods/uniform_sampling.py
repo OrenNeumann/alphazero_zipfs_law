@@ -60,6 +60,8 @@ class AlphaZeroUniformSampling(base.AlphaZero):
         batch_size = self.config.train_batch_size
         # Sample the entire (shuffled) buffer:
         buffer_data = self.replay_buffer.sample()
+        logger.print(len(buffer_data))
+        logger.print(len(buffer_data) // batch_size)
         # Feed batches to the model:
         for i in range(len(buffer_data) // batch_size):
             data = buffer_data[i * batch_size: (i + 1) * batch_size]
