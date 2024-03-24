@@ -10,12 +10,12 @@ class UniqueBuffer(base.Buffer):
         """ Convert data to a dict, keeping only the latest copy of each state."""
         unique_dict = {}
         for state in self.data:
-            unique_dict[state.observation] = state
+            unique_dict[str(state.observation)] = state
         return random.sample(list(unique_dict.values()), count)
     
     def count_duplicates(self):
         """ Count the number of duplicate states in the buffer."""
-        observations = [state.observation for state in self.data]
+        observations = [str(state.observation) for state in self.data]
         counts = Counter(observations)
         duplicates = sum(val - 1 for val in counts.values() if val > 1)
         repeat_observations = sum(1 for val in counts.values() if val > 1)
