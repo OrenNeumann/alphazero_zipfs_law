@@ -14,7 +14,7 @@ games = ['connect_four', 'pentago', 'oware', 'checkers']
 env = games[game_num]
 
 path = models_path() + game_path(env)
-model = 'q_6_2'
+model = 'q_4_6'
 path += model + '/'
 
 print('Collecting ' + env + ' games:')
