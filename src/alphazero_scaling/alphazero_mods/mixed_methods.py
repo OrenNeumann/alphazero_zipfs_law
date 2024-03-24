@@ -198,4 +198,7 @@ class ResignationUniform(base.AlphaZero):
         super()._print_step(logger, *args, **kwargs)
         logger.print("v_resign: {:.2f}. Target: {:.2f}. Resignations: {}. New tests: {}. False-positive fraction: {:.1f}%.".format(
             self.v_resign, self.target_v, self.n_resigned, self.n_tests, 100 * sum(self.fp_mask) / max(len(self.fp_mask), 1)))
-
+        ###
+        n_duplicates, n_repeating = self.replay_buffer.count_duplicates()
+        logger.print("Duplicates: {}. Repeating states: {}.".format(
+            n_duplicates, n_repeating))
