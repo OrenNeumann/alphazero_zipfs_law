@@ -34,7 +34,10 @@ class BufferCounter(StateCounter):
         self.states_added += 1
 
     def _sample_buffer(self):
-        return sample(self.buffer, self.batch_size)
+        data = list()
+        for _ in range(len(self.buffer) // self.batch_size):
+            data.extend(sample(self.buffer, self.batch_size))
+        return data
 
 
 class UniqueBufferCounter(BufferCounter):
@@ -48,7 +51,11 @@ class UniqueBufferCounter(BufferCounter):
         unique_keys = list(set(self.buffer))
         if len(unique_keys) < self.batch_size:
             raise Exception(f'Batch size ({self.batch_size}) is larger than number of unique keys ({len(unique_keys)}).')
-        return sample(unique_keys, self.batch_size)
+        # Data is fed in batches, leftover gets discarded:
+        missed = len(unique_keys) % self.batch_size
+        return sample(unique_keys, len(unique_keys) - missed)
+        # Not up to date:
+        #return sample(unique_keys, self.batch_size)
     
 """
 class ValueSurpriseCounter(BufferCounter):

@@ -24,12 +24,14 @@ class UniqueBuffer(base.Buffer):
     def sample(self, count=None):
         """ Sample without repetitions, using the most recent copy of each state but averaging the value."""
         counter = defaultdict(lambda: [None, 0, 0])
+        TrainInput = model_lib.TrainInput
         for state in self.data:
             key = str(state.observation)
             # Update the latest state, the sum of value, and the count of duplicates
-            counter[key] = [state, counter[key][1] + state.value, counter[key][2] + 1]
+            _, sum_value, count = counter[key]
+            counter[key] = [state, sum_value + state.value, count + 1]
         # Calculate average value for each unique state
-        states = [model_lib.TrainInput(s.observation, s.legals_mask, s.policy, sum_value / count) 
+        states = [TrainInput(s.observation, s.legals_mask, s.policy, sum_value / count) 
                        for (s, sum_value, count) in counter.values()]
         if count is None:
             count = len(states)
