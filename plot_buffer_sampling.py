@@ -9,16 +9,16 @@ Plot state frequency with a buffer.
 """
 
 # Choose game type:
-game_num = 0
+game_num = 2
 games = ['connect_four', 'pentago', 'oware', 'checkers']
 env = games[game_num]
 
 path = models_path() + game_path(env)
-model = 'q_4_6'
+model = 'q_3_0'
 path += model + '/'
 
 print('Collecting ' + env + ' games:')
-num_files = 10
+num_files = 6
 
 fit_colors = ['olivedrab', 'dodgerblue']
 data_colors = ['navy', 'darkviolet']
@@ -84,4 +84,4 @@ plt.yscale('log')
 
 fig.epilogue()
 fig.save('buffer_distribution')
-plt.show()
+#plt.show()
