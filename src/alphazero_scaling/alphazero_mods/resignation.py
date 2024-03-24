@@ -10,8 +10,6 @@ The implementation is based on the one described in the AlphaGo Zero paper, wher
 are a clear loss, keeping a false-positive fraction of 5% (out of all resigned games).
 The false positive estimate is obtained by playing out 10% of the games after resignation. These games
 are part of the training data.
-
-TODO: add option of saving counters.
 """
 
 
