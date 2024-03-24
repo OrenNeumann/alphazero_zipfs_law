@@ -28,15 +28,13 @@ class UniqueBuffer(base.Buffer):
         for state in self.data:
             key = str(state.observation)
             # Update the latest state, the sum of value, and the count of duplicates
-            #counter[key] = [state, counter[key][1] + state.value, counter[key][2] + 1]
-            _, sum_value, count = counter[key]
-            counter[key] = [state, sum_value + state.value, count + 1]
+            _, sum_value, reps = counter[key]
+            counter[key] = [state, sum_value + state.value, reps + 1]
         # Calculate average value for each unique state
-        states = [TrainInput(s.observation, s.legals_mask, s.policy, sum_value / count) 
-                       for (s, sum_value, count) in counter.values()]
+        states = [TrainInput(s.observation, s.legals_mask, s.policy, sum_val / n) 
+                       for (s, sum_val, n) in counter.values()]
         if count is None:
             count = len(states)
-            print('count:', count)
         return random.sample(states, count)
     
     def count_duplicates(self):
@@ -62,8 +60,6 @@ class AlphaZeroUniformSampling(base.AlphaZero):
         batch_size = self.config.train_batch_size
         # Sample the entire (shuffled) buffer:
         buffer_data = self.replay_buffer.sample()
-        logger.print(len(buffer_data))
-        logger.print(len(buffer_data) // batch_size)
         # Feed batches to the model:
         for i in range(len(buffer_data) // batch_size):
             data = buffer_data[i * batch_size: (i + 1) * batch_size]
