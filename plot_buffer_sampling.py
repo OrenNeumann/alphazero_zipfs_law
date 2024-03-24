@@ -18,7 +18,7 @@ model = 'q_4_6'
 path += model + '/'
 
 print('Collecting ' + env + ' games:')
-num_files = 3
+num_files = 10
 
 fit_colors = ['olivedrab', 'dodgerblue']
 data_colors = ['navy', 'darkviolet']
