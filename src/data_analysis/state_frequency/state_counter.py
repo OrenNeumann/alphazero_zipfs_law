@@ -162,6 +162,8 @@ class StateCounter(object):
 
     def prune_early_turns(self,threshold):
         """ Remove states that occur early in game."""
+        if not self.normalized:
+            raise Exception('Normalize first.')
         self.frequencies = Counter({k: self.frequencies[k] for k, t in self.turns_played.items() if t <= threshold})
 
 
