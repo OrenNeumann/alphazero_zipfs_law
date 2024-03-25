@@ -11,7 +11,7 @@ Value loss histogram
 """
 
 # Choose game type:
-game_num = 0
+game_num = 2
 games = ['connect_four', 'pentago', 'oware', 'checkers']
 env = games[game_num]
 path = models_path()
@@ -29,7 +29,7 @@ figure = BarFigure(par,
 figure.preamble()
 color_nums = figure.colorbar_colors()
 
-data_labels = [0, 1, 2, 3, 4, 5, 6] # for oware no 6
+data_labels = [0, 1, 2, 3, 4, 5]#, 6] # for oware no 6
 #data_labels = [0]
 n_copies = 6
 
