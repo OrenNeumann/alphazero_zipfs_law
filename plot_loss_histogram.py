@@ -31,7 +31,7 @@ color_nums = figure.colorbar_colors()
 
 data_labels = [0, 1, 2, 3, 4, 5]#, 6] # for oware no 6
 #data_labels = [0]
-n_copies = 6
+n_copies = 2
 
 # initialize bins to cover a range definitely larger than what you'll need:
 bins = incremental_bin(10**10)
