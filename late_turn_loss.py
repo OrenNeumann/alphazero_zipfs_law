@@ -50,9 +50,10 @@ for label in data_labels:
         print(model_name)
         model_path = path + game_path(env) + model_name + '/'
         state_counter.reset_counters()
-        state_counter.collect_data(path=model_path, max_file_num=3)
+        state_counter.collect_data(path=model_path, max_file_num=39)
         state_counter.normalize_counters()
 
+        state_counter.prune_low_frequencies(threshold=4)
         state_counter.prune_early_turns(threshold=40)
 
         freq = np.array([item[1] for item in state_counter.frequencies.most_common()])
