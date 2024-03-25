@@ -164,7 +164,7 @@ class StateCounter(object):
         """ Remove states that occur early in game."""
         if not self.normalized:
             raise Exception('Normalize first.')
-        self.frequencies = Counter({k: self.frequencies[k] for k, t in self.turns_played.items() if t >= threshold})
+        self.frequencies = Counter({k: c for k, c in self.frequencies.items() if self.turns_played[k] >= threshold})
 
 
 # check for bugs
