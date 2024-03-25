@@ -71,8 +71,8 @@ class StateCounter(object):
     def reset_counters(self):
         self.frequencies = Counter()
         self.serials = dict()
-        self.turns_played = dict()
-        self.turns_to_end = dict()
+        self.turns_played = defaultdict(int)
+        self.turns_to_end = defaultdict(int)
         self.values = dict()
         self.normalized = False
 
