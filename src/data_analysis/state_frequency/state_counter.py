@@ -160,11 +160,11 @@ class StateCounter(object):
             states below threshold=4 will reduce it by another OOM."""
         self.frequencies = Counter({k: c for k, c in self.frequencies.items() if c >= threshold})
 
-    def prune_early_turns(self,threshold):
-        """ Remove states that occur early in game."""
+    def late_turn_mask(self, threshold):
+        """ Create mask for late game states when sorting by frequency."""
         if not self.normalized:
             raise Exception('Normalize first.')
-        self.frequencies = Counter({k: c for k, c in self.frequencies.items() if self.turns_played[k] >= threshold})
+        return np.array([self.turns_played[k] >= threshold for k, _ in self.frequencies.most_common()])
 
 
 # check for bugs
