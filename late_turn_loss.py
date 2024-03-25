@@ -53,7 +53,7 @@ for label in data_labels:
         state_counter.collect_data(path=model_path, max_file_num=39)
         state_counter.normalize_counters()
 
-        state_counter.prune_low_frequencies(threshold=4)
+        state_counter.prune_low_frequencies(threshold=10)
         state_counter.prune_early_turns(threshold=40)
 
         freq = np.array([item[1] for item in state_counter.frequencies.most_common()])
