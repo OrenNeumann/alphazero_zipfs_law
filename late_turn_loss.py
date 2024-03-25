@@ -54,39 +54,27 @@ for label in data_labels:
         state_counter.normalize_counters()
 
         state_counter.prune_low_frequencies(threshold=10)
-        state_counter.prune_early_turns(threshold=40)
+        #state_counter.prune_early_turns(threshold=40)
+        turn_mask = state_counter.late_turn_mask(threshold=40)
 
-        freq = np.array([item[1] for item in state_counter.frequencies.most_common()])
+        #freq = np.array([c for k, c in state_counter.frequencies.most_common()])
 
         loss = value_loss(env, model_path, state_counter=state_counter)
-        total_loss[label, copy] = np.sum(loss * freq)
-        total_counts[label, copy] = np.sum(freq)
 
         ranks = np.arange(len(loss)) + 1
         # Calculate histogram.
         # np.histogram counts how many elements of 'ranks' fall in each bin.
         # by specifying 'weights=loss', you can make it sum losses instead of counting.
-        bin_counts += np.histogram(ranks, bins=bins)[0]
-        loss_sums += np.histogram(ranks, bins=bins, weights=loss)[0]
+        bin_counts += np.histogram(ranks[turn_mask], bins=bins)[0]
+        loss_sums += np.histogram(ranks, bins=bins, weights=loss*turn_mask)[0]
         #loss_sums += np.histogram(ranks, bins=bins, weights=loss*freq)[0]
     # Divide sum to get average:
     mask = np.nonzero(bin_counts)
     loss_averages = loss_sums[mask] / bin_counts[mask]
-    # scatter plot:
-    #plt.scatter(x[mask], loss_averages,
-    #            s=4, color=cm.viridis(color_nums[label]))
+
     # Line plot:
     plt.plot(x[mask], loss_averages,
                 color=cm.viridis(color_nums[label]))
-    #weighted_loss = loss * freq 
-    #plt.scatter(ranks, weighted_loss,
-    #             s=40 * 3 / (10 + ranks),color=cm.viridis(color_nums[label]))
-
-print('Total loss L:', total_loss)
-print('Total counts:', total_counts)
-for copy in range(n_copies):
-    total_loss[:, copy] /= total_counts[:, copy]
-print('Average loss L:', total_loss)
     
 
 plt.xscale('log')
