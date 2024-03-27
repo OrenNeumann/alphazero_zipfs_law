@@ -29,8 +29,8 @@ figure = BarFigure(par,
 figure.preamble()
 color_nums = figure.colorbar_colors()
 
-data_labels = [0, 1, 2, 3, 4, 5] # for oware no 6 (get from cluster)
-#data_labels = [0]
+#data_labels = [0, 1, 2, 3, 4, 5] # for oware no 6 (get from cluster)
+data_labels = [0,2,5]
 n_copies = 1#6
 
 # initialize bins to cover a range definitely larger than what you'll need:
