@@ -48,7 +48,7 @@ def calc_loss_curves():
             state_counter.prune_low_frequencies(threshold=4)#10
             turn_mask = state_counter.late_turn_mask(threshold=40)
 
-            loss = value_loss(env, model_path, state_counter=state_counter, num_chunks=100)
+            loss = value_loss(env, model_path, state_counter=state_counter, num_chunks=1000)
 
             ranks = np.arange(len(loss)) + 1
 
