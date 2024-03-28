@@ -42,10 +42,10 @@ def calc_loss_curves():
             print(model_name)
             model_path = path + game_path(env) + model_name + '/'
             state_counter.reset_counters()
-            state_counter.collect_data(path=model_path, max_file_num=70)
+            state_counter.collect_data(path=model_path, max_file_num=50)
             state_counter.normalize_counters()
 
-            state_counter.prune_low_frequencies(threshold=4)#10
+            state_counter.prune_low_frequencies(threshold=6)#10
             turn_mask = state_counter.late_turn_mask(threshold=40)
 
             loss = value_loss(env, model_path, state_counter=state_counter, num_chunks=1000)
@@ -75,11 +75,10 @@ def calc_loss_curves():
 def smooth(vec):
     """return a smoothed vec with values averaged with their neighbors."""
     a = 0.5
-    new_vec = np.zeros(len(vec))
-    new_vec[0] = (vec[0] + a*vec[1])/ (1 + a)
-    for i in range(len(vec)-2):
-        new_vec[i+1] = (a*vec[i] + vec[i+1] + a*vec[i+2]) / (1 + 2*a)
-    new_vec[-1] = (vec[-1] + a*vec[-2])/ (1 + a)
+    filter = np.array([a, 1, a]) / (1 + 2 * a)
+    new_vec = np.convolve(vec, filter, mode='same')
+    new_vec[0] = (vec[0] + a * vec[1]) / (1 + a)
+    new_vec[-1] = (vec[-1] + a * vec[-2]) / (1 + a)
     return new_vec
 
 if load_data:
