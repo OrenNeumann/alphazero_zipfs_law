@@ -4,7 +4,7 @@ from src.data_analysis.state_frequency.state_counter import StateCounter
 from tqdm import tqdm
 
 
-def value_loss(env, path_model, state_counter: StateCounter, num_chunks=20):
+def value_loss(env, path_model, state_counter: StateCounter, num_chunks=40):
     """
     Calculate the value loss of a model on all states, sorted by rank.
     """
