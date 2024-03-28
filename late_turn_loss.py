@@ -42,10 +42,10 @@ def calc_loss_curves():
             print(model_name)
             model_path = path + game_path(env) + model_name + '/'
             state_counter.reset_counters()
-            state_counter.collect_data(path=model_path, max_file_num=40)
+            state_counter.collect_data(path=model_path, max_file_num=70)
             state_counter.normalize_counters()
 
-            state_counter.prune_low_frequencies(threshold=10)
+            state_counter.prune_low_frequencies(threshold=1)#10
             turn_mask = state_counter.late_turn_mask(threshold=40)
 
             loss = value_loss(env, model_path, state_counter=state_counter)
@@ -67,14 +67,24 @@ def calc_loss_curves():
             loss_values[label][t] = loss_sums[t][mask] / bin_count[t][mask]
             rank_values[label][t] = x[mask]
         
-    with open('../plot_data/value_loss/loss_curves'+env+'.pkl', 'wb') as f:
+    with open('../plot_data/value_loss/loss_curves_'+env+'.pkl', 'wb') as f:
         pickle.dump([loss_values,rank_values], f)
 
     return loss_values, rank_values
 
+def smooth(vec):
+    """return a smoothed vec with values averaged with their neighbors."""
+    a = 0.5
+    new_vec = np.zeros(len(vec))
+    new_vec[0] = (vec[0] + a*vec[1])/ (1 + a)
+    for i in range(len(vec)-2):
+        new_vec[i+1] = (a*vec[i] + vec[i+1] + a*vec[i+2]) / (1 + 2*a)
+    new_vec[-1] = (vec[-1] + a*vec[-2])/ (1 + a)
+    return new_vec
+
 if load_data:
     print('Loading')
-    with open('../plot_data/value_loss/loss_curves'+env+'.pkl', "rb") as f:
+    with open('../plot_data/value_loss/loss_curves_'+env+'.pkl', "rb") as f:
         loss_values, rank_values =  pickle.load(f)
 else:
     loss_values, rank_values = calc_loss_curves()
@@ -98,7 +108,10 @@ for t in loss_types:
     figure.title = 'Value loss '+ t
     figure.preamble()
     for label in data_labels:
-        plt.plot(rank_values[label][t], loss_values[label][t], color=cm.viridis(color_nums[label]))
+        x = rank_values[label][t]
+        y = loss_values[label][t]
+        y = smooth(y)
+        plt.plot(x, y, color=cm.viridis(color_nums[label]))
 
     plt.xscale('log')
     plt.yscale('log')
