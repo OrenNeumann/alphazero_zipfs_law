@@ -54,20 +54,15 @@ for label in data_labels:
         state_counter.normalize_counters()
 
         state_counter.prune_low_frequencies(threshold=10)
-        #state_counter.prune_early_turns(threshold=40)
         turn_mask = state_counter.late_turn_mask(threshold=40)
-
-        #freq = np.array([c for k, c in state_counter.frequencies.most_common()])
 
         loss = value_loss(env, model_path, state_counter=state_counter)
 
         ranks = np.arange(len(loss)) + 1
         # Calculate histogram.
         # np.histogram counts how many elements of 'ranks' fall in each bin.
-        # by specifying 'weights=loss', you can make it sum losses instead of counting.
         bin_counts += np.histogram(ranks[turn_mask], bins=bins)[0]
         loss_sums += np.histogram(ranks, bins=bins, weights=loss*turn_mask)[0]
-        #loss_sums += np.histogram(ranks, bins=bins, weights=loss*freq)[0]
     # Divide sum to get average:
     mask = np.nonzero(bin_counts)
     loss_averages = loss_sums[mask] / bin_counts[mask]
