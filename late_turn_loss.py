@@ -82,7 +82,7 @@ figure = BarFigure(par,
 color_nums = figure.colorbar_colors()
 
 for t in loss_types:
-    figure.title('Value loss '+ t)
+    figure.title = 'Value loss '+ t
     figure.preamble()
     for label in data_labels:
         plt.plot(rank_values[label][t], loss_values[label][t], color=cm.viridis(color_nums[label]))
