@@ -42,7 +42,7 @@ def calc_loss_curves():
             print(model_name)
             model_path = path + game_path(env) + model_name + '/'
             state_counter.reset_counters()
-            state_counter.collect_data(path=model_path, max_file_num=60)
+            state_counter.collect_data(path=model_path, max_file_num=40)
             state_counter.normalize_counters()
 
             state_counter.prune_low_frequencies(threshold=10)
