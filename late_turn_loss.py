@@ -14,7 +14,7 @@ Value loss histogram only on late-game states
 load_data = False
 
 # Choose game type:
-game_num = 3
+game_num = 2
 games = ['connect_four', 'pentago', 'oware', 'checkers']
 env = games[game_num]
 path = models_path()
@@ -23,7 +23,7 @@ path = models_path()
 loss_types = ('later_turns','early_turns','every_state')
 data_labels = [0, 1, 2, 3, 4, 5, 6] # for oware no 6 (get from cluster)
 #data_labels = [0,2,5]
-n_copies = 1#6
+n_copies = 6
 
 # initialize bins to cover a range definitely larger than what you'll need:
 bins = incremental_bin(10**10)
@@ -35,9 +35,17 @@ def _state_loss(path):
     # max_file_num=50 is about the max iota can carry (checked on checkers)
     state_counter.collect_data(path=path, max_file_num=50)
     state_counter.normalize_counters()
-    state_counter.prune_low_frequencies(threshold=4)#10
+    state_counter.prune_low_frequencies(threshold=10)
     turn_mask = state_counter.late_turn_mask(threshold=40)
     loss = value_loss(env, path, state_counter=state_counter, num_chunks=40)
+    total_loss = 0
+    counts = 0
+    i=0
+    for _, count in state_counter.frequencies.most_common():
+        total_loss += loss[i]*count
+        i+=1
+        counts += count
+    print('Model loss on train set:', total_loss/counts)
     return loss, turn_mask
 
 def calc_loss_curves():
@@ -47,6 +55,9 @@ def calc_loss_curves():
         bin_count = {k: np.zeros(len(x)) for k in loss_types}
         loss_sums = {k: np.zeros(len(x)) for k in loss_types}
         for copy in range(n_copies):
+            if env == 'oware' and label == 6:
+                if copy > 3:
+                    continue
             model_name = f'q_{label}_{copy}'
             print(model_name)
             model_path = path + game_path(env) + model_name + '/'
