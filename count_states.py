@@ -24,8 +24,8 @@ path += data_paths[env]
 print('Collecting '+env+' games:')
 
 # Process all games
-#state_counter = StateCounter(env=env)
-state_counter = ResignationCounter(env=env, model=get_model(path))
+state_counter = StateCounter(env=env)
+#state_counter = ResignationCounter(env=env, model=get_model(path))
 
 state_counter.collect_data(path=path, max_file_num=70)
 
