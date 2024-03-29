@@ -9,7 +9,7 @@ Count board states played from actor logfiles of AlphaZero agents.
 """
 
 # Choose game type:
-game_num = 2
+game_num = 3
 games = ['connect_four', 'pentago', 'oware', 'checkers']
 
 env = games[game_num]
@@ -27,7 +27,7 @@ print('Collecting '+env+' games:')
 #state_counter = StateCounter(env=env)
 state_counter = ResignationCounter(env=env, model=get_model(path))
 
-state_counter.collect_data(path=path, max_file_num=39)
+state_counter.collect_data(path=path, max_file_num=70)
 
 # Sort by frequency
 freq = np.array([item[1] for item in state_counter.frequencies.most_common()])
