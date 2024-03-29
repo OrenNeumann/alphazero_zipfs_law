@@ -19,20 +19,16 @@ https://github.com/yytdfc/Bayesian-Elo
 
 def get_bayeselo(matches):
     dims = matches.shape
-    if matches.ndim != 2:
-        raise ValueError('BayesElo only works for 2D matrices.')
-    n_agents = len(matches)
-    agents = list(map(str, list(range(n_agents))))
+    if matches.ndim != 2 or dims[0] != dims[1]:
+        raise ValueError('BayesElo only works for square 2D matrices.')
+    n = len(matches)
+    agents = [str(i) for i in range(n)]
     r = bayeselo.ResultSet()
     print('Loading games...')
-    for i in range(dims[0]):
-        player_1 = i
-        for j in range(dims[1]):
-            player_2 = j
-            p = matches[i, j]
-            if p is np.ma.masked:
-                continue
-            if i == j:
+    for player_1 in range(n):
+        for player_2 in range(n):
+            p = matches[player_1, player_2]
+            if p is np.ma.masked or player_1 == player_2:
                 continue
             p = int(p * 400)
             for k in range(400):
@@ -46,7 +42,11 @@ def get_bayeselo(matches):
     e.mm()
     e.exact_dist()
     print(e)
-    x = e.__str__().split("\n")
+    return _extract_elo(e)
+
+
+def _extract_elo(elo_rating):
+    x = elo_rating.__str__().split("\n")
     table = []
     for row in x:
         table.append(row.split())
