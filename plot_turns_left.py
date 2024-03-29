@@ -76,11 +76,10 @@ all_states = np.histogram(x, bins=bins)[0]
 mask = np.nonzero(all_states)
 ratio = late_states[mask] / all_states[mask]
 bin_x = bin_x[mask]
-print(len(bin_x), len(ratio))
 
 fig.fig_num += 1
 fig.preamble()
-plt.scatter(bin_x, late_states / all_states)
+plt.scatter(bin_x, ratio)
 plt.xscale('log')
 plt.yscale('linear')
 fig.y_label = 'Late turn ratio'
