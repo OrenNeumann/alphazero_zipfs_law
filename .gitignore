@@ -3,12 +3,7 @@ share/
 bin/
 lib64
 pyvenv.cfg
-src/data_analysis/__pycache__
-src/data_analysis/state_value/__pycache__
-src/data_analysis/state_frequency/__pycache__
-src/alphazero_scaling/__pycache__
-src/general/__pycache__
-src/plotting/__pycache__
+**/__pycache__/
 src/alphazero_scaling/connect4-master/
 src/alphazero_scaling/elo/Bayesian_Elo/
 plots/
