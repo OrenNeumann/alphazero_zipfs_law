@@ -30,8 +30,17 @@ bins = incremental_bin(10**10)
 widths = (bins[1:] - bins[:-1])
 x = bins[:-1] + widths/2
 
-def calc_loss_curves():
+def _state_loss(path):
     state_counter = StateCounter(env, save_serial=True, save_value=True, save_turn_num=True)
+    # max_file_num=50 is about the max iota can carry (checked on checkers)
+    state_counter.collect_data(path=path, max_file_num=79)
+    state_counter.normalize_counters()
+    state_counter.prune_low_frequencies(threshold=4)#10
+    turn_mask = state_counter.late_turn_mask(threshold=40)
+    loss = value_loss(env, path, state_counter=state_counter, num_chunks=100)
+    return loss, turn_mask
+
+def calc_loss_curves():
     loss_values = {label: {k: None for k in loss_types} for label in data_labels}
     rank_values = {label: {k: None for k in loss_types} for label in data_labels}
     for label in data_labels:
@@ -41,16 +50,7 @@ def calc_loss_curves():
             model_name = f'q_{label}_{copy}'
             print(model_name)
             model_path = path + game_path(env) + model_name + '/'
-            state_counter.reset_counters()
-            # max_file_num=50 is about the max iota can carry (checked on checkers)
-            state_counter.collect_data(path=model_path, max_file_num=50)
-            state_counter.normalize_counters()
-
-            state_counter.prune_low_frequencies(threshold=4)#10
-            turn_mask = state_counter.late_turn_mask(threshold=40)
-
-            loss = value_loss(env, model_path, state_counter=state_counter, num_chunks=40)
-
+            loss, turn_mask = _state_loss(model_path)
             ranks = np.arange(len(loss)) + 1
 
             # Calculate histogram.
