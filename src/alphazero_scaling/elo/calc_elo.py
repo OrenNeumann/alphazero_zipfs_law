@@ -1,5 +1,6 @@
 from src.alphazero_scaling.elo.Bayesian_Elo import bayeselo
 import numpy as np
+from itertools import combinations
 
 """
 How this code works:
@@ -22,22 +23,19 @@ def get_bayeselo(matches):
     if matches.ndim != 2 or dims[0] != dims[1]:
         raise ValueError('BayesElo only works for square 2D matrices.')
     n = len(matches)
-    agents = [str(i) for i in range(n)]
     r = bayeselo.ResultSet()
     print('Loading games...')
-    for player_1 in range(n):
-        for player_2 in range(n):
-            p = matches[player_1, player_2]
-            if p is np.ma.masked or player_1 == player_2:
-                continue
-            p = int(p * 400)
-            for k in range(400):
-                # just say we had 800 games and none of them tied:
-                r.append(player_1, player_2, int(k < p) * 2)
-                r.append(player_2, player_1, int(k > p) * 2)
-
+    for player_1,player_2 in combinations(range(n), 2):
+        p = matches[player_1, player_2]
+        if p is np.ma.masked:
+            continue
+        for k in range(800):
+            # just say we had 1600 games and none of them tied:
+            r.append(player_1, player_2, int(k < p*800) * 2)
+            r.append(player_2, player_1, int(k > p*800) * 2)
     print('Calculating rating...')
-    e = bayeselo.EloRating(r, agents)
+    agent_names = [str(i) for i in range(n)]
+    e = bayeselo.EloRating(r, agent_names)
     e.offset(1000)
     e.mm()
     e.exact_dist()
