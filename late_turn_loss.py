@@ -42,13 +42,13 @@ def calc_loss_curves():
             print(model_name)
             model_path = path + game_path(env) + model_name + '/'
             state_counter.reset_counters()
-            state_counter.collect_data(path=model_path, max_file_num=50)
+            state_counter.collect_data(path=model_path, max_file_num=55)
             state_counter.normalize_counters()
 
             state_counter.prune_low_frequencies(threshold=6)#10
             turn_mask = state_counter.late_turn_mask(threshold=40)
 
-            loss = value_loss(env, model_path, state_counter=state_counter, num_chunks=1000)
+            loss = value_loss(env, model_path, state_counter=state_counter, num_chunks=100)
 
             ranks = np.arange(len(loss)) + 1
 
