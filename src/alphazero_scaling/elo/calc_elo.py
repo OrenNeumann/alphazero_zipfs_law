@@ -33,8 +33,6 @@ def get_bayeselo(matches):
             # just say we had 1600 games and none of them tied:
             r.append(player_1, player_2, int(k < p*800) * 2)
             r.append(player_2, player_1, int(k > p*800) * 2)
-
-
     print('Calculating rating...')
     agent_names = [str(i) for i in range(n)]
     e = bayeselo.EloRating(r, agent_names)
