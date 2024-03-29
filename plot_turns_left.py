@@ -15,9 +15,9 @@ games = ['connect_four', 'pentago', 'oware', 'checkers']
 env = games[game_num]
 
 #data_labels = [0, 1, 2, 3, 4, 5, 6]  # for oware no 6
-data_labels = [5]
+data_labels = [6]
 
-state_counter = gather_data(env, data_labels, max_file_num=20, save_turn_num=True)
+state_counter = gather_data(env, data_labels, max_file_num=80, save_turn_num=True)
 state_counter.prune_low_frequencies(4)
 turns_played = state_counter.turns_played
 turns_to_end = state_counter.turns_to_end
@@ -79,7 +79,7 @@ bin_x = bin_x[mask]
 
 fig.fig_num += 1
 fig.preamble()
-plt.scatter(bin_x, ratio)
+plt.plot(bin_x, ratio)
 plt.xscale('log')
 plt.yscale('linear')
 fig.y_label = 'Late turn ratio'
