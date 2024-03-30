@@ -31,7 +31,7 @@ widths = (bins[1:] - bins[:-1])
 x = bins[:-1] + widths/2
 
 def _state_loss(path):
-    state_counter = StateCounter(env, save_serial=True, save_value=True, save_turn_num=True, cut_early_games=True)
+    state_counter = StateCounter(env, save_serial=True, save_value=True, save_turn_num=True, cut_extensive=True)
     # max_file_num=50 is about the max iota can carry (checked on checkers)
     state_counter.collect_data(path=path, max_file_num=78)#50
     state_counter.normalize_counters()
