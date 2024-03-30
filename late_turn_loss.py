@@ -14,7 +14,7 @@ Value loss histogram only on late-game states
 load_data = False
 
 # Choose game type:
-game_num = 2
+game_num = 3
 games = ['connect_four', 'pentago', 'oware', 'checkers']
 env = games[game_num]
 path = models_path()
@@ -31,9 +31,9 @@ widths = (bins[1:] - bins[:-1])
 x = bins[:-1] + widths/2
 
 def _state_loss(path):
-    state_counter = StateCounter(env, save_serial=True, save_value=True, save_turn_num=True)
+    state_counter = StateCounter(env, save_serial=True, save_value=True, save_turn_num=True, cut_early_games=True)
     # max_file_num=50 is about the max iota can carry (checked on checkers)
-    state_counter.collect_data(path=path, max_file_num=50)
+    state_counter.collect_data(path=path, max_file_num=78)#50
     state_counter.normalize_counters()
     state_counter.prune_low_frequencies(threshold=10)
     turn_mask = state_counter.late_turn_mask(threshold=40)
@@ -95,7 +95,7 @@ def smooth(vec):
 
 if load_data:
     print('Loading')
-    with open('../plot_data/value_loss/loss_curves_'+env+'.pkl', "rb") as f:
+    with open('../plot_data/value_loss/loss_curves_'+env+'_extensive_cut.pkl', "rb") as f:
         loss_values, rank_values =  pickle.load(f)
 else:
     loss_values, rank_values = calc_loss_curves()

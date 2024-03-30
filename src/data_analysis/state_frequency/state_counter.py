@@ -52,12 +52,14 @@ class StateCounter(object):
                  save_serial=False,
                  save_turn_num=False,
                  save_value=False,
-                 cut_early_games=True):
+                 cut_early_games=True,
+                 cut_extensive=False):
         self.env = env
         self.save_serial = save_serial
         self.save_turn_num = save_turn_num
         self.save_value = save_value
         self.cut_early_games = cut_early_games
+        self.cut_extensive = cut_extensive
 
         self.action_string = ACTION_STRINGS[env]
         self.frequencies = Counter()
@@ -79,13 +81,19 @@ class StateCounter(object):
     def _extract_games(self, file_path):
         """ Get the move-list (str) of all games in the file.
             If cut_early_games is True, only include the last 70% of games,
-            accounting for short actor files (due to training run crashes)."""
+            accounting for short actor files (due to training run crashes).
+            If cut_extensive is True, drop the first 40% of games instead. 
+            This is a lot more data wasteful."""
         with open(file_path, 'r') as file:
             games = [line.split("Actions: ", 1)[1] for line in file if re.search(r'Game \d+:', line)]
         if self.cut_early_games:
             full_length = training_length(self.env)
-            include = int(full_length * 0.7)
-            games = games[-include:]
+            if self.cut_extensive:
+                exclude = int(full_length * 0.4)
+                games = games[exclude:]
+            else:
+                include = int(full_length * 0.7)
+                games = games[-include:]
         return games
 
     def collect_data(self, path, max_file_num):
