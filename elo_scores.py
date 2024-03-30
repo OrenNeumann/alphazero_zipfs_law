@@ -10,6 +10,8 @@ dir_name = '../matches/oware_base/'
 r = bayeselo.ResultSet()
 
 def add_match(n,m,p):
+    print(n,m,p)
+    print(type(n), type(m), type(p))
     for k in range(800):
         # just say we had 1600 games and none of them tied:
         r.append(n, m, int(k < p*800) * 2)
