@@ -82,14 +82,14 @@ class StateCounter(object):
         """ Get the move-list (str) of all games in the file.
             If cut_early_games is True, only include the last 70% of games,
             accounting for short actor files (due to training run crashes).
-            If cut_extensive is True, drop the first 60% of games instead. 
+            If cut_extensive is True, drop the first 80% of games instead. 
             This is a lot more data wasteful."""
         with open(file_path, 'r') as file:
             games = [line.split("Actions: ", 1)[1] for line in file if re.search(r'Game \d+:', line)]
         if self.cut_early_games:
             full_length = training_length(self.env)
             if self.cut_extensive:
-                exclude = int(full_length * 0.6)
+                exclude = int(full_length * 0.8)
                 games = games[exclude:]
             else:
                 include = int(full_length * 0.7)
