@@ -146,4 +146,5 @@ for size in range(7):
 plt.scatter(sizes, scores)
 plt.xscale('log')
 fig.epilogue()
+fig.save('oware_size_scaling')
 
