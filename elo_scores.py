@@ -46,7 +46,7 @@ for i in range(6):
 
 # this assumes 1) that the matrix is symmetric 2) len(matches) = len(checkpoints)
 for model in tqdm(fixed_size_models, desc='Loading fixed-size matches'):
-    matches = np.load(dir_name + 'fixed_size/model_' + str(model) + '/matrix.npy')
+    matches = np.load(dir_name + 'fixed_size/' + str(model) + '/matrix.npy')
     for cp in checkpoints:
         agents.add(model, cp)
     for i,j in combinations(range(len(matches)), 2):
