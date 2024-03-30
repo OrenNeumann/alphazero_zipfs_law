@@ -49,6 +49,8 @@ for model in tqdm(fixed_size_models, desc='Loading fixed-size matches'):
     matches = np.load(dir_name + 'fixed_size/' + str(model) + '/matrix.npy')
     for cp in checkpoints:
         agents.add(model, cp)
+    if len(matches) != len(checkpoints):
+        raise ValueError('Matrix size does not match number of checkpoints.')
     for i,j in combinations(range(len(matches)), 2):
         p = matches[i, j]
         num_i = agents.num(model, checkpoints[i])
@@ -56,21 +58,30 @@ for model in tqdm(fixed_size_models, desc='Loading fixed-size matches'):
         add_match(num_i, num_j, p)
 
 
-fixed_checkpoint_models = []
-# this misses q_6_3 and f_*_3 sadly
-for i in range(7):
-    for j in range(3):
-        fixed_checkpoint_models.append('q_' + str(i) + '_' + str(j))
-for i in range(6):
-    for j in range(3):       
-        fixed_checkpoint_models.append('f_' + str(i) + '_' + str(j))
+def fc_model_ordering():
+    # this misses q_6_3 and f_*_3 sadly
+    max_q = 6
+    min_f = 0
+    max_f = 5
+    n_copies = 3
+    nets = []
+    for i in range(max_q + 1):
+        for j in range(n_copies):
+            nets.append('q_' + str(i) + '_' + str(j))
+        if min_f <= i <= max_f:
+            for j in range(n_copies):
+                nets.append('f_' + str(i) + '_' + str(j))
+    return nets
 
+fixed_checkpoint_models = fc_model_ordering()
 
 # assumes len(matches) = len(fixed_checkpoint_models)
 for cp in tqdm(checkpoints, desc='Loading fixed-checkpoint matches'):
     matches = np.load(dir_name + 'fixed_checkpoint/checkpoint_' + str(cp) + '/matrix.npy')
     for model in fixed_checkpoint_models:
         agents.add(model, cp)
+    if len(matches) != len(fixed_checkpoint_models):
+        raise ValueError('Matrix size does not match number of models.')
     for i,j in combinations(range(len(matches)), 2):
         p = matches[i, j]
         num_i = agents.num(fixed_checkpoint_models[i], cp)
