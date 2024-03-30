@@ -23,7 +23,7 @@ path = models_path()
 loss_types = ('later_turns','early_turns','every_state')
 data_labels = [0, 1, 2, 3, 4, 5, 6] # for oware no 6 (get from cluster)
 #data_labels = [0,2,5]
-n_copies = 6
+n_copies = 1#6
 
 # initialize bins to cover a range definitely larger than what you'll need:
 bins = incremental_bin(10**10)
