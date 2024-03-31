@@ -83,7 +83,7 @@ def oware_value_loss():
     par = np.load('src/config/parameter_counts/oware.npy')
     tf =12
     # Create figure and subplots
-    fig, axes = plt.subplots(nrows=1, ncols=3, figsize=(12, 5))
+    fig, axes = plt.subplots(nrows=1, ncols=3, figsize=(12, 4))
 
     with open('../plot_data/value_loss/loss_curves_oware.pkl', "rb") as f:
         loss_values, rank_values =  pickle.load(f)
@@ -110,7 +110,7 @@ def oware_value_loss():
         ax.set_xlabel('State rank',fontsize=tf)
         if i == 0:
             ax.set_ylabel('Loss',fontsize=tf)
-            ax.get_ylim()
+            ylim = ax.get_ylim()
         else:
             ax.set_ylim(ylim)
 
