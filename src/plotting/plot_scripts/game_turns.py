@@ -93,7 +93,8 @@ def oware_value_loss():
 
     loss_types = ('every_state', 'early_turns', 'later_turns')
     data_labels = [0, 1, 2, 3, 4, 5, 6] 
-    titles = ['Oware value loss', 'Loss on early turns', 'Loss on late turns']
+    titles = ['Oware value loss', 'Early-turn loss', 'Late-turn loss']
+    ylim = None
     for i,ax in enumerate(axes.flat):
         t = loss_types[i]
         ax.set_title(titles[i], fontsize=tf+4)
@@ -107,8 +108,11 @@ def oware_value_loss():
         ax.set_yscale('log')
         ax.tick_params(axis='both', which='major', labelsize=tf-2)
         ax.set_xlabel('State rank',fontsize=tf)
-        if i == 1:
+        if i == 0:
             ax.set_ylabel('Loss',fontsize=tf)
+            ax.get_ylim()
+        else:
+            ax.set_ylim(ylim)
 
     norm = matplotlib.colors.LogNorm(vmin=par.min(), vmax=par.max())
     # create a scalarmappable from the colormap
