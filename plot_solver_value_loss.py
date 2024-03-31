@@ -2,6 +2,7 @@ import numpy as np
 import pickle
 from src.data_analysis.state_frequency.state_counter import StateCounter
 from src.data_analysis.state_value.value_prediction import get_model_value_estimator
+from src.general.general_utils import models_path, game_path
 import collections
 import matplotlib
 import matplotlib.cm as cm
@@ -29,7 +30,9 @@ serial_states = dict()
 state_counter = StateCounter(env, save_serial=True, save_value=True)
 for label in data_labels:
     num = str(label)
-    path = '/mnt/ceph/neumann/alphazero/scratch_backup/models/connect_four_10000/q_' + num + '_0/log-actor'
+    model_name = 'q_' + num + '_0'
+    model_path = path + game_path(env) + model_name + '/'
+    path = models_path() + '/connect_four_10000/q_' + num + '_0/'
     state_counter.collect_data(path=path, max_file_num=1)
     # add counts to the counter, and update new serial states:
     board_counter.update(state_counter.frequencies)
