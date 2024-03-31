@@ -116,6 +116,7 @@ def oware_value_loss():
             ax.set_ylabel(r'$\bf{=}$', rotation=0, fontsize=tf+6)
         if i==2:
             ax.set_ylabel(r'$\bf{+}$', rotation=0, fontsize=tf+6)
+            ax.set_xlim(left=10**0)
 
     norm = matplotlib.colors.LogNorm(vmin=par.min(), vmax=par.max())
     # create a scalarmappable from the colormap
