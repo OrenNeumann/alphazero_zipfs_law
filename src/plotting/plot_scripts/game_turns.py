@@ -4,7 +4,6 @@ import pickle
 import numpy as np
 from tqdm import tqdm
 import scienceplots
-from late_turn_loss import smooth
 
 plt.style.use(['science','nature','grid'])
 
