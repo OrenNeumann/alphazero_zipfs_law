@@ -1,4 +1,5 @@
 import numpy as np
+import pickle
 from src.data_analysis.gather_agent_data import gather_data
 from src.data_analysis.data_utils import sort_by_frequency
 from src.plotting.plot_utils import Figure, incremental_bin
@@ -9,15 +10,17 @@ Plot turn related data: how late/early in the game do states appear.
 """
 
 # Choose game type:
-game_num = 2
+game_num = 0
 games = ['connect_four', 'pentago', 'oware', 'checkers']
 
 env = games[game_num]
 
-#data_labels = [0, 1, 2, 3, 4, 5, 6]  # for oware no 6
-data_labels = [5]
+plot_extra = False
 
-state_counter = gather_data(env, data_labels, max_file_num=79, save_turn_num=True)
+#data_labels = [0, 1, 2, 3, 4, 5, 6]  # for oware no 6
+data_labels = [0,1]
+
+state_counter = gather_data(env, data_labels, max_file_num=3, save_turn_num=True)
 state_counter.prune_low_frequencies(4)
 turns_played = state_counter.turns_played
 turns_to_end = state_counter.turns_to_end
@@ -47,20 +50,21 @@ def plot_turns(y, name, y_label, y_logscale=False):
     fig.save(name)
     #plt.show()
 
+if plot_extra:
+    print('plot turns taken so far')
+    y = sort_by_frequency(data=turns_played, counter=board_counter)
+    y = np.cumsum(y) / (np.arange(n) + 1)
+    plot_turns(y, name='turns_taken', y_label='Average turn num.')
 
-print('plot turns taken so far')
-y = sort_by_frequency(data=turns_played, counter=board_counter)
-y = np.cumsum(y) / (np.arange(n) + 1)
-plot_turns(y, name='turns_taken', y_label='Average turn num.')
-
-print('plot turns until end of game')
-y = sort_by_frequency(data=turns_to_end, counter=board_counter)
-y = np.cumsum(y) / (np.arange(n) + 1)
-plot_turns(y, name='turns_left', y_label='Average turns until end')
+    print('plot turns until end of game')
+    y = sort_by_frequency(data=turns_to_end, counter=board_counter)
+    y = np.cumsum(y) / (np.arange(n) + 1)
+    plot_turns(y, name='turns_left', y_label='Average turns until end')
 
 print('Plot raw data (to see U-shape)')
 y = sort_by_frequency(data=turns_played, counter=board_counter)
-# y = sort_by_frequency(data=turns_to_end, counter=board_counter)
+with open('../plot_data/turns/raw_turns_'+env+'.pkl', 'wb') as f:
+    pickle.dump(y, f)
 plot_turns(y, name='turns_taken_raw', y_label='Turn num.', y_logscale=True)  # ylabel 'Turns left'
 
 
@@ -76,6 +80,9 @@ all_states = np.histogram(x, bins=bins)[0]
 mask = np.nonzero(all_states)
 ratio = late_states[mask] / all_states[mask]
 bin_x = bin_x[mask]
+
+with open('../plot_data/turns/turn_ratio_'+env+'.pkl', 'wb') as f:
+    pickle.dump([bin_x, ratio], f)
 
 fig.fig_num += 1
 fig.preamble()
