@@ -2,6 +2,9 @@ import matplotlib.pyplot as plt
 import pickle
 import numpy as np
 from tqdm import tqdm
+import scienceplots
+
+plt.style.use('science')
 
 def game_turns():
     tf =10
