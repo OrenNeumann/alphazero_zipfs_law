@@ -34,9 +34,9 @@ def game_turns():
 
     # Add axis labels to each subplot
     ax1.set_ylabel('Turn number',fontsize=tf)
-    ax3.set_xlabel('State rank',fontsize=tf+2)
+    ax3.set_xlabel('State rank',fontsize=tf)
     ax3.set_ylabel('Turn number',fontsize=tf)
-    ax4.set_xlabel('State rank',fontsize=tf+2)
+    ax4.set_xlabel('State rank',fontsize=tf)
 
     with open('../plot_data/turns/turn_ratio_'+envs[0]+'.pkl', "rb") as f:
         bin_x, ratio =  pickle.load(f)
