@@ -4,7 +4,7 @@ import numpy as np
 from tqdm import tqdm
 import scienceplots
 
-plt.style.use('science')
+plt.style.use(['science','nature'])
 
 def game_turns():
     tf =10
@@ -45,7 +45,7 @@ def game_turns():
         bin_x, ratio =  pickle.load(f)
     ax5.plot(bin_x, ratio, color=colors[0], label=env_names[0])
     ax5.set_xlabel('State rank',fontsize=tf+2)
-    ax5.set_ylabel('Late turn ratio (>40)',fontsize=tf+2)
+    ax5.set_ylabel('Late turn ratio ($>40$)',fontsize=tf+2)
     ax5.set_xscale('log')
     ax5.set_ylim(0, 1)
     ax5.legend(loc="upper left")
