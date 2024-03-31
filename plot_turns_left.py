@@ -65,7 +65,11 @@ print('Plot raw data (to see U-shape)')
 y = sort_by_frequency(data=turns_played, counter=board_counter)
 with open('../plot_data/turns/raw_turns_'+env+'.pkl', 'wb') as f:
     pickle.dump(y, f)
-plot_turns(y, name='turns_taken_raw', y_label='Turn num.', y_logscale=True)  # ylabel 'Turns left'
+plot_turns(y, name='turns_taken_raw', y_label='Turn num.', y_logscale=True)
+y = sort_by_frequency(data=turns_to_end, counter=board_counter)
+with open('../plot_data/turns/raw_turns_to_end_'+env+'.pkl', 'wb') as f:
+    pickle.dump(y, f)
+plot_turns(y, name='turns_to_end_raw', y_label='Turns left', y_logscale=True)  
 
 
 # Plot percentage of late turns:
