@@ -4,7 +4,7 @@ import numpy as np
 from tqdm import tqdm
 import scienceplots
 
-plt.style.use(['science','nature'])
+plt.style.use(['science','nature','grid'])
 
 def game_turns():
     tf =12
@@ -20,12 +20,13 @@ def game_turns():
     ax4 = plt.subplot2grid((2, 3), (1, 1))
     ax5 = plt.subplot2grid((2, 3), (0, 2), rowspan=2)
 
+    # Plots 1-4
     square_plots = [ax1, ax2, ax3, ax4]
     colors = ['blue', 'purple', 'green', 'olive']
     envs = ['connect_four', 'pentago', 'oware', 'checkers']
     env_names =['Connect Four', 'Pentago', 'Oware', 'Checkers']
     for i, ax in enumerate(tqdm(square_plots, desc='Raw data plots')):
-        if i==1 or i==2:
+        if i==2:
             with open('../plot_data/turns/raw_turns_'+envs[0]+'.pkl', "rb") as f:
                 y =  pickle.load(f)
         else:
@@ -35,7 +36,11 @@ def game_turns():
         ax.scatter(x, y, color=colors[i], s=40 * 3 / (10 + x), label=env_names[i])
         ax.set_xscale('log')
         ax.set_yscale('log')
-        ax.legend(loc="upper left", fontsize=tf)
+        if i<2:
+            location = 'upper left'
+        else:
+            location = 'center left'
+        ax.legend(loc=location, fontsize=tf)
         ax.tick_params(axis='both', which='major', labelsize=tf-2)
 
 
@@ -47,7 +52,7 @@ def game_turns():
 
     # PLot num. 5
     for i, env in enumerate(tqdm(envs, desc='Turn ratio plot')):
-        if i==1 or i==2:
+        if i==2:
             continue
         with open('../plot_data/turns/turn_ratio_'+env+'.pkl', "rb") as f:
             bin_x, ratio =  pickle.load(f)
