@@ -37,7 +37,7 @@ def game_turns():
         if i<2:
             ax.legend(loc='upper left', fontsize=tf)
         else:
-            ax.legend(loc="upper left", bbox_to_anchor=(0.0, 0.7), fontsize=tf)
+            ax.legend(loc="upper left", bbox_to_anchor=(0.0, 0.8), fontsize=tf)
         ax.tick_params(axis='both', which='major', labelsize=tf-2)
 
 
@@ -72,6 +72,7 @@ def game_turns():
 
 
 def oware_value_loss():
+    par = np.load('src/config/parameter_counts/oware.npy')
     tf =12
     # Create figure and subplots
     fig, axes = plt.subplots(nrows=1, ncols=3,figsize=(12, 6))
@@ -79,7 +80,7 @@ def oware_value_loss():
     norm = matplotlib.colors.LogNorm(vmin=par.min(), vmax=par.max())
     # create a scalarmappable from the colormap
     sm = matplotlib.cm.ScalarMappable(cmap=plt.get_cmap('viridis'), norm=norm)
-    cbar = plt.colorbar(sm)
+    cbar = fig.colorbar(sm)
     cbar.ax.tick_params(labelsize=number_font)
     cbar.ax.set_ylabel('Parameters', rotation=90, fontsize=tf)
 
