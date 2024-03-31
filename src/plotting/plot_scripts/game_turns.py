@@ -98,7 +98,6 @@ def oware_value_loss():
     for i,ax in enumerate(axes.flat):
         t = loss_types[i]
         ax.set_title(titles[i], fontsize=tf+4)
-        #figure.preamble()
         for label in data_labels:
             x = rank_values[label][t]
             y = loss_values[label][t]
@@ -113,6 +112,10 @@ def oware_value_loss():
             ylim = ax.get_ylim()
         else:
             ax.set_ylim(ylim)
+        if i==1:
+            ax.set_ylabel(r'$\bf{=}$', rotation=0, fontsize=tf)
+        if i==2:
+            ax.set_ylabel(r'$\bf{+}$', rotation=0, fontsize=tf)
 
     norm = matplotlib.colors.LogNorm(vmin=par.min(), vmax=par.max())
     # create a scalarmappable from the colormap
