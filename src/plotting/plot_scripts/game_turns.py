@@ -25,7 +25,7 @@ def game_turns():
     # Plots 1-4
     square_plots = [ax1, ax2, ax3, ax4]
     #colors = ['blue', 'purple', 'green', 'olive']
-    colors = ['#377eb8', '#984ea3', '#ff7f00', '#e41a1c']
+    colors = ['#377eb8', '#984ea3', '2ca02c', '#bcbd22']
     envs = ['connect_four', 'pentago', 'oware', 'checkers']
     env_names =['Connect Four', 'Pentago', 'Oware', 'Checkers']
     for i, ax in enumerate(tqdm(square_plots, desc='Raw data plots')):
