@@ -31,7 +31,7 @@ def game_turns():
         ax.scatter(x, y, color=colors[i], s=40 * 3 / (10 + x), label=env_names[i])
         ax.set_xscale('log')
         ax.set_yscale('log')
-        ax.legend(loc="upper left", labelsize=tf)
+        ax.legend(loc="upper left", fontsize=tf)
         ax.tick_params(axis='both', which='major', labelsize=tf)
 
 
