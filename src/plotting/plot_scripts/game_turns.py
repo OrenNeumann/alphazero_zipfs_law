@@ -25,8 +25,12 @@ def game_turns():
     envs = ['connect_four', 'pentago', 'oware', 'checkers']
     env_names =['Connect Four', 'Pentago', 'Oware', 'Checkers']
     for i, ax in enumerate(tqdm(square_plots, desc='Raw data plots')):
-        with open('../plot_data/turns/raw_turns_'+envs[0]+'.pkl', "rb") as f:
-            y =  pickle.load(f)
+        if i==1 or i==2:
+            with open('../plot_data/turns/raw_turns_'+envs[0]+'.pkl', "rb") as f:
+                y =  pickle.load(f)
+        else:
+            with open('../plot_data/turns/raw_turns_'+envs[i]+'.pkl', "rb") as f:
+                y =  pickle.load(f)
         x = np.arange(len(y)) + 1
         ax.scatter(x, y, color=colors[i], s=40 * 3 / (10 + x), label=env_names[i])
         ax.set_xscale('log')
@@ -41,14 +45,18 @@ def game_turns():
     ax3.set_ylabel('Turn number',fontsize=tf)
     ax4.set_xlabel('State rank',fontsize=tf)
 
-    with open('../plot_data/turns/turn_ratio_'+envs[0]+'.pkl', "rb") as f:
-        bin_x, ratio =  pickle.load(f)
-    ax5.plot(bin_x, ratio, color=colors[0], label=env_names[0])
+    # PLot num. 5
+    for i, env in enumerate(tqdm(envs, desc='Turn ratio plot')):
+        if i==1 or i==2:
+            continue
+        with open('../plot_data/turns/turn_ratio_'+env+'.pkl', "rb") as f:
+            bin_x, ratio =  pickle.load(f)
+        ax5.plot(bin_x, ratio, color=colors[i], label=env_names[i], linewidth=3.0)
     ax5.set_xlabel('State rank',fontsize=tf+2)
     ax5.set_ylabel('Late turn ratio ($>40$)',fontsize=tf+2)
     ax5.set_xscale('log')
-    ax5.set_ylim(0, 1)
-    ax5.legend(loc="upper left")
+    ax5.set_ylim(top=1)
+    ax5.legend(loc="upper left", fontsize=tf)
 
     ax5.tick_params(axis='both', which='major', labelsize=tf+2)
 
