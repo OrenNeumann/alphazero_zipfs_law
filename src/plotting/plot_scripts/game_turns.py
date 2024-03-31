@@ -44,6 +44,7 @@ def game_turns():
     ax5.set_xlabel('State rank',fontsize=tf+2)
     ax5.set_ylabel('Late turn ratio (>40)',fontsize=tf+2)
     ax5.set_xscale('log')
+    ax5.set_ylim(0, 1)
     ax5.legend(loc="upper left")
 
     ax5.tick_params(axis='both', which='major', labelsize=tf+2)
