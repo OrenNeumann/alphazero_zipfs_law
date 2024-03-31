@@ -55,3 +55,5 @@ def game_turns():
 
     plt.tight_layout()
     fig.savefig('./plots/turns.png', dpi=900)
+
+game_turns()
