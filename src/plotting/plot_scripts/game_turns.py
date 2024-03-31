@@ -4,6 +4,7 @@ import pickle
 import numpy as np
 from tqdm import tqdm
 import scienceplots
+from late_turn_loss import smooth
 
 plt.style.use(['science','nature','grid'])
 
@@ -56,7 +57,7 @@ def game_turns():
     ax5.set_ylabel('Ratio of late ($>40$) turns',fontsize=tf+2)
     ax5.set_xscale('log')
     ax5.set_ylim(top=1)
-    ax5.legend(loc="upper left", fontsize=tf)
+    ax5.legend(loc="upper left", framealpha=0.6, fontsize=tf)
     ax5.tick_params(axis='both', which='major', labelsize=tf)
 
     # Set titles for each subplot
@@ -75,16 +76,41 @@ def oware_value_loss():
     par = np.load('src/config/parameter_counts/oware.npy')
     tf =12
     # Create figure and subplots
-    fig, axes = plt.subplots(nrows=1, ncols=3,figsize=(12, 6))
+    fig, axes = plt.subplots(nrows=1, ncols=3, figsize=(12, 5))
+
+    with open('../plot_data/value_loss/loss_curves_oware.pkl', "rb") as f:
+        loss_values, rank_values =  pickle.load(f)
+
+    log_par = np.log(par)
+    color_nums = (log_par - log_par.min()) / (log_par.max() - log_par.min())
+
+    loss_types = ('every_state', 'early_turns', 'later_turns')
+    data_labels = [0, 1, 2, 3, 4, 5, 6] 
+    titles = ['Oware value loss', 'Loss on early turns', 'Loss on late turns']
+    for i,ax in enumerate(axes.flat):
+        t = loss_types[i]
+        ax.set_title(titles[i], fontsize=tf+4)
+        #figure.preamble()
+        for label in data_labels:
+            x = rank_values[label][t]
+            y = loss_values[label][t]
+            y = smooth(y)
+            plt.plot(x, y, color=matplotlib.cm.viridis(color_nums[label]))
+
+        plt.xscale('log')
+        plt.yscale('log')
 
     norm = matplotlib.colors.LogNorm(vmin=par.min(), vmax=par.max())
     # create a scalarmappable from the colormap
     sm = matplotlib.cm.ScalarMappable(cmap=plt.get_cmap('viridis'), norm=norm)
     cbar = fig.colorbar(sm)
-    cbar.ax.tick_params(labelsize=number_font)
+    cbar.ax.tick_params(labelsize=tf)
     cbar.ax.set_ylabel('Parameters', rotation=90, fontsize=tf)
 
-game_turns()
+    plt.tight_layout()
+    fig.savefig('./plots/oware_value_loss.png', dpi=900)
 
+#game_turns()
+oware_value_loss()
 
 
