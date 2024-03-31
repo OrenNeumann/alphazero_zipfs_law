@@ -49,12 +49,12 @@ def game_turns():
     ax5.tick_params(axis='both', which='major', labelsize=tf+2)
 
     # Set titles for each subplot
-    bbox = ax1.get_yticklabels()[-1].get_window_extent()
-    x,_ = ax1.transAxes.inverted().transform([bbox.x0, bbox.y0])
-    ax1.set_title(r'$\bf{a.}$ Turn distribution', ha='left',x=x,fontsize=tf+2)
-    bbox = ax5.get_yticklabels()[-1].get_window_extent()
-    x,_ = ax5.transAxes.inverted().transform([bbox.x0, bbox.y0])
-    ax5.set_title(r'$\bf{b.}$ Turn ratios', ha='left',x=x,fontsize=tf+2)
+    def aligned_title(ax, title):
+        bbox = ax.get_yticklabels()[-1].get_window_extent()
+        x,_ = ax.transAxes.inverted().transform([bbox.x0, bbox.y0])
+        ax.set_title(title, ha='left',x=x,fontsize=tf+2)
+    aligned_title(ax1, r'$\bf{a.}$ Turn distribution')
+    aligned_title(ax5, r'$\bf{b.}$ Turn ratios')
 
     plt.tight_layout()
     fig.savefig('./plots/turns.png', dpi=900)
