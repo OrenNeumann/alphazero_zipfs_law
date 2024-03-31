@@ -102,10 +102,13 @@ def oware_value_loss():
             x = rank_values[label][t]
             y = loss_values[label][t]
             y = smooth(y)
-            plt.plot(x, y, color=matplotlib.cm.viridis(color_nums[label]))
-
-        plt.xscale('log')
-        plt.yscale('log')
+            ax.plot(x, y, color=matplotlib.cm.viridis(color_nums[label]))
+        ax.set_xscale('log')
+        ax.set_yscale('log')
+        ax.tick_params(axis='both', which='major', labelsize=tf-2)
+        ax.set_xlabel('State rank',fontsize=tf)
+        if i == 1:
+            ax.set_ylabel('Loss',fontsize=tf)
 
     norm = matplotlib.colors.LogNorm(vmin=par.min(), vmax=par.max())
     # create a scalarmappable from the colormap
