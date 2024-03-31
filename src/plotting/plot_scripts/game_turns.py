@@ -20,7 +20,7 @@ def game_turns():
     colors = ['blue', 'purple', 'green', 'olive']
     envs = ['connect_four', 'pentago', 'oware', 'checkers']
     for i, ax in enumerate(square_plots):
-        with open('../plot_data/turns/raw_turns_'+envs[i]+'.pkl', "rb") as f:
+        with open('../plot_data/turns/raw_turns_'+envs[0]+'.pkl', "rb") as f:
             y =  pickle.load(f)
         x = np.arange(len(y)) + 1
         ax.scatter(x, y, color=colors[i], s=40 * 3 / (10 + x), label='Line ' + str(i + 1))
