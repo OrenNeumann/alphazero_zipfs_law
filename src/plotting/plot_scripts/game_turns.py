@@ -113,9 +113,9 @@ def oware_value_loss():
         else:
             ax.set_ylim(ylim)
         if i==1:
-            ax.set_ylabel(r'$\bf{=}$', rotation=0, fontsize=tf)
+            ax.set_ylabel(r'$\bf{=}$', rotation=0, fontsize=tf+6)
         if i==2:
-            ax.set_ylabel(r'$\bf{+}$', rotation=0, fontsize=tf)
+            ax.set_ylabel(r'$\bf{+}$', rotation=0, fontsize=tf+6)
 
     norm = matplotlib.colors.LogNorm(vmin=par.min(), vmax=par.max())
     # create a scalarmappable from the colormap
@@ -127,8 +127,7 @@ def oware_value_loss():
     plt.tight_layout()
     fig.savefig('./plots/oware_value_loss.png', dpi=900)
 
-game_turns()
+#game_turns()
 print('oware loss')
 oware_value_loss()
-
 
