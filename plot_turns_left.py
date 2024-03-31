@@ -10,7 +10,7 @@ Plot turn related data: how late/early in the game do states appear.
 """
 
 # Choose game type:
-game_num = 3
+game_num = 1
 games = ['connect_four', 'pentago', 'oware', 'checkers']
 
 env = games[game_num]
@@ -20,7 +20,7 @@ plot_extra = False
 data_labels = [0, 1, 2, 3, 4, 5, 6]  # for oware no 6
 #data_labels = [0,1]
 
-state_counter = gather_data(env, data_labels, max_file_num=20, save_turn_num=True)
+state_counter = gather_data(env, data_labels, max_file_num=25, save_turn_num=True)
 state_counter.prune_low_frequencies(10)
 turns_played = state_counter.turns_played
 turns_to_end = state_counter.turns_to_end
