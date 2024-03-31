@@ -71,6 +71,14 @@ def game_turns():
     plt.tight_layout()
     fig.savefig('./plots/turns.png', dpi=900)
 
+def smooth(vec):
+    """return a smoothed vec with values averaged with their neighbors."""
+    a = 0.5
+    filter = np.array([a, 1, a]) / (1 + 2 * a)
+    new_vec = np.convolve(vec, filter, mode='same')
+    new_vec[0] = (vec[0] + a * vec[1]) / (1 + a)
+    new_vec[-1] = (vec[-1] + a * vec[-2]) / (1 + a)
+    return new_vec
 
 def oware_value_loss():
     par = np.load('src/config/parameter_counts/oware.npy')
