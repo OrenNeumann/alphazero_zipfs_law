@@ -21,7 +21,7 @@ def game_turns():
     colors = ['blue', 'purple', 'green', 'olive']
     envs = ['connect_four', 'pentago', 'oware', 'checkers']
     env_names =['Connect Four', 'Pentago', 'Oware', 'Checkers']
-    for i, ax in tqdm(enumerate(square_plots), desc='Raw data plots'):
+    for i, ax in enumerate(tqdm(square_plots, desc='Raw data plots')):
         with open('../plot_data/turns/raw_turns_'+envs[0]+'.pkl', "rb") as f:
             y =  pickle.load(f)
         x = np.arange(len(y)) + 1
