@@ -1,3 +1,4 @@
+import matplotlib
 import matplotlib.pyplot as plt
 import pickle
 import numpy as np
@@ -26,21 +27,17 @@ def game_turns():
     envs = ['connect_four', 'pentago', 'oware', 'checkers']
     env_names =['Connect Four', 'Pentago', 'Oware', 'Checkers']
     for i, ax in enumerate(tqdm(square_plots, desc='Raw data plots')):
-        if i==2:
-            with open('../plot_data/turns/raw_turns_'+envs[0]+'.pkl', "rb") as f:
-                y =  pickle.load(f)
-        else:
-            with open('../plot_data/turns/raw_turns_'+envs[i]+'.pkl', "rb") as f:
-                y =  pickle.load(f)
+        with open('../plot_data/turns/raw_turns_'+envs[i]+'.pkl', "rb") as f:
+            y =  pickle.load(f)
         x = np.arange(len(y)) + 1
         ax.scatter(x, y, color=colors[i], s=40 * 3 / (10 + x), label=env_names[i])
         ax.set_xscale('log')
         ax.set_yscale('log')
+        # Specific legend positions
         if i<2:
-            location = 'upper left'
+            ax.legend(loc='upper left', fontsize=tf)
         else:
-            location = 'center left'
-        ax.legend(loc=location, fontsize=tf)
+            ax.legend(loc="upper left", bbox_to_anchor=(0.0, 0.7), fontsize=tf)
         ax.tick_params(axis='both', which='major', labelsize=tf-2)
 
 
@@ -52,17 +49,14 @@ def game_turns():
 
     # PLot num. 5
     for i, env in enumerate(tqdm(envs, desc='Turn ratio plot')):
-        if i==2:
-            continue
         with open('../plot_data/turns/turn_ratio_'+env+'.pkl', "rb") as f:
             bin_x, ratio =  pickle.load(f)
         ax5.plot(bin_x, ratio, color=colors[i], label=env_names[i], linewidth=3.0)
     ax5.set_xlabel('State rank',fontsize=tf+2)
-    ax5.set_ylabel('Late turn ratio ($>40$)',fontsize=tf+2)
+    ax5.set_ylabel('Ratio of late ($>40$) turns',fontsize=tf+2)
     ax5.set_xscale('log')
     ax5.set_ylim(top=1)
     ax5.legend(loc="upper left", fontsize=tf)
-
     ax5.tick_params(axis='both', which='major', labelsize=tf)
 
     # Set titles for each subplot
@@ -76,4 +70,20 @@ def game_turns():
     plt.tight_layout()
     fig.savefig('./plots/turns.png', dpi=900)
 
+
+def oware_value_loss():
+    tf =12
+    # Create figure and subplots
+    fig, axes = plt.subplots(nrows=1, ncols=3,figsize=(12, 6))
+
+    norm = matplotlib.colors.LogNorm(vmin=par.min(), vmax=par.max())
+    # create a scalarmappable from the colormap
+    sm = matplotlib.cm.ScalarMappable(cmap=plt.get_cmap('viridis'), norm=norm)
+    cbar = plt.colorbar(sm)
+    cbar.ax.tick_params(labelsize=number_font)
+    cbar.ax.set_ylabel('Parameters', rotation=90, fontsize=tf)
+
 game_turns()
+
+
+
