@@ -7,7 +7,7 @@ import scienceplots
 plt.style.use(['science','nature'])
 
 def game_turns():
-    tf =10
+    tf =12
     # Create figure and subplots
     fig = plt.figure(figsize=(12, 6))
 
@@ -36,7 +36,7 @@ def game_turns():
         ax.set_xscale('log')
         ax.set_yscale('log')
         ax.legend(loc="upper left", fontsize=tf)
-        ax.tick_params(axis='both', which='major', labelsize=tf)
+        ax.tick_params(axis='both', which='major', labelsize=tf-2)
 
 
     # Add axis labels to each subplot
@@ -58,13 +58,13 @@ def game_turns():
     ax5.set_ylim(top=1)
     ax5.legend(loc="upper left", fontsize=tf)
 
-    ax5.tick_params(axis='both', which='major', labelsize=tf+2)
+    ax5.tick_params(axis='both', which='major', labelsize=tf)
 
     # Set titles for each subplot
     def aligned_title(ax, title):
         bbox = ax.get_yticklabels()[-1].get_window_extent()
         x,_ = ax.transAxes.inverted().transform([bbox.x0, bbox.y0])
-        ax.set_title(title, ha='left',x=x,fontsize=tf+2)
+        ax.set_title(title, ha='left',x=x,fontsize=tf+4)
     aligned_title(ax1, r'$\bf{a.}$ Turn distribution')
     aligned_title(ax5, r'$\bf{b.}$ Turn ratios')
 
