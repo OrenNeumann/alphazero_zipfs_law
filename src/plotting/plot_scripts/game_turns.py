@@ -1,5 +1,6 @@
 import matplotlib.pyplot as plt
-
+import pickle
+import numpy as np
 
 def game_turns():
     tf =10
@@ -17,8 +18,12 @@ def game_turns():
 
     square_plots = [ax1, ax2, ax3, ax4]
     colors = ['blue', 'purple', 'green', 'olive']
+    envs = ['connect_four', 'pentago', 'oware', 'checkers']
     for i, ax in enumerate(square_plots):
-        ax.scatter([1, 2, 3], [4, 5, 6], color=colors[i],label='Line ' + str(i + 1))
+        with open('../plot_data/turns/raw_turns_'+envs[i]+'.pkl', "rb") as f:
+            y =  pickle.load(f)
+        x = np.arange(len(y)) + 1
+        ax.scatter(x, y, color=colors[i], s=40 * 3 / (10 + x), label='Line ' + str(i + 1))
         ax.set_xscale('log')
         ax.set_yscale('log')
         ax.legend(loc="upper left")
@@ -26,14 +31,16 @@ def game_turns():
 
 
     # Add axis labels to each subplot
-    ax1.set_ylabel('Y Label 1',fontsize=tf)
-    ax3.set_xlabel('X Label 3',fontsize=tf)
-    ax3.set_ylabel('Y Label 3',fontsize=tf)
-    ax4.set_xlabel('X Label 4',fontsize=tf)
+    ax1.set_ylabel('Turn number',fontsize=tf)
+    ax3.set_xlabel('State rank',fontsize=tf)
+    ax3.set_ylabel('Turn number',fontsize=tf)
+    ax4.set_xlabel('State rank',fontsize=tf)
 
-    ax5.plot([1, 2, 3], [4, 5, 6])
-    ax5.set_xlabel('X Label 5',fontsize=tf+4)
-    ax5.set_ylabel('Y Label 5',fontsize=tf+4)
+    with open('../plot_data/turns/turn_ratio_'+envs[0]+'.pkl', "rb") as f:
+        bin_x, ratio =  pickle.load(f)
+    ax5.plot(bin_x, ratio, color=colors[0])
+    ax5.set_xlabel('State rank',fontsize=tf+4)
+    ax5.set_ylabel('Late turn ratio (>40)',fontsize=tf+4)
 
 
     ax5.tick_params(axis='both', which='major', labelsize=tf+4)
@@ -46,9 +53,5 @@ def game_turns():
     x,_ = ax5.transAxes.inverted().transform([bbox.x0, bbox.y0])
     ax5.set_title(r'$\bf{b.}$ Turn ratios', ha='left',x=x,fontsize=tf+4)
 
-
-    # Adjust layout to prevent overlapping of subplots
     plt.tight_layout()
-
-    # Show the plot
-    plt.show()
+    fig.savefig('./plots/turns.png', dpi=900)
