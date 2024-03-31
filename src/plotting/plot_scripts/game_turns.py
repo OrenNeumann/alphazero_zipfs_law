@@ -1,7 +1,7 @@
 import matplotlib.pyplot as plt
 import pickle
 import numpy as np
-import tqdm
+from tqdm import tqdm
 
 def game_turns():
     tf =10
