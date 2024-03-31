@@ -5,7 +5,6 @@ lib64
 pyvenv.cfg
 **/__pycache__/
 src/alphazero_scaling/connect4-master/*
-!src/alphazero_scaling/connect4-master/call_solver.sh
 src/alphazero_scaling/elo/Bayesian_Elo/
 plots/
 alphazero_scaling_full/

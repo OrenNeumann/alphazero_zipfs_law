@@ -8,6 +8,7 @@ import scienceplots
 plt.style.use(['science','nature','grid'])
 
 def game_turns():
+    print('Plotting game turns')
     tf =12
     # Create figure and subplots
     fig = plt.figure(figsize=(12, 6))
@@ -23,7 +24,8 @@ def game_turns():
 
     # Plots 1-4
     square_plots = [ax1, ax2, ax3, ax4]
-    colors = ['blue', 'purple', 'green', 'olive']
+    #colors = ['blue', 'purple', 'green', 'olive']
+    colors = ['#377eb8', '#984ea3', '#ff7f00', '#e41a1c']
     envs = ['connect_four', 'pentago', 'oware', 'checkers']
     env_names =['Connect Four', 'Pentago', 'Oware', 'Checkers']
     for i, ax in enumerate(tqdm(square_plots, desc='Raw data plots')):
@@ -80,6 +82,7 @@ def smooth(vec):
     return new_vec
 
 def oware_value_loss():
+    print('Plotting oware value loss')
     par = np.load('src/config/parameter_counts/oware.npy')
     tf =12
     # Create figure and subplots
@@ -128,7 +131,6 @@ def oware_value_loss():
     plt.tight_layout()
     fig.savefig('./plots/oware_value_loss.png', dpi=900)
 
-#game_turns()
-print('oware loss')
-oware_value_loss()
+game_turns()
+#oware_value_loss()
 
