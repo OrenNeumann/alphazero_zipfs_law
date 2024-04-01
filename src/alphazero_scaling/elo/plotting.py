@@ -79,8 +79,7 @@ def plot_oware_size_scaling():
     f_scores = []
     q_sizes = []
     f_sizes = []
-    f_errormin=[]
-    f_errormax=[]
+    f_error=[]
     f_means=[]
     for size in range(6): # Ignore last size, was trained with different temp. drop
         for copy in range(6):
@@ -95,17 +94,15 @@ def plot_oware_size_scaling():
             if model in elo:
                 f_scores.append(elo[model])
                 y.append(elo[model])
-        f_errormin.append(-np.std(y))
-        f_errormax.append(np.std(y))
+        f_error.append(np.std(y))
         f_means.append(np.mean(y))
         f_sizes.append(par[i])
         i += 1
     #plt.scatter(q_sizes, q_scores, label='Temp. drop = 50')
-    print(f_errormin)
-    print(f_errormax)
+    print(f_error)
     print(f_sizes)
-    print(f_scores)
-    plt.errorbar(f_sizes, f_means, yerr=[f_errormin, f_errormax], fmt='o')#, label='Temp. drop = 15')
+    print(f_means)
+    plt.errorbar(f_sizes, f_means, yerr=[f_error, f_error], fmt='o')#, label='Temp. drop = 15')
     #plt.xscale('log')
     fig.epilogue()
     fig.save('oware_size_scaling')
