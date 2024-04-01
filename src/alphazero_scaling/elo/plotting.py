@@ -78,15 +78,22 @@ def plot_oware_size_scaling():
     q_scores = []
     f_scores = []
     q_sizes = []
+    q_sizes = []
+    q_error=[]
+    q_means=[]
     f_sizes = []
     f_error=[]
     f_means=[]
     for size in range(6): # Ignore last size, was trained with different temp. drop
+        y=[]
         for copy in range(6):
             model = 'q_' + str(size) + '_' + str(copy) +',10000'
             if model in elo:
                 q_scores.append(elo[model])
-                q_sizes.append(par[i])
+                y.append(elo[model])
+        q_error.append(np.std(y))
+        q_means.append(np.mean(y))
+        q_sizes.append(par[i])
         i += 1
         y = []
         for copy in range(4):
@@ -98,12 +105,9 @@ def plot_oware_size_scaling():
         f_means.append(np.mean(y))
         f_sizes.append(par[i])
         i += 1
-    #plt.scatter(q_sizes, q_scores, label='Temp. drop = 50')
-    print(f_error)
-    print(f_sizes)
-    print(f_means)
-    plt.errorbar(f_sizes, f_means, yerr=[f_error, f_error], fmt='o')#, label='Temp. drop = 15')
-    #plt.xscale('log')
+    plt.errorbar(q_sizes, q_means, yerr=[q_error, q_error], fmt='o', label='Temp. drop = 50')
+    plt.errorbar(f_sizes, f_means, yerr=[f_error, f_error], fmt='o', label='Temp. drop = 15')
+    plt.xscale('log')
     fig.epilogue()
     fig.save('oware_size_scaling')
 
