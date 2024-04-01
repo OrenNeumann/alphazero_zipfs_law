@@ -112,3 +112,23 @@ def plot_oware_size_scaling():
     fig.epilogue()
     fig.save('oware_size_scaling')
 
+
+def plot_new_size_scaling():
+    dir_name = '../matches/oware_s/'
+    r = BayesElo()
+    agents = PlayerNums()
+
+    ######## load models ########
+    models = []
+    # Enumerate self-matches models
+    for i in range(7):
+        for j in range(1):
+            models.append('q_' + str(i) + '_' + str(j))
+
+    for model in tqdm(models, desc='Loading matches'):
+        matches = np.load(dir_name + '/matrix.npy')
+        agents.add(model, 10000)
+        for i, j in combinations(range(len(matches)), 2):
+            num_i = agents.num(models[i], 10000)
+            num_j = agents.num(models[j], 10000)
+            r.add_match(num_i, num_j, p=matches[i, j])
