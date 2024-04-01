@@ -70,27 +70,37 @@ def plot_oware_size_scaling():
                 y_label='Elo', 
                 title='Oware size scaling',
                 text_font=font, 
-                number_font=font_num)
+                number_font=font_num,
+                legend=True)
     fig.preamble()
 
     i= 0
-    scores = []
-    sizes = []
-    for size in range(7):
-        for copy in range(4):
+    q_scores = []
+    f_scores = []
+    q_sizes = []
+    f_sizes = []
+    f_errormin=[]
+    f_errormax=[]
+    for size in range(6): # Ignore last size, was trained with different temp. drop
+        for copy in range(6):
             model = 'q_' + str(size) + '_' + str(copy) +',10000'
             if model in elo:
-                scores.append(elo[model])
-                sizes.append(par[i])
+                q_scores.append(elo[model])
+                q_sizes.append(par[i])
         i += 1
-        if size != 7:
-            for copy in range(4):
-                model = 'f_' + str(size) + '_' + str(copy) +',10000'
-                if model in elo:
-                    scores.append(elo[model])
-                    sizes.append(par[i])
-            i += 1
-    plt.scatter(sizes, scores)
+        y = []
+        for copy in range(4):
+            model = 'f_' + str(size) + '_' + str(copy) +',10000'
+            if model in elo:
+                f_scores.append(elo[model])
+                y.append(elo[model])
+                f_sizes.append(par[i])
+
+        f_errormin.extend([-np.std(y)]*4)
+        f_errormax.extend([+np.std(y)]*4)
+        i += 1
+    plt.scatter(q_sizes, q_scores, label='Temp. drop = 50')
+    plt.errorbar(f_sizes, f_scores, yerr=[f_errormin, f_errormax], fmt='o', label='Temp. drop = 15')
     plt.xscale('log')
     fig.epilogue()
     fig.save('oware_size_scaling')
