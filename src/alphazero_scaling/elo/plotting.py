@@ -132,3 +132,23 @@ def plot_new_size_scaling():
             num_i = agents.num(models[i], 10000)
             num_j = agents.num(models[j], 10000)
             r.add_match(num_i, num_j, p=matches[i, j])
+    elo = r.extract_elo(agents)
+    
+    font = 18 - 2
+    font_num = 16 - 2
+    fig = Figure(x_label='Neural net parameters', 
+                y_label='Elo', 
+                title='Oware size scaling',
+                text_font=font, 
+                number_font=font_num)
+    fig.preamble()
+
+    par = np.load('src/config/parameter_counts/oware.npy')
+    scores=[]
+    for size in range(7): 
+        model = 'q_' + str(size) + '_0,10000'
+        scores.append(elo[model])
+    plt.errorbar(par, scores, fmt='-o')
+    plt.xscale('log')
+    fig.epilogue()
+    fig.save('oware_size_scaling')
