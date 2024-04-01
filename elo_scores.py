@@ -1,4 +1,4 @@
-from src.alphazero_scaling.elo.Bayesian_Elo import bayeselo
+from src.alphazero_scaling.elo.utils import PlayerNums, BayesElo
 import numpy as np
 from tqdm import tqdm
 from itertools import combinations
@@ -9,35 +9,7 @@ import matplotlib.pyplot as plt
 
 checkpoints = [20, 30, 50, 70, 100, 150, 230, 340, 510, 770, 1150, 1730, 2590, 3880, 5820, 8730, 10000]
 dir_name = '../matches/oware_base/'
-r = bayeselo.ResultSet()
-
-
-def add_match(n, m, p):
-    for k in range(800):
-        # just say we had 1600 games and none of them tied:
-        r.append(n, m, int(k < p * 800) * 2)
-        r.append(m, n, int(k > p * 800) * 2)
-
-
-class PlayerNums(object):
-    def __init__(self):
-        self.n = 0
-        self.d = dict()
-
-    def add(self, model, checkpoint):
-        player = model + '/' + str(checkpoint)
-        if player not in self.d:
-            self.d[player] = self.n
-            self.n += 1
-
-    def num(self, model, checkpoint):
-        return self.d[model + '/' + str(checkpoint)]
-
-    def names(self):
-        """ return dict keys in order of values """
-        return sorted(self.d, key=self.d.get)
-
-
+r = BayesElo()
 agents = PlayerNums()
 
 ######## load fixed-size models ########
@@ -58,7 +30,7 @@ for model in tqdm(fixed_size_models, desc='Loading fixed-size matches'):
     for i, j in combinations(range(len(matches)), 2):
         num_i = agents.num(model, checkpoints[i])
         num_j = agents.num(model, checkpoints[j])
-        add_match(num_i, num_j, p=matches[i, j])
+        r.add_match(num_i, num_j, p=matches[i, j])
 
 ######## load fixed-checkpoint models ########
 
@@ -90,27 +62,12 @@ for cp in tqdm(checkpoints, desc='Loading fixed-checkpoint matches'):
     for i, j in combinations(range(len(matches)), 2):
         num_i = agents.num(fixed_checkpoint_models[i], cp)
         num_j = agents.num(fixed_checkpoint_models[j], cp)
-        add_match(num_i, num_j, p=matches[i, j])
+        r.add_match(num_i, num_j, p=matches[i, j])
 
 ######## Extract Elo ratings ########
 
-e = bayeselo.EloRating(r, agents.names())
-e.offset(1000)
-e.mm()
-e.exact_dist()
-print(e)
 
-
-def _extract_elo(elo_rating):
-    x = str(elo_rating).split("\n")
-    players = [row.split()[1] for row in x[1:-1]]
-    scores = [int(row.split()[2]) for row in x[1:-1]]
-    scores = np.array(scores) - min(scores)
-    elos = dict(zip(players, scores))
-    return elos
-
-
-elo = _extract_elo(e)
+elo = r.extract_elo(agents)
 
 ######## plot oware size scaling ########
 
@@ -131,14 +88,14 @@ scores = []
 sizes = []
 for size in range(7):
     for copy in range(4):
-        model = 'q_' + str(size) + '_' + str(copy) +'/10000'
+        model = 'q_' + str(size) + '_' + str(copy) +',10000'
         if model in elo:
             scores.append(elo[model])
             sizes.append(par[i])
     i += 1
     if size != 7:
         for copy in range(4):
-            model = 'f_' + str(size) + '_' + str(copy) +'/10000'
+            model = 'f_' + str(size) + '_' + str(copy) +',10000'
             if model in elo:
                 scores.append(elo[model])
                 sizes.append(par[i])
