@@ -100,13 +100,13 @@ def plot_oware_size_scaling():
         f_means.append(np.mean(y))
         f_sizes.append(par[i])
         i += 1
-    plt.scatter(q_sizes, q_scores, label='Temp. drop = 50')
+    #plt.scatter(q_sizes, q_scores, label='Temp. drop = 50')
     print(f_errormin)
     print(f_errormax)
     print(f_sizes)
     print(f_scores)
-    plt.errorbar(f_sizes, f_means, yerr=[f_errormin, f_errormax], fmt='o', label='Temp. drop = 15')
-    plt.xscale('log')
+    plt.errorbar(f_sizes, f_means, yerr=[f_errormin, f_errormax], fmt='o')#, label='Temp. drop = 15')
+    #plt.xscale('log')
     fig.epilogue()
     fig.save('oware_size_scaling')
 
