@@ -119,19 +119,18 @@ def plot_new_size_scaling():
     agents = PlayerNums()
 
     ######## load models ########
+    print('Loading matches')
     models = []
-    # Enumerate self-matches models
     for i in range(7):
         for j in range(1):
             models.append('q_' + str(i) + '_' + str(j))
-
-    for model in tqdm(models, desc='Loading matches'):
-        matches = np.load(dir_name + '/matrix.npy')
+    matches = np.load(dir_name + '/matrix.npy')
+    for model in models:
         agents.add(model, 10000)
-        for i, j in combinations(range(len(matches)), 2):
-            num_i = agents.num(models[i], 10000)
-            num_j = agents.num(models[j], 10000)
-            r.add_match(num_i, num_j, p=matches[i, j])
+    for i, j in combinations(range(len(matches)), 2):
+        num_i = agents.num(models[i], 10000)
+        num_j = agents.num(models[j], 10000)
+        r.add_match(num_i, num_j, p=matches[i, j])
     elo = r.extract_elo(agents)
     
     font = 18 - 2
