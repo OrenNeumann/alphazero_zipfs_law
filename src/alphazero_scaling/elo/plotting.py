@@ -95,8 +95,8 @@ def plot_oware_size_scaling():
             if model in elo:
                 f_scores.append(elo[model])
                 y.append(elo[model])
-        f_errormin.append([-np.std(y)])
-        f_errormax.append([+np.std(y)])
+        f_errormin.append(-np.std(y))
+        f_errormax.append(np.std(y))
         f_means.append(np.mean(y))
         f_sizes.append(par[i])
         i += 1
