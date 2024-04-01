@@ -106,8 +106,8 @@ def plot_oware_size_scaling():
         f_sizes.append(par[i])
         i += 1
     
-    plt.errorbar(q_sizes, q_means, yerr=[q_error, q_error], label='Temp. drop = 50')
-    plt.errorbar(f_sizes, f_means, yerr=[f_error, f_error], label='Temp. drop = 15')
+    plt.errorbar(q_sizes, q_means, yerr=[q_error, q_error], fmt='-o', label='Temp. drop = 50')
+    plt.errorbar(f_sizes, f_means, yerr=[f_error, f_error], fmt='-o', label='Temp. drop = 15')
     plt.xscale('log')
     fig.epilogue()
     fig.save('oware_size_scaling')
