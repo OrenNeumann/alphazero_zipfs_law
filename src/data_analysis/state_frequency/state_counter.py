@@ -21,7 +21,6 @@ ACTION_STRINGS = {
 }
 
 
-
 class StateCounter(object):
     """ Class for collecting and analyzing game states from AlphaZero logfiles.
         Args:
@@ -47,6 +46,7 @@ class StateCounter(object):
             and Pentago, where a stone is added every turn). That is not the case for Oware and checkers,
             which is why we average that number.
     """
+
     def __init__(self,
                  env: str,
                  save_serial=False,
@@ -129,9 +129,9 @@ class StateCounter(object):
         if not board.is_terminal():
             raise Exception('Game ended prematurely. Maybe a corrupted file?')
         return board, keys
-    
+
     def _update_frequencies(self, keys):
-        self.frequencies.update(keys)          
+        self.frequencies.update(keys)
 
     def _update_info_counters(self, board, keys):
         """ Update the turn and value counters.
@@ -139,7 +139,7 @@ class StateCounter(object):
         if self.save_turn_num:
             end = board.move_number() + 1
             for turn, key in enumerate(keys, start=1):
-                self.turns_played[key] += turn 
+                self.turns_played[key] += turn
                 self.turns_to_end[key] += end - turn
         if self.save_value:
             game_return = board.player_return(0)
@@ -180,6 +180,7 @@ class RandomGamesCounter(StateCounter):
     """ A StateCounter that collects data from random games, generated on the fly.
         A way to check scaling at T = infinity.
         """
+
     def __init__(self,
                  env: str,
                  save_serial=False,
@@ -189,25 +190,24 @@ class RandomGamesCounter(StateCounter):
                          save_serial=save_serial,
                          save_turn_num=save_turn_num,
                          save_value=save_value)
-        
-        def collect_data(self, n=25_000 * 80):
-            if self.normalized:
-                raise Exception('Data already normalized, reset counters to collect new data.')
-            for episode in tqdm(range(n), desc='Generating games'):
-                board, keys = self._process_game()
-                self._update_frequencies(keys)
-                self._update_info_counters(board, keys)
 
-        def _process_game(self):
-            board = self.game.new_initial_state()
-            keys = list()
-            while not board.is_terminal():
-                board.apply_action(np.random.choice(board.legal_actions()))
-                if board.is_terminal():
-                    break
-                key = str(board)
-                keys.append(key)
-                if self.save_serial and key not in self.serials.keys():
-                    self.serials[key] = board.serialize()
-            return board, keys
+    def collect_data(self, n=25_000 * 80, *args, **kwargs):
+        if self.normalized:
+            raise Exception('Data already normalized, reset counters to collect new data.')
+        for episode in tqdm(range(n), desc='Generating games'):
+            board, keys = self._process_game()
+            self._update_frequencies(keys)
+            self._update_info_counters(board, keys)
 
+    def _process_game(self, *args, **kwargs):
+        board = self.game.new_initial_state()
+        keys = list()
+        while not board.is_terminal():
+            board.apply_action(np.random.choice(board.legal_actions()))
+            if board.is_terminal():
+                break
+            key = str(board)
+            keys.append(key)
+            if self.save_serial and key not in self.serials.keys():
+                self.serials[key] = board.serialize()
+        return board, keys
