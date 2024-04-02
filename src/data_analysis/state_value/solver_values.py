@@ -1,12 +1,10 @@
-
-
 import numpy as np
 import subprocess
 from subprocess import PIPE
+import pyspiel
 
 
-
-def connect_four_solver(state):
+def connect_four_solver(state, return_policy=False):
     """ Produces an optimal policy for the current state.
 
         This code uses the open source solver available in:
@@ -17,7 +15,7 @@ def connect_four_solver(state):
         Hit 'make' and copy the call_solver.sh script into the folder.
         Then download the openings book here: (7x6.book)
         https://github.com/PascalPons/connect4/releases/tag/book
-        and place it in the parent directory.
+        and place it in the top directory.
         """
 
     # The solver starts counting moves from 1:
@@ -34,16 +32,38 @@ def connect_four_solver(state):
 
     mask = state.legal_actions_mask()
     p = np.extract(mask, scores)
-    if (p > 0).any():  # Win
-        v = 1
-        p[p < np.amax(p)] = 0
-        p[p != 0] = 1
-    elif (p == 0).any():  # Draw
-        v = 0
-        p = (p == 0).astype(int)
-    else:  # Loss
-        v = -1
-        p[p < np.amax(p)] = 0
-        p[p != 0] = 1
-    p = p / sum(p)
-    return v, p
+    # v=[1,0,-1] for win, draw, loss
+    v = np.sign(p.sum()) if p.sum() != 0 else 0
+    if return_policy:
+        if (p > 0).any():  # Win
+            p[p < np.amax(p)] = 0
+            p[p != 0] = 1
+        elif (p == 0).any():  # Draw
+            p = (p == 0).astype(int)
+        else:  # Loss
+            p[p < np.amax(p)] = 0
+            p[p != 0] = 1
+        return v, p / sum(p)
+    return v
+
+
+def get_solver_value_estimator():
+    """
+    Create an estimator based on the Connect 4 solver.
+    Only supported for Connect 4, could add Pentago.
+    """
+    game = pyspiel.load_game('connect_four')
+
+    def solver_value(serial_state: str) -> float:
+        """
+        Calculate ground truth value given by the solver.
+        Returns the value for the current player.
+        """
+        state = game.deserialize_state(serial_state)
+        if state.is_terminal():
+            # if the state is terminal, the model has nothing to predict.
+            raise Exception('Terminal state encountered')
+        solver_v = connect_four_solver(state)
+        return solver_v * (1 - 2 * state.current_player())
+
+    return solver_value
