@@ -4,15 +4,14 @@ import matplotlib.pyplot as plt
 import matplotlib
 from src.data_analysis.gather_agent_data import gather_data
 from src.data_analysis.data_utils import sort_by_frequency
-from src.plotting.plot_utils import Figure, BarFigure, incremental_bin
+from src.plotting.plot_utils import Figure, incremental_bin
 
 
 """
-Plot turn related data: how late/early in the game do states appear.
+Plot the effect of different cutoff values on the state frequency distribution.
+At cutoff=50, there is a tiny change, and by 80 the change is very visible, but still small.
 """
-# theres a cool plot to be made here, overlaying data from different cutoff values.
-# At 50, there is a tiny change, and by 80 the change is very visible, but still small.
-# overlay the ratio plot, and also the turn num. plot.
+# TODO: adjust counter size so all cutoffs have ~same number of states.
 
 # Choose game type:
 game_num = 2
