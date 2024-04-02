@@ -13,7 +13,7 @@ class AlphaZeroTurnCutoff(base.AlphaZero):
     terminal state is not included in training).
     Cutoff is disabled every so often, so the agent can learn to play late-game states.
     """
-    def __init__(self, cutoff=50, disable_rate=0.01, end_tolerance=0, **kwargs):
+    def __init__(self, cutoff=3, disable_rate=0.01, end_tolerance=0, **kwargs):
         super().__init__(**kwargs)
         self.cutoff = cutoff
         self.end_tolerance = end_tolerance
@@ -48,6 +48,7 @@ class AlphaZeroTurnCutoff(base.AlphaZero):
             ###
             check = True
             l = len(trajectory.states)
+            
             if random.random() > self.disable_rate:
                 cut = max(self.cutoff, len(trajectory.states) - self.end_tolerance)
                 trajectory.states = trajectory.states[:cut]
@@ -58,7 +59,6 @@ class AlphaZeroTurnCutoff(base.AlphaZero):
                     if len(trajectory.states) != cut:
                         raise ValueError(f"Cut-off failed: {len(trajectory.states)} -> {l}") 
                     ###
-            raise ValueError(f"Cut-off failed: {len(trajectory.states)} -> {l}") 
             num_trajectories += 1
             num_states += len(trajectory.states)
             self.game_lengths.add(len(trajectory.states))
