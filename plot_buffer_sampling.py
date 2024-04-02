@@ -1,6 +1,6 @@
 import matplotlib.pyplot as plt
 import numpy as np
-from src.data_analysis.state_frequency.buffer_counter import BufferCounter, UniqueBufferCounter
+from src.data_analysis.state_frequency.counting_mods.buffer_counter import BufferCounter, UniqueBufferCounter
 from src.general.general_utils import models_path, game_path, fit_power_law
 from src.plotting.plot_utils import Figure
 

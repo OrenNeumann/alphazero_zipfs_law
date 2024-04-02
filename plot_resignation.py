@@ -1,7 +1,7 @@
 import matplotlib.pyplot as plt
 import numpy as np
 from src.data_analysis.state_frequency.state_counter import StateCounter
-from src.data_analysis.state_frequency.resign_counter import ResignationCounter, get_model
+from src.data_analysis.state_frequency.counting_mods.resign_counter import ResignationCounter, get_model
 from src.general.general_utils import models_path
 from src.data_analysis.data_utils import sort_by_frequency
 from src.plotting.plot_utils import Figure
