@@ -18,7 +18,7 @@ games = ['connect_four', 'pentago', 'oware', 'checkers']
 
 env = games[game_num]
 
-save_data = False
+save_data = True
 
 data_labels = [0, 1, 2, 3, 4, 5, 6]  # for oware no 6
 # data_labels = [0,1]
@@ -67,8 +67,7 @@ fig = Figure(x_label='State rank',
              y_label='Frequency',
              text_font=font,
              number_font=font_num,
-             legend=True,
-             fig_num=2)
+             legend=True)
 for cutoff in cutoffs[::-1]:
     freq = freqs[cutoff]
     x = np.arange(len(freq)) + 1
@@ -80,25 +79,18 @@ fig.save('zipf_distribution_cutoff')
 
 
 print('Plotting turn distributions')
-fig = Figure(x_label='State rank', text_font=font, number_font=font_num)
-
-def plot_turns(y, name, y_label, cutoff):
-    fig.fig_num += 1
-    fig.preamble()
-    x = np.arange(len(y)) + 1
-    plt.scatter(x, y, s=40 * 3 / (10 + x), alpha=1, color='green', label='Cutoff: ' + str(cutoff)) # color gradient
-    plt.xscale('log')
-    plt.yscale('log')
-    fig.y_label = y_label
-    fig.epilogue()
-    fig.save(name)
-
-
-print('Plot raw data (to see U-shape)')
+fig = Figure(x_label='State rank', text_font=font, number_font=font_num, legend=True)
+fig.fig_num += 1
+fig.preamble()
 for cutoff in cutoffs[::-1]:
     y = ys[cutoff]
-    plot_turns(y, name='turns_taken_cutoff', y_label='Turn num.', cutoff=cutoff)
-
+    x = np.arange(len(y)) + 1
+    plt.scatter(x, y, s=40 * 3 / (10 + x), label='Cutoff: ' + str(cutoff))
+plt.xscale('log')
+plt.yscale('log')
+fig.y_label = 'Turn num.'
+fig.epilogue()
+fig.save('turns_taken_cutoff')
 
 
 fig.fig_num += 1
