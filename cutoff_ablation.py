@@ -25,7 +25,7 @@ save_data = True
 data_labels = [0, 1, 2, 3, 4, 5, 6]  # for oware no 6
 # data_labels = [0,1]
 
-cutoffs = [50, 65, 80, 100, 120, 140]
+cutoffs = [50, 65, 80, 100, 120, 140, 160, 180, 200]
 freqs = {cutoff: [] for cutoff in cutoffs}
 ys = {cutoff: [] for cutoff in cutoffs}
 ratio_data = {cutoff: [] for cutoff in cutoffs}
@@ -33,7 +33,7 @@ ratio_data = {cutoff: [] for cutoff in cutoffs}
 
 def analyze_counts(cutoff):
     print('Analyzing cutoff:', cutoff)
-    state_counter = gather_data(env, data_labels, cutoff=cutoff, max_file_num=2, save_turn_num=True)
+    state_counter = gather_data(env, data_labels, cutoff=cutoff, max_file_num=10, save_turn_num=True)
     state_counter.prune_low_frequencies(10)
     turns_played = state_counter.turns_played
     board_counter = state_counter.frequencies
