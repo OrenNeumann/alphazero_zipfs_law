@@ -58,6 +58,7 @@ class AlphaZeroTurnCutoff(base.AlphaZero):
                     if len(trajectory.states) != cut:
                         raise ValueError(f"Cut-off failed: {len(trajectory.states)} -> {l}") 
                     ###
+            raise ValueError(f"Cut-off failed: {len(trajectory.states)} -> {l}") 
             num_trajectories += 1
             num_states += len(trajectory.states)
             self.game_lengths.add(len(trajectory.states))
