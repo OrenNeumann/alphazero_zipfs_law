@@ -10,7 +10,7 @@ Plot turn related data: how late/early in the game do states appear.
 """
 
 # Choose game type:
-game_num = 3
+game_num = 2
 games = ['connect_four', 'pentago', 'oware', 'checkers']
 
 env = games[game_num]
@@ -21,8 +21,9 @@ save_data = False
 data_labels = [0, 1, 2, 3, 4, 5, 6]  # for oware no 6
 # data_labels = [0,1]
 
-state_counter = gather_data(env, data_labels, max_file_num=22, save_turn_num=True)
-state_counter.prune_low_frequencies(10)
+state_counter = gather_data(env, data_labels, max_file_num=20, save_turn_num=True)
+#state_counter.prune_low_frequencies(10)
+state_counter.prune_low_frequencies(2)
 turns_played = state_counter.turns_played
 turns_to_end = state_counter.turns_to_end
 board_counter = state_counter.frequencies
@@ -34,8 +35,23 @@ x = np.arange(n) + 1
 font = 18 - 2
 font_num = 16 - 2
 
-fig = Figure(x_label='State rank', text_font=font, number_font=font_num)
+print('Plotting zipf distribution')
+fig = Figure(x_label='State rank',
+             y_label='Frequency',
+             text_font=font,
+             number_font=font_num,
+             legend=True,
+             fig_num=2)
+freq = np.array([item[1] for item in board_counter.most_common()])
+plt.scatter(x, freq, s=40 / (10 + x))
+plt.xscale('log')
+plt.yscale('log')
+fig.epilogue()
+fig.save('zipf_distribution')
 
+
+print('Plotting turn distributions')
+fig = Figure(x_label='State rank', text_font=font, number_font=font_num)
 
 def plot_turns(y, name, y_label, y_logscale=False):
     fig.fig_num += 1
