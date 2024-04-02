@@ -126,8 +126,8 @@ class StateCounter(object):
                 self.serials[key] = board.serialize()
         # Apply final action (not counted, it's not trained on and it messes up value loss)
         board.apply_action(board.string_to_action(actions[-1]))
-        if not board.is_terminal():
-            raise Exception('Game ended prematurely. Maybe a corrupted file?')
+        #if not board.is_terminal():
+        #    raise Exception('Game ended prematurely. Maybe a corrupted file?')
         return board, keys
 
     def _update_frequencies(self, keys):
