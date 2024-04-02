@@ -58,7 +58,7 @@ for cutoff in cutoffs:
     analyze_counts(cutoff)
 if save_data:
     with open('../plot_data/turns/cutoff_ablation_' + env + '.pkl', 'wb') as f:
-        pickle.dump([freqs,ys], f)
+        pickle.dump([freqs, ys, ratio_data], f)
 font = 18 - 2
 font_num = 16 - 2
 
@@ -71,12 +71,11 @@ fig = Figure(x_label='State rank',
 for cutoff in cutoffs[::-1]:
     freq = freqs[cutoff]
     x = np.arange(len(freq)) + 1
-    plt.scatter(x, freq, s=40 / (10 + x), label='Cutoff: ' + str(cutoff)) # color gradient
+    plt.scatter(x, freq, s=40 / (10 + x), label='Cutoff: ' + str(cutoff))  # color gradient
 plt.xscale('log')
 plt.yscale('log')
 fig.epilogue()
 fig.save('zipf_distribution_cutoff')
-
 
 print('Plotting turn distributions')
 fig = Figure(x_label='State rank', text_font=font, number_font=font_num, legend=True)
@@ -92,12 +91,11 @@ fig.y_label = 'Turn num.'
 fig.epilogue()
 fig.save('turns_taken_cutoff')
 
-
 fig.fig_num += 1
 fig.preamble()
 for cutoff in cutoffs[::-1]:
     bin_x, ratio = ratio_data[cutoff]
-    plt.plot(bin_x, ratio, label='Cutoff: ' + str(cutoff)) # color gradient
+    plt.plot(bin_x, ratio, label='Cutoff: ' + str(cutoff))  # color gradient
 plt.xscale('log')
 plt.yscale('linear')
 fig.y_label = 'Late turn ratio'
