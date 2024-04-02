@@ -6,12 +6,13 @@ class CutoffCounter(StateCounter):
     """
     Count states when using late-state cutoff.
     'Cutoff' is the number of turns before the end of the game to stop counting states.
-    end_tolerance cuts-off short games by restricting the distance to the final turn.
+    end_cutoff cuts-off short games by restricting the distance to the final turn.
+    end_cutoff=1 is what the base AlphaZero training algo uses.
     """
     def __init__(self, cutoff=80, **kwargs):
         super().__init__(**kwargs)
         self.cutoff = cutoff
-        self.end_tolerance = 1
+        self.end_cutoff = 1
 
     def _process_game(self, game_record):
         """ Process a single game, counting states only until the cutoff point.
@@ -19,10 +20,7 @@ class CutoffCounter(StateCounter):
         board = self.game.new_initial_state()
         actions = re.findall(self.action_string, game_record)
         keys = list()
-        if len(actions) < self.cutoff:
-            cut = len(actions) - self.end_tolerance
-        else:
-            cut = self.cutoff
+        cut = max(self.cutoff, len(actions) - self.end_cutoff)
         for action in actions[:cut]:
             board.apply_action(board.string_to_action(action))
             key = str(board)
