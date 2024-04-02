@@ -74,8 +74,9 @@ class BarFigure(Figure):
         colorbar_colors(): Calculate the color scale for the colorbar.
     """
 
-    def __init__(self, par, **kwargs):
+    def __init__(self, par, colormap='viridis', **kwargs):
         super().__init__(**kwargs)
+        self.cmap = colormap
         self.par = par
 
     def preamble(self, **kwargs):
@@ -83,7 +84,7 @@ class BarFigure(Figure):
         # ax = plt.gca()
         norm = matplotlib.colors.LogNorm(vmin=self.par.min(), vmax=self.par.max())
         # create a scalarmappable from the colormap
-        sm = matplotlib.cm.ScalarMappable(cmap=plt.get_cmap('viridis'), norm=norm)
+        sm = matplotlib.cm.ScalarMappable(cmap=plt.get_cmap(self.cmap), norm=norm)
         cbar = plt.colorbar(sm)
         cbar.ax.tick_params(labelsize=self.number_font)
         cbar.ax.set_ylabel('Parameters', rotation=90, fontsize=self.text_font)
