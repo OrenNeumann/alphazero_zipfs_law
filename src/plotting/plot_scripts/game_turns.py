@@ -144,6 +144,6 @@ def oware_value_loss():
     plt.tight_layout()
     fig.savefig('./plots/oware_value_loss.png', dpi=900)
 
-game_turns()
-#oware_value_loss()
+#game_turns()
+oware_value_loss()
 
