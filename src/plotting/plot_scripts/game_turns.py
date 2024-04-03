@@ -132,10 +132,10 @@ def oware_value_loss():
             axin.set_yscale('log')
             axin.set_ylim(bottom=9*10**-2, top=2.8*10**-1)
             axin.set_xlim(left=10**2, right=2*10**5)
-            axin.set_xticks([])  # Remove x-axis ticks
-            axin.set_yticks([])  # Remove y-axis tick labels
-            axin.tick_params(axis='both', which='major', labelbottom=False, labelleft=False)
-            ax.indicate_inset_zoom(axin, edgecolor="black",linewidth=1.5)
+            #axin.set_xticks([])  # Remove x-axis ticks
+            #axin.set_yticks([])  # Remove y-axis tick labels
+            axin.tick_params(axis='both', which='both', labelsize=0)
+            ax.indicate_inset_zoom(axin, edgecolor="black",linewidth=2)
             ###
 
     norm = matplotlib.colors.LogNorm(vmin=par.min(), vmax=par.max())
