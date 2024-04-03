@@ -135,7 +135,7 @@ def oware_value_loss():
             axin.set_xlim(right=10**5)
             axin.set_xticks([])  # Remove x-axis ticks
             axin.set_yticks([])  # Remove y-axis tick labels
-            ax.tick_params(axis='both', which='major', labelsize=0)
+            axin.tick_params(axis='both', which='major', labelsize=0)
             ax.indicate_inset_zoom(axin, edgecolor="black")
             
             ###
