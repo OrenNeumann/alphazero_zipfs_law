@@ -121,8 +121,8 @@ def oware_value_loss():
         if i==2:
             ax.set_ylabel(r'$\bf{+}$', rotation=0, fontsize=tf+6)
             ax.set_xlim(left=10**0)
-            ###
-            axin = ax.inset_axes([0.02, 0.02, 0.96, 0.48])#, xticklabels=[], yticklabels=[])
+            # Add zoom-in inset
+            axin = ax.inset_axes([0.02, 0.02, 0.96, 0.48])
             for label in data_labels:
                 x = rank_values[label][t]
                 y = loss_values[label][t]
@@ -132,16 +132,13 @@ def oware_value_loss():
             axin.set_yscale('log')
             axin.set_ylim(bottom=9*10**-2, top=2.8*10**-1)
             axin.set_xlim(left=10**2, right=2*10**5)
-            #axin.set_xticks([])  # Remove x-axis ticks
-            #axin.set_yticks([])  # Remove y-axis tick labels
             axin.tick_params(axis='both', which='both', labelsize=0)
             ax.indicate_inset_zoom(axin, edgecolor="black",linewidth=2)
-            ###
 
     norm = matplotlib.colors.LogNorm(vmin=par.min(), vmax=par.max())
     # create a scalarmappable from the colormap
     sm = matplotlib.cm.ScalarMappable(cmap=plt.get_cmap('viridis'), norm=norm)
-    cbar = fig.colorbar(sm, ax=axes[2]) ###
+    cbar = fig.colorbar(sm, ax=axes[2]) # attach to plot 2, rather than to inset
     cbar.ax.tick_params(labelsize=tf)
     cbar.ax.set_ylabel('Parameters', rotation=90, fontsize=tf)
 
