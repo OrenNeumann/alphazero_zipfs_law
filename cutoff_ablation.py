@@ -20,7 +20,7 @@ games = ['connect_four', 'pentago', 'oware', 'checkers']
 
 env = games[game_num]
 
-save_data = False
+save_data = True
 
 data_labels = [0, 1, 2, 3, 4, 5, 6]  # for oware no 6
 # data_labels = [0,1]
