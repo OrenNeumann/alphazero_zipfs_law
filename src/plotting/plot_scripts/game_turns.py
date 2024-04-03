@@ -4,6 +4,7 @@ import pickle
 import numpy as np
 from tqdm import tqdm
 import scienceplots
+from mpl_toolkits.axes_grid1.inset_locator import inset_axes
 
 plt.style.use(['science','nature','grid'])
 
@@ -120,6 +121,18 @@ def oware_value_loss():
         if i==2:
             ax.set_ylabel(r'$\bf{+}$', rotation=0, fontsize=tf+6)
             ax.set_xlim(left=10**0)
+            ###
+            axin = inset_axes(ax, width="60%", height="60%", loc='upper left')
+            for label in data_labels:
+                x = rank_values[label][t]
+                y = loss_values[label][t]
+                y = smooth(y)
+                axin.plot(x, y, color=matplotlib.cm.viridis(color_nums[label]))
+            axin.set_xscale('log')
+            axin.set_yscale('log')
+            axin.tick_params(axis='both', which='major', labelsize=tf - 2)
+            ax.indicate_inset_zoom(axin, edgecolor="black")
+            ###
 
     norm = matplotlib.colors.LogNorm(vmin=par.min(), vmax=par.max())
     # create a scalarmappable from the colormap
