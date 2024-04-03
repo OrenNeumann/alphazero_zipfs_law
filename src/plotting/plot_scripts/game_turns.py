@@ -135,7 +135,7 @@ def oware_value_loss():
             axin.set_xticks([])  # Remove x-axis ticks
             axin.set_yticks([])  # Remove y-axis tick labels
             ax.indicate_inset_zoom(axin, edgecolor="black")
-            ax.set_yticks(axes[1].get_yticks())
+            ax.tick_params(axis='both', which='major', labelsize=tf-2)
             ###
 
     norm = matplotlib.colors.LogNorm(vmin=par.min(), vmax=par.max())
