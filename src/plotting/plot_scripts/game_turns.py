@@ -4,7 +4,6 @@ import pickle
 import numpy as np
 from tqdm import tqdm
 import scienceplots
-from mpl_toolkits.axes_grid1.inset_locator import inset_axes
 
 plt.style.use(['science','nature','grid'])
 
