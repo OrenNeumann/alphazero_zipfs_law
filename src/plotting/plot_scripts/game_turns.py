@@ -131,8 +131,8 @@ def oware_value_loss():
                 axin.plot(x, y, color=matplotlib.cm.viridis(color_nums[label]))
             axin.set_xscale('log')
             axin.set_yscale('log')
-            axin.set_ylim(bottom=8*10**-2)
-            axin.set_xlim(right=2*10**5)
+            axin.set_ylim(bottom=9*10**-2, top=2.5*10**-1)
+            axin.set_xlim(left=10**2, right=2*10**5)
             axin.set_xticks([])  # Remove x-axis ticks
             axin.set_yticks([])  # Remove y-axis tick labels
             axin.tick_params(axis='both', which='major', labelsize=0)
