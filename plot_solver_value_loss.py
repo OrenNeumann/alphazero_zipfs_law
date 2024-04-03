@@ -3,6 +3,7 @@ import pickle
 from src.data_analysis.state_frequency.state_counter import StateCounter
 from src.data_analysis.state_value.value_prediction import get_model_value_estimator
 from src.data_analysis.state_value.solver_values import get_solver_value_estimator
+from src.data_analysis.data_utils import sort_by_frequency
 from src.general.general_utils import models_path, game_path
 import collections
 import matplotlib
@@ -23,26 +24,35 @@ I changed the model evaluator function to work with data chunks rather than indi
 
 """
 
-def save_solver_values(env: str, labels: list[int], max_file_num: int = 1):
+def save_solver_values(env: str, labels: list[int], file_num: int = 1):
     env = 'connect_four'
-    data_labels = [0, 2, 4, 6]
     solver_values = dict()
     board_counter = collections.Counter()
     serial_states = dict()
     state_counter = StateCounter(env, save_serial=True, save_value=True)
-    for label in data_labels:
+    for label in labels:
         num = str(label)
         model_name = 'q_' + num + '_0'
         path = models_path() + '/connect_four_10000/q_' + num + '_0/'
-        state_counter.collect_data(path=path, max_file_num=1)
+        state_counter.collect_data(path=path, max_file_num=file_num)
         # add counts to the counter, and update new serial states:
         board_counter.update(state_counter.frequencies)
         serial_states.update(state_counter.serials)
 
+    #serials = sort_by_frequency(data=serial_states, counter=board_counter)
     solver = get_solver_value_estimator(env)
-    def save_values(chunk_num):
+    solver_values = dict()
+    for key, serial in tqdm(serial_states.items(), desc="Estimating solver values"):
+        solver_values[key] = solver(serial)
+    with open('../plot_data/solver/solver_values_' + env + '.pkl', 'wb') as f:
+        pickle.dump({'board counter': board_counter,
+                     'solver_values': solver_values}, f)
+    """
     with Pool(5) as p:
-        print(p.map(f, [1, 2, 3]))
+        print(p.map(f, [1, 2, 3]))"""
+
+save_solver_values('connect_four', [0, 2, 4, 6], file_num=1)
+
 
 def plot_solver_value_loss():
     env = 'connect_four'
