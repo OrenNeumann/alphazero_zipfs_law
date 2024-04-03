@@ -20,7 +20,7 @@ class CutoffCounter(StateCounter):
         board = self.game.new_initial_state()
         actions = re.findall(self.action_string, game_record)
         keys = list()
-        cut = max(self.cutoff, len(actions) - self.end_cutoff)
+        cut = min(self.cutoff, len(actions) - self.end_cutoff)
         for action in actions[:cut]:
             board.apply_action(board.string_to_action(action))
             key = str(board)
