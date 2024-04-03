@@ -122,7 +122,7 @@ def oware_value_loss():
             ax.set_ylabel(r'$\bf{+}$', rotation=0, fontsize=tf+6)
             ax.set_xlim(left=10**0)
             ###
-            axin = ax.inset_axes([0.02, 0.02, 0.96, 0.46])#, xticklabels=[], yticklabels=[])
+            axin = ax.inset_axes([0.02, 0.02, 0.96, 0.48])#, xticklabels=[], yticklabels=[])
             for label in data_labels:
                 x = rank_values[label][t]
                 y = loss_values[label][t]
@@ -135,7 +135,7 @@ def oware_value_loss():
             axin.set_xticks([])  # Remove x-axis ticks
             axin.set_yticks([])  # Remove y-axis tick labels
             axin.tick_params(axis='both', which='major', labelbottom=False, labelleft=False)
-            ax.indicate_inset_zoom(axin, edgecolor="black")
+            ax.indicate_inset_zoom(axin, edgecolor="black",linewidth=1.5)
             ###
 
     norm = matplotlib.colors.LogNorm(vmin=par.min(), vmax=par.max())
