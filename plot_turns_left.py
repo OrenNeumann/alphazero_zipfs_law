@@ -8,9 +8,6 @@ import matplotlib.pyplot as plt
 """
 Plot turn related data: how late/early in the game do states appear.
 """
-# theres a cool plot to be made here, overlaying data from different cutoff values.
-# At 50, there is a tiny change, and by 80 the change is very visible, but still small.
-# overlay the ratio plot, and also the turn num. plot.
 
 # Choose game type:
 game_num = 2
@@ -24,8 +21,8 @@ save_data = False
 data_labels = [0, 1, 2, 3, 4, 5, 6]  # for oware no 6
 # data_labels = [0,1]
 
-#state_counter = gather_data(env, data_labels, max_file_num=20, save_turn_num=True)
-state_counter = gather_data(env, data_labels, cutoff=80, max_file_num=20, save_turn_num=True)
+state_counter = gather_data(env, data_labels, max_file_num=40, save_turn_num=True)
+#state_counter = gather_data(env, data_labels, cutoff=80, max_file_num=20, save_turn_num=True)
 state_counter.prune_low_frequencies(10)
 turns_played = state_counter.turns_played
 turns_to_end = state_counter.turns_to_end
