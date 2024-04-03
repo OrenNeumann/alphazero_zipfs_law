@@ -122,7 +122,8 @@ def oware_value_loss():
             ax.set_ylabel(r'$\bf{+}$', rotation=0, fontsize=tf+6)
             ax.set_xlim(left=10**0)
             ###
-            axin = inset_axes(ax, width="60%", height="60%", loc='upper left')
+            #axin = inset_axes(ax, width="60%", height="60%", loc='upper left')
+            axin = ax.inset_axes([0, -0.3, 1, 0.3], xticklabels=[], yticklabels=[])
             for label in data_labels:
                 x = rank_values[label][t]
                 y = loss_values[label][t]
@@ -130,14 +131,13 @@ def oware_value_loss():
                 axin.plot(x, y, color=matplotlib.cm.viridis(color_nums[label]))
             axin.set_xscale('log')
             axin.set_yscale('log')
-            axin.tick_params(axis='both', which='major', labelsize=tf - 2)
             ax.indicate_inset_zoom(axin, edgecolor="black")
             ###
 
     norm = matplotlib.colors.LogNorm(vmin=par.min(), vmax=par.max())
     # create a scalarmappable from the colormap
     sm = matplotlib.cm.ScalarMappable(cmap=plt.get_cmap('viridis'), norm=norm)
-    cbar = fig.colorbar(sm)
+    cbar = fig.colorbar(sm, ax=axes[2]) ###
     cbar.ax.tick_params(labelsize=tf)
     cbar.ax.set_ylabel('Parameters', rotation=90, fontsize=tf)
 
