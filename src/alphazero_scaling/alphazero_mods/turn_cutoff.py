@@ -2,7 +2,6 @@ import time
 import random
 from open_spiel.python.utils import spawn
 import src.alphazero_scaling.alphazero_base as base
-from open_spiel.python.algorithms.alpha_zero import model as model_lib
 
 
 class AlphaZeroTurnCutoff(base.AlphaZero):
