@@ -21,8 +21,8 @@ save_data = False
 data_labels = [0, 1, 2, 3, 4, 5, 6]  # for oware no 6
 # data_labels = [0,1]
 
-state_counter = gather_data(env, data_labels, max_file_num=40, save_turn_num=True)
-#state_counter = gather_data(env, data_labels, cutoff=80, max_file_num=20, save_turn_num=True)
+#state_counter = gather_data(env, data_labels, max_file_num=40, save_turn_num=True)
+state_counter = gather_data(env, data_labels, cutoff=50, max_file_num=20, save_turn_num=True)
 state_counter.prune_low_frequencies(10)
 turns_played = state_counter.turns_played
 turns_to_end = state_counter.turns_to_end
