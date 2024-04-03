@@ -131,7 +131,7 @@ def oware_value_loss():
                 axin.plot(x, y, color=matplotlib.cm.viridis(color_nums[label]))
             axin.set_xscale('log')
             axin.set_yscale('log')
-            axin.set_ylim(bottom=5*10**-3)
+            axin.set_ylim(bottom=5*10**-2)
             axin.set_xticks([])  # Remove x-axis ticks
             axin.set_yticks([])  # Remove y-axis tick labels
             ax.indicate_inset_zoom(axin, edgecolor="black")
