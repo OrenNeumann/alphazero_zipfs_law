@@ -1,4 +1,3 @@
-from turtle import right
 import numpy as np
 import pickle
 import matplotlib.pyplot as plt
@@ -12,7 +11,6 @@ from src.plotting.plot_utils import Figure, incremental_bin
 Plot the effect of different cutoff values on the state frequency distribution.
 At cutoff=50, there is a tiny change, and by 80 the change is very visible, but still small.
 """
-# TODO: adjust counter size so all cutoffs have ~same number of states.
 
 # Choose game type:
 game_num = 2
@@ -36,10 +34,10 @@ def get_data(counter, cutoff):
     counter.prune_low_frequencies(10)
     turns_played = counter.turns_played
     board_counter = counter.frequencies
-
+    print('Calc. frequencies and turns')
     freqs[cutoff] = np.array([item[1] for item in board_counter.most_common()])
     ys[cutoff] = sort_by_frequency(data=turns_played, counter=board_counter)
-
+    print('Calc. late turn ratio')
     # Plot percentage of late turns:
     bins = incremental_bin(10 ** 10)
     widths = (bins[1:] - bins[:-1])
@@ -57,7 +55,7 @@ def get_data(counter, cutoff):
 
 for i, cutoff in enumerate(cutoffs):
     print('Analyzing cutoff:', cutoff)
-    file_num = int(20 + 10*(1/(i+1))) # to compensate for low data at low cutoffs
+    file_num = int(15 + 10*(1/(i+1))) # to compensate for low data at low cutoffs
     state_counter = gather_data(env, data_labels, cutoff=cutoff, max_file_num=file_num, save_turn_num=True)
     get_data(state_counter, cutoff)
 state_counter = gather_data(env, data_labels, max_file_num=20, save_turn_num=True)
