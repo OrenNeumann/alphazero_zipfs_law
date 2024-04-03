@@ -58,7 +58,7 @@ for i, cutoff in enumerate(cutoffs):
     file_num = int(10 + 4*(1/(i+1))) # to compensate for low data at low cutoffs
     state_counter = gather_data(env, data_labels, cutoff=cutoff, max_file_num=file_num, save_turn_num=True)
     get_data(state_counter, cutoff)
-state_counter = gather_data(env, data_labels, max_file_num=20, save_turn_num=True)
+state_counter = gather_data(env, data_labels, max_file_num=10, save_turn_num=True)
 get_data(state_counter,cutoff=np.inf)
 
 if save_data:
