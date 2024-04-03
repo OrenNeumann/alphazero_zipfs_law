@@ -25,7 +25,7 @@ save_data = True
 data_labels = [0, 1, 2, 3, 4, 5, 6]  # for oware no 6
 # data_labels = [0,1]
 
-cutoffs = [50, 65, 80, 100, 120, 140, 160, 180, 200]
+cutoffs = [50, 65, 72, 80, 100, 120, 140, 160, 200]
 #cutoffs =[45, 50, 60]
 freqs = {cutoff: [] for cutoff in cutoffs}
 ys = {cutoff: [] for cutoff in cutoffs}
