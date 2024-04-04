@@ -151,3 +151,30 @@ def plot_new_size_scaling():
     plt.xscale('log')
     fig.epilogue()
     fig.save('oware_size_scaling')
+
+"""
+from scipy.optimize import curve_fit
+import numpy as np
+# Define a function that combines two linear functions with a logistic transition
+def logistic_transition(x, a1, b1, a2, b2, c, d):
+    y1 = a1 * x + b1  # First linear function
+    y2 = a2 * x + b2  # Second linear function
+    logistic = 1 / (1 + np.exp(-d * (x - c)))  # Logistic function
+    return y1 * (1 - logistic) + y2 * logistic  # Combine the linear functions with the logistic transition
+# Generate some example data
+x = np.concatenate([np.log10(q_sizes), np.log10(f_sizes)])
+y = np.concatenate([q_means, f_means - 72])
+# Define initial guesses for the parameters
+initial_guesses = [1, 300, -1, 600, 4, 0.5]  # Adjust these values based on your data
+# Fit the logistic transition function to the data with initial guesses
+popt, pcov = curve_fit(logistic_transition, x, y, p0=initial_guesses)
+# Plot the data and the fitted curve
+plt.errorbar(q_sizes, q_means, yerr=[q_error, q_error], fmt='-o', label='Temp. drop = 50')
+plt.errorbar(f_sizes, f_means, yerr=[f_error, f_error], fmt='-o', label='Temp. drop = 15')
+x=np.linspace(2, 5, 100)
+plt.plot(10**x, logistic_transition(x, *popt), color='red', label='Fit 1')
+plt.plot(10**x, logistic_transition(x, *popt)+72, color='red', label='Fit 2')
+plt.legend()
+plt.xscale('log')
+
+"""
