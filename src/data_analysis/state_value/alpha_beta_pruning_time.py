@@ -1,3 +1,4 @@
+import stat
 import numpy as np
 import subprocess
 from subprocess import PIPE
@@ -11,9 +12,12 @@ import collections
 
 import matplotlib.pyplot as plt
 from tqdm import tqdm
+import pyspiel
 """
 Time how long it takes for alpha beta pruning to analyze connect4 states.
 """
+
+game = pyspiel.load_game('connect_four')
 
 def time_alpha_beta_pruning(states):
     times = []
@@ -34,7 +38,7 @@ def save_pruning_time():
     board_counter = collections.Counter()
     serial_states = dict()
     state_counter = StateCounter(env, save_serial=True)
-    for label in [0, 2, 4, 6]:
+    for label in [0]:#, 2, 4, 6]:
         num = str(label)
         path = models_path() + '/connect_four_10000/q_' + num + '_0/'
         state_counter.collect_data(path=path, max_file_num=1)
@@ -55,12 +59,13 @@ def save_pruning_time():
                 number_font=font_num,
                 legend=True,
                 fig_num=2)
+    """
     freq = np.array([item[1] for item in board_counter.most_common()])
     plt.scatter(x, freq, s=40 / (10 + x))
     plt.xscale('log')
     plt.yscale('log')
     fig.epilogue()
-    fig.save('zipf_distribution')
+    fig.save('zipf_distribution')"""
 
     bins = incremental_bin(10 ** 10)
     widths = (bins[1:] - bins[:-1])
@@ -69,10 +74,11 @@ def save_pruning_time():
     times = []
     indices = np.arange(5,10)
     for i in tqdm(indices,desc='Calculating times'):
-        states = keys[int(bin_x[i]):int(bin_x[i+1])]
-        print(states)
-        print(type(states))
-        states = random.sample(states,k=min(10,len(states)))
+        state_keys = keys[int(bin_x[i]):int(bin_x[i+1])]
+        n = min(10,len(state_keys)) # for 2 random indices
+        index = np.random.choice(state_keys.shape[0], n, replace=False)  
+        state_keys = state_keys[index]
+        states = [game.new_initial_state().deserialize(serial_states[key]) for key in state_keys]
         times.append(time_alpha_beta_pruning(states))
 
     fig.fig_num += 1
