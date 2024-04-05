@@ -69,7 +69,7 @@ def save_pruning_time():
     times = []
     indices = np.arange(4,6)
     for i in tqdm(indices,desc='Calculating times'):
-        states = keys[int(bin_x[i]):bin_x[i+1]]
+        states = keys[int(bin_x[i]):int(bin_x[i+1])]
         states = random.sample(states,k=min(10,len(states)))
         times.append(time_alpha_beta_pruning(states))
 
