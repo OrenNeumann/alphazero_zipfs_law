@@ -7,7 +7,7 @@ from src.data_analysis.state_frequency.state_counter import StateCounter
 from src.plotting.plot_utils import Figure, incremental_bin
 from src.general.general_utils import models_path
 import collections
-
+import scipy
 import matplotlib.pyplot as plt
 from tqdm import tqdm
 import pyspiel
@@ -17,12 +17,12 @@ Time how long it takes for alpha beta pruning to analyze connect4 states.
 
 game = pyspiel.load_game('connect_four')
 
-def time_alpha_beta_pruning(states):
-    """ Time the solver on states until 2 minutes have passed."""
+def time_alpha_beta_pruning(states, max_time=2*60):
+    """ Time the solver on states until max_time seconds have passed."""
     times = []
     total_time = time.time()
     for state in states:
-        if time.time() - total_time > 2*60:
+        if time.time() - total_time > max_time:
             break
         moves = ""
         for action in state.full_history():
@@ -34,10 +34,11 @@ def time_alpha_beta_pruning(states):
         times.append(time_end - time_start)
 
     print(times)
-    return np.mean(times), np.std(times)
+    return np.mean(times), np.std(times), scipy.stats.gstd(times)
     
 
 def save_pruning_time():
+    # Gather states
     env = 'connect_four'
     board_counter = collections.Counter()
     serial_states = dict()
@@ -46,7 +47,6 @@ def save_pruning_time():
         num = str(label)
         path = models_path() + '/connect_four_10000/q_' + num + '_0/'
         state_counter.collect_data(path=path, max_file_num=2)
-        # add counts to the counter, and update new serial states:
         board_counter.update(state_counter.frequencies)
         serial_states.update(state_counter.serials)
 
@@ -71,37 +71,47 @@ def save_pruning_time():
     fig.epilogue()
     fig.save('zipf_distribution')
 
+    # Calculate solver times
     bins = incremental_bin(10 ** 10)
     widths = (bins[1:] - bins[:-1])
     bin_x = bins[:-1] + widths / 2
     keys = np.array([key for key,_ in board_counter.most_common()])
     times = []
     standard_devs = []
-    indices = np.arange(20,50)
+    gstds = []
+    indices = np.arange(200,250)#np.arange(1,200)#np.arange(20,50)
+    rng = np.random.default_rng()
     #for i in tqdm(indices,desc='Calculating times'):
     for i in indices:
         print('loop',i)
-        state_keys = keys[int(bin_x[i]):int(bin_x[i+1])]
+        state_keys = keys[int(bins[i]):int(bins[i+1])]
         n = min(100,len(state_keys))
         print('n=',n)
-        sample = np.random.choice(state_keys.shape[0], n, replace=False)  
-        states = [game.deserialize_state(serial_states[key]) for key in state_keys[sample]]
-        t, stdv = time_alpha_beta_pruning(states)
+        sample = rng.choice(state_keys, n, replace=False) 
+        states = [game.deserialize_state(serial_states[key]) for key in sample]
+        if i < 15:
+            t, stdv, gstd= time_alpha_beta_pruning(states, max_time=4*60)
+        else:
+            t, stdv, gstd= time_alpha_beta_pruning(states)
         times.append(t)
         standard_devs.append(stdv)
+        gstds.append(gstd)
     with open('../plot_data/ab_pruning.pkl', 'wb') as f:
         pickle.dump({'x': bin_x[indices],
                      'times': times,
                      'std': standard_devs,
+                     'gstd': gstds,
                      'counter': state_counter}, f)
     fig.fig_num += 1
     fig.preamble()
-    #plt.plot(bin_x[indices], times)
-    plt.errorbar(bin_x[indices], times, yerr=[standard_devs, standard_devs], fmt='-o')
+    # Plot with geometric standard deviation error bars
+    err = [np.array(times)*np.array(gstds), np.array(times)/np.array(gstds)]
+    plt.errorbar(bin_x[indices], times, yerr=err, fmt='-o')
     plt.xscale('log')
     plt.yscale('log')
     fig.y_label = 'CPU time (s)'
     fig.x_label = 'State rank'
+    fig.title = 'Alpha-beta pruning resources'
     fig.epilogue()
     fig.save('search_time')
     
