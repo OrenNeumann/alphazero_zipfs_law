@@ -30,6 +30,7 @@ def time_alpha_beta_pruning(states):
         _ = subprocess.run(["src/alphazero_scaling/connect4-master/call_solver.sh", moves], stdout=PIPE, stderr=PIPE)
         time_end = time.time()
         times.append(time_end - time_start)
+    print(times)
     return np.mean(times)
     
 
@@ -72,10 +73,13 @@ def save_pruning_time():
     bin_x = bins[:-1] + widths / 2
     keys = np.array([key for key,_ in board_counter.most_common()])
     times = []
-    indices = np.arange(50,60)
-    for i in tqdm(indices,desc='Calculating times'):
+    indices = np.arange(40,50)
+    #for i in tqdm(indices,desc='Calculating times'):
+    for i in indices:
+        print('loop',i)
         state_keys = keys[int(bin_x[i]):int(bin_x[i+1])]
         n = min(10,len(state_keys)) # for 2 random indices
+        print('n=',n)
         index = np.random.choice(state_keys.shape[0], n, replace=False)  
         state_keys = state_keys[index]
         states = [game.deserialize_state(serial_states[key]) for key in state_keys]
