@@ -73,7 +73,7 @@ def save_pruning_time():
     bin_x = bins[:-1] + widths / 2
     keys = np.array([key for key,_ in board_counter.most_common()])
     times = []
-    indices = np.arange(40,50)
+    indices = np.arange(30,50)
     #for i in tqdm(indices,desc='Calculating times'):
     for i in indices:
         print('loop',i)
