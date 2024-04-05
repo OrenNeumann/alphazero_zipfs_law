@@ -52,12 +52,14 @@ def save_pruning_time():
             board_counter.update(state_counter.frequencies)
             serial_states.update(state_counter.serials)
 
-        state_counter.prune_low_frequencies(10)
-        with open('../plot_data/ab_pruning/counter.pkl', 'wb') as f:
-            pickle.dump(state_counter, f)
-        font = 18 - 2
-        font_num = 16 - 2
-
+        # Prune
+        board_counter = collections.Counter({k: c for k, c in board_counter.items() if c >= 10})
+        serial_states = {k: v for k, v in serial_states.items() if k in board_counter.keys()}
+        with open('../plot_data/ab_pruning/counters.pkl', 'wb') as f:
+            pickle.dump({'counter': board_counter,
+                         'serials': serial_states}, f)
+        font = 16
+        font_num = 14
         print('Plotting zipf distribution')
         fig = Figure(x_label='State rank',
                     y_label='Frequency',
@@ -75,8 +77,10 @@ def save_pruning_time():
         fig.save('zipf_distribution')
 
     else:
-        with open('../plot_data/ab_pruning/counter.pkl', 'rb') as f:
-            state_counter = pickle.load(f)
+        with open('../plot_data/ab_pruning/counters.pkl', 'rb') as f:
+            counters = pickle.load(f)
+        board_counter = counters['counter']
+        serial_states = counters['serials']
 
     # Calculate solver times
     bins = incremental_bin(10 ** 10)
@@ -107,8 +111,7 @@ def save_pruning_time():
         pickle.dump({'x': bin_x[indices],
                      'times': times,
                      'std': standard_devs,
-                     'gstd': gstds,
-                     'counter': state_counter}, f)
+                     'gstd': gstds}, f)
         
     fig = Figure(text_font=16,
                 number_font=14,
