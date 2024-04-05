@@ -67,9 +67,11 @@ def save_pruning_time():
     bin_x = bins[:-1] + widths / 2
     keys = np.array([key for key,_ in board_counter.most_common()])
     times = []
-    indices = np.arange(4,6)
+    indices = np.arange(5,10)
     for i in tqdm(indices,desc='Calculating times'):
         states = keys[int(bin_x[i]):int(bin_x[i+1])]
+        print(states)
+        print(type(states)
         states = random.sample(states,k=min(10,len(states)))
         times.append(time_alpha_beta_pruning(states))
 
