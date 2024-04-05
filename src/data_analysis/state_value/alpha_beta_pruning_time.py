@@ -39,37 +39,44 @@ def time_alpha_beta_pruning(states, max_time=2*60):
 
 def save_pruning_time():
     # Gather states
-    env = 'connect_four'
-    board_counter = collections.Counter()
-    serial_states = dict()
-    state_counter = StateCounter(env, save_serial=True)
-    for label in [0, 2, 4, 6]:
-        num = str(label)
-        path = models_path() + '/connect_four_10000/q_' + num + '_0/'
-        state_counter.collect_data(path=path, max_file_num=2)
-        board_counter.update(state_counter.frequencies)
-        serial_states.update(state_counter.serials)
+    generate = True
+    if generate:
+        env = 'connect_four'
+        board_counter = collections.Counter()
+        serial_states = dict()
+        state_counter = StateCounter(env, save_serial=True)
+        for label in [0, 2, 4, 6]:
+            num = str(label)
+            path = models_path() + '/connect_four_10000/q_' + num + '_0/'
+            state_counter.collect_data(path=path, max_file_num=10)
+            board_counter.update(state_counter.frequencies)
+            serial_states.update(state_counter.serials)
 
-    state_counter.prune_low_frequencies(10)
+        state_counter.prune_low_frequencies(10)
+        with open('../plot_data/ab_pruning/counter.pkl', 'wb') as f:
+            pickle.dump(state_counter, f)
+        font = 18 - 2
+        font_num = 16 - 2
 
-    font = 18 - 2
-    font_num = 16 - 2
+        print('Plotting zipf distribution')
+        fig = Figure(x_label='State rank',
+                    y_label='Frequency',
+                    text_font=font,
+                    number_font=font_num,
+                    legend=True,
+                    fig_num=2)
+        
+        freq = np.array([item[1] for item in board_counter.most_common()])
+        x = np.arange(len(board_counter)) + 1
+        plt.scatter(x, freq, s=40 / (10 + x))
+        plt.xscale('log')
+        plt.yscale('log')
+        fig.epilogue()
+        fig.save('zipf_distribution')
 
-    print('Plotting zipf distribution')
-    fig = Figure(x_label='State rank',
-                y_label='Frequency',
-                text_font=font,
-                number_font=font_num,
-                legend=True,
-                fig_num=2)
-    
-    freq = np.array([item[1] for item in board_counter.most_common()])
-    x = np.arange(len(board_counter)) + 1
-    plt.scatter(x, freq, s=40 / (10 + x))
-    plt.xscale('log')
-    plt.yscale('log')
-    fig.epilogue()
-    fig.save('zipf_distribution')
+    else:
+        with open('../plot_data/ab_pruning/counter.pkl', 'rb') as f:
+            state_counter = pickle.load(f)
 
     # Calculate solver times
     bins = incremental_bin(10 ** 10)
@@ -96,13 +103,16 @@ def save_pruning_time():
         times.append(t)
         standard_devs.append(stdv)
         gstds.append(gstd)
-    with open('../plot_data/ab_pruning.pkl', 'wb') as f:
+    with open('../plot_data/ab_pruning/data.pkl', 'wb') as f:
         pickle.dump({'x': bin_x[indices],
                      'times': times,
                      'std': standard_devs,
                      'gstd': gstds,
                      'counter': state_counter}, f)
-    fig.fig_num += 1
+        
+    fig = Figure(text_font=16,
+                number_font=14,
+                fig_num=3)
     fig.preamble()
     # Plot with geometric standard deviation error bars
     err = [np.array(times)*np.array(gstds), np.array(times)/np.array(gstds)]
