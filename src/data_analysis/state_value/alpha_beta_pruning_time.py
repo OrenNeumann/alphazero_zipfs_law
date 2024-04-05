@@ -78,7 +78,7 @@ def save_pruning_time():
         n = min(10,len(state_keys)) # for 2 random indices
         index = np.random.choice(state_keys.shape[0], n, replace=False)  
         state_keys = state_keys[index]
-        states = [game.new_initial_state().deserialize(serial_states[key]) for key in state_keys]
+        states = [game.deserialize_state(serial_states[key]) for key in state_keys]
         times.append(time_alpha_beta_pruning(states))
 
     fig.fig_num += 1
