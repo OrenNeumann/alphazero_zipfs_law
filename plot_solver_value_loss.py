@@ -22,6 +22,7 @@ Change the solver code to get the player 0 value.
 ALSO:
 I changed the model evaluator function to work with data chunks rather than individual states.
 
+TODO: state collection bugged, use gather_agent_data.py instead.
 """
 
 def save_solver_values(env: str, labels: list[int], file_num: int = 1):
