@@ -12,7 +12,7 @@ def connect4_loss_plots():
     print('Plotting Connect Four value loss plots')
     tf =12
     # Create figure and subplots
-    fig, axs = plt.subplots(1, 3, figsize=(12, 6))
+    fig, axs = plt.subplots(1, 3, figsize=(12, 4))
 
     with open('../plot_data/ab_pruning/data.pkl', 'rb') as f:
         ab_data = pickle.load(f)
@@ -24,14 +24,14 @@ def connect4_loss_plots():
         x = ab_data['x']
         y = np.array(ab_data['times'])#
         gstd = np.array(ab_data['gstd'])
-        err = [y*gstd, y/gstd]
+        err = [y*(gstd-1), y*(1-1/gstd)]
         ax.errorbar(x, y, yerr=err, fmt='-o')
         ax.set_xscale('log')
         ax.set_yscale('log')
         ax.tick_params(axis='both', which='major', labelsize=tf-2)
         if i==0:
             ax.set_ylabel('Loss',fontsize=tf)
-        if i == 2:
+        if i==2:
             ax.set_ylabel('CPU time (s)',fontsize=tf)
         ax.set_xlabel('State rank',fontsize=tf)
         aligned_title(ax, title=titles[i],font=tf+4)
