@@ -27,7 +27,7 @@ def connect4_loss_plots():
         err = [y*(gstd-1), y*(1-1/gstd)]
         ax.errorbar(x, y, yerr=err, fmt='-o')
         ax.set_xscale('log')
-        ax.set_yscale('log')
+        #ax.set_yscale('log')
         ax.tick_params(axis='both', which='major', labelsize=tf-2)
         if i==0:
             ax.set_ylabel('Loss',fontsize=tf)
