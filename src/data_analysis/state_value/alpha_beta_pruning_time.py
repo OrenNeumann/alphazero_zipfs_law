@@ -23,7 +23,8 @@ def time_alpha_beta_pruning(states, max_time=2*60):
     beginning = time.time()
     for state in states:
         if time.time() - beginning > max_time:
-            break
+            if len(times) != 1:
+                break
         moves = ""
         for action in state.full_history():
             # The solver starts counting moves from 1:
@@ -33,8 +34,8 @@ def time_alpha_beta_pruning(states, max_time=2*60):
         time_end = time.time()
         times.append(time_end - time_start)
     print(times)
-    gm_stdev = 1 if len(times)==1 else gstd(times)
-    return np.mean(times), np.std(times), gmean(times), gm_stdev
+    #gm_stdev = 1 if len(times)==1 else gstd(times)
+    return np.mean(times), np.std(times), gmean(times), gstd(times)
     
 
 def save_pruning_time():
@@ -86,12 +87,14 @@ def save_pruning_time():
             with open('../plot_data/ab_pruning/data.pkl', 'wb') as f:
                 pickle.dump({'x': bin_x[indices],
                             'times': times,
+                            'g_mean': g_mean_times,
                             'std': standard_devs,
                             'gstd': gstds}, f)
         
     with open('../plot_data/ab_pruning/data.pkl', 'wb') as f:
         pickle.dump({'x': bin_x[indices],
                      'times': times,
+                     'g_mean': g_mean_times,
                      'std': standard_devs,
                      'gstd': gstds}, f)
         
@@ -100,8 +103,9 @@ def save_pruning_time():
                 fig_num=3)
     fig.preamble()
     # Plot with geometric standard deviation error bars
-    err = [np.array(times)*np.array(gstds), np.array(times)/np.array(gstds)]
+    err = [np.array(g_mean_times)*np.array(gstds), np.array(g_mean_times)/np.array(gstds)]
     plt.errorbar(bin_x[indices], g_mean_times, yerr=err, fmt='-o')
+    err = [np.array(times)*np.array(gstds), np.array(times)/np.array(gstds)]
     plt.errorbar(bin_x[indices], times, yerr=err, fmt='-o')
     plt.xscale('log')
     plt.yscale('log')
