@@ -68,7 +68,7 @@ def save_pruning_time():
         n = min(100,len(state_keys))
         print('n=',n)
         sample = rng.choice(state_keys, n, replace=False) 
-        if len(sample) < 10:
+        if len(sample) == 1:
             sample = np.concatenate([sample,sample])
         states = [game.deserialize_state(serial_states[key]) for key in sample]
         if i < 5:
