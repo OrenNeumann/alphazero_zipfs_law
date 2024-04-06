@@ -34,7 +34,12 @@ def time_alpha_beta_pruning(states, max_time=2*60):
         times.append(time_end - time_start)
 
     print(times)
-    return np.mean(times), np.std(times), scipy.stats.gstd(times)
+    if len(times) == 1:
+        gstd = 1
+    else:
+        gstd = scipy.stats.gstd(times)
+
+    return np.mean(times), np.std(times), gstd
     
 
 def save_pruning_time():
