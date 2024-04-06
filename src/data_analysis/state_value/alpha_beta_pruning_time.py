@@ -12,6 +12,7 @@ import pyspiel
 
 """
 Time how long it takes for alpha beta pruning to analyze connect4 states.
+This code requires that the connect four opening book ("7x6.book") is NOT present in the parent directory.
 """
 
 game = pyspiel.load_game('connect_four')
@@ -38,7 +39,7 @@ def time_alpha_beta_pruning(states, max_time=2*60):
 
 def save_pruning_time():
     # Gather states
-    generate = True
+    generate = False
     if generate:
         generate_states()
     with open('../plot_data/ab_pruning/counter.pkl', 'rb') as f:
@@ -56,7 +57,7 @@ def save_pruning_time():
     standard_devs = []
     gstds = []
     indices = []
-    bin_range = np.arange(0,len(bins))#np.arange(1,200)#np.arange(20,50)
+    bin_range = np.arange(0,len(bins))
     rng = np.random.default_rng()
     #for i in tqdm(indices,desc='Calculating times'):
     for i in bin_range:
@@ -70,7 +71,9 @@ def save_pruning_time():
         if len(sample) < 10:
             sample = np.concatenate([sample,sample])
         states = [game.deserialize_state(serial_states[key]) for key in sample]
-        if i < 15:
+        if i < 5:
+            t, stdv, g_t, gstd= time_alpha_beta_pruning(states, max_time=4*60)
+        elif i < 15:
             t, stdv, g_t, gstd= time_alpha_beta_pruning(states, max_time=3*60)
         else:
             t, stdv, g_t, gstd= time_alpha_beta_pruning(states)
