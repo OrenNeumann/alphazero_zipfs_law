@@ -4,6 +4,7 @@ import pickle
 import numpy as np
 from tqdm import tqdm
 import scienceplots
+from src.plotting.plot_utils import aligned_title
 
 plt.style.use(['science','nature','grid'])
 
@@ -60,14 +61,8 @@ def game_turns():
     ax5.set_ylim(top=1)
     ax5.legend(loc="upper left", framealpha=0.6, fontsize=tf)
     ax5.tick_params(axis='both', which='major', labelsize=tf)
-
-    # Set titles for each subplot
-    def aligned_title(ax, title):
-        bbox = ax.get_yticklabels()[-1].get_window_extent()
-        x,_ = ax.transAxes.inverted().transform([bbox.x0, bbox.y0])
-        ax.set_title(title, ha='left',x=x,fontsize=tf+4)
-    aligned_title(ax1, r'$\bf{a.}$ Turn distribution')
-    aligned_title(ax5, r'$\bf{b.}$ Turn ratios')
+    aligned_title(ax1, r'$\bf{a.}$ Turn distribution', font=tf+4)
+    aligned_title(ax5, r'$\bf{b.}$ Turn ratios', font=tf+4)
 
     plt.tight_layout()
     fig.savefig('./plots/turns.png', dpi=900)

@@ -113,3 +113,10 @@ def incremental_bin(bin_max):
             break
         bins.append(new_val)
     return np.array(bins)
+
+
+def aligned_title(ax, title,font):
+    """ Align the title to the left."""
+    bbox = ax.get_yticklabels()[-1].get_window_extent()
+    x,_ = ax.transAxes.inverted().transform([bbox.x0, bbox.y0])
+    ax.set_title(title, ha='left',x=x,fontsize=font)
