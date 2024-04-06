@@ -3,14 +3,13 @@ import subprocess
 from subprocess import PIPE
 import time
 import pickle
-from src.data_analysis.state_frequency.state_counter import StateCounter
 from src.plotting.plot_utils import Figure, incremental_bin
-from src.general.general_utils import models_path
-import collections
-import scipy
+from src.data_analysis.gather_agent_data import gather_data
+from scipy.stats import gmean, gstd
 import matplotlib.pyplot as plt
 #from tqdm import tqdm
 import pyspiel
+
 """
 Time how long it takes for alpha beta pruning to analyze connect4 states.
 """
@@ -33,11 +32,8 @@ def time_alpha_beta_pruning(states, max_time=2*60):
         time_end = time.time()
         times.append(time_end - time_start)
     print(times)
-    if len(times) == 1:
-        gstd = 1
-    else:
-        gstd = scipy.stats.gstd(times)
-    return np.mean(times), np.std(times), gstd
+    gm_stdev = 1 if len(times)==1 else gstd(times)
+    return np.mean(times), np.std(times), gmean(times), gm_stdev
     
 
 def save_pruning_time():
@@ -56,6 +52,7 @@ def save_pruning_time():
     bin_x = bins[:-1] + widths / 2
     keys = np.array([key for key,_ in board_counter.most_common()])
     times = []
+    g_mean_times = []
     standard_devs = []
     gstds = []
     indices = []
@@ -74,13 +71,21 @@ def save_pruning_time():
             sample = np.concatenate([sample,sample])
         states = [game.deserialize_state(serial_states[key]) for key in sample]
         if i < 15:
-            t, stdv, gstd= time_alpha_beta_pruning(states, max_time=3*60)
+            t, stdv, g_t, gstd= time_alpha_beta_pruning(states, max_time=3*60)
         else:
-            t, stdv, gstd= time_alpha_beta_pruning(states)
+            t, stdv, g_t, gstd= time_alpha_beta_pruning(states)
         times.append(t)
         standard_devs.append(stdv)
         gstds.append(gstd)
+        g_mean_times.append(g_t)
         indices.append(i)
+        if i%10 == 0:
+            with open('../plot_data/ab_pruning/data.pkl', 'wb') as f:
+                pickle.dump({'x': bin_x[indices],
+                            'times': times,
+                            'std': standard_devs,
+                            'gstd': gstds}, f)
+        
     with open('../plot_data/ab_pruning/data.pkl', 'wb') as f:
         pickle.dump({'x': bin_x[indices],
                      'times': times,
@@ -93,6 +98,7 @@ def save_pruning_time():
     fig.preamble()
     # Plot with geometric standard deviation error bars
     err = [np.array(times)*np.array(gstds), np.array(times)/np.array(gstds)]
+    plt.errorbar(bin_x[indices], g_mean_times, yerr=err, fmt='-o')
     plt.errorbar(bin_x[indices], times, yerr=err, fmt='-o')
     plt.xscale('log')
     plt.yscale('log')
@@ -104,13 +110,7 @@ def save_pruning_time():
     
 
 def generate_states():
-    state_counter = StateCounter(env='connect_four', save_serial=True)
-    for label in [0, 1, 2, 3, 4, 5, 6]:
-        num = str(label)
-        path = models_path() + '/connect_four_10000/q_' + num + '_0/'
-        state_counter.collect_data(path=path, max_file_num=5)
-
-    # Prune
+    state_counter = gather_data(env='connect_four', labels=[0, 1, 2, 3, 4, 5, 6], max_file_num=10, save_serial=True)
     state_counter.prune_low_frequencies(10)
     with open('../plot_data/ab_pruning/counter.pkl', 'wb') as f:
         pickle.dump(state_counter, f)
