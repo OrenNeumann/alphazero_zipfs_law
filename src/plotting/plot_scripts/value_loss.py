@@ -22,12 +22,12 @@ def connect4_loss_plots():
               r'$\bf{c.}$ Alpha-beta-pruning complexity']
     for i, ax in enumerate(axs):
         x = ab_data['x']
-        y = np.array(ab_data['times'])#
+        y = np.array(ab_data['g_mean'])#
         gstd = np.array(ab_data['gstd'])
-        err = [y*(gstd-1), y*(1-1/gstd)]
-        ax.errorbar(x, y, yerr=err, fmt='-o')
+        err = np.array([y*(1-1/gstd), y*(gstd-1)])
+        ax.errorbar(x[:-15], y[:-15], yerr=err, fmt='-o')
         ax.set_xscale('log')
-        #ax.set_yscale('log')
+        ax.set_yscale('log')
         ax.tick_params(axis='both', which='major', labelsize=tf-2)
         if i==0:
             ax.set_ylabel('Loss',fontsize=tf)
