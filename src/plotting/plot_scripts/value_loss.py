@@ -25,7 +25,8 @@ def connect4_loss_plots():
         y = np.array(ab_data['g_mean'])#
         gstd = np.array(ab_data['gstd'])
         err = np.array([y*(1-1/gstd), y*(gstd-1)])
-        ax.errorbar(x[:-15], y[:-15], yerr=err, fmt='-o')
+        c = -15 # Cut off hardware-limit plateau
+        ax.errorbar(x[:c], y[:c], yerr=err[:,:c], fmt='-o')
         ax.set_xscale('log')
         ax.set_yscale('log')
         ax.tick_params(axis='both', which='major', labelsize=tf-2)
