@@ -12,10 +12,10 @@ from tqdm import tqdm
 def plot_capture_differences():
     env = 'oware'
     # Gather states
-    generate = False
+    generate = True
     if generate:
         generate_states()
-    with open('../plot_data/capture_diff/counter.pkl', 'rb') as f:
+    with open('../plot_data/capture_diff/counter_no_pruning.pkl', 'rb') as f:
         state_counter = pickle.load(f)
     board_counter = state_counter.frequencies
     keys = np.array([key for key,_ in board_counter.most_common()])
@@ -68,11 +68,10 @@ def capture_diff(state_str, env):
     return np.abs(score_x - score_o), score_x+score_o
 
 
-
 def generate_states(env='oware'):
     state_counter = gather_data(env, labels=[0, 1, 2, 3, 4, 5, 6], max_file_num=10)
-    state_counter.prune_low_frequencies(10)
-    with open('../plot_data/capture_diff/counter.pkl', 'wb') as f:
+    #state_counter.prune_low_frequencies(10)
+    with open('../plot_data/capture_diff/counter_no_pruning.pkl', 'wb') as f:
         pickle.dump(state_counter, f)
     font = 16
     font_num = 14
