@@ -23,22 +23,28 @@ def plot_capture_differences():
     captured = np.zeros(len(keys))
     diff_counter = Counter()
     for i, key in tqdm(enumerate(keys), desc='Calc. capture differences'):
-        d = capture_diff(key,env)
         diffs[i], captured[i] = capture_diff(key,env)
-        diff_counter[d] += board_counter[key]
+        diff_counter[diffs[i]] += board_counter[key]
     x = np.arange(len(keys)) + 1
     print('Plotting capture distribution')
     fig = Figure(x_label='State rank', y_label='Capture difference', text_font=16, number_font=14, fig_num=2)
     fig.preamble()
     plt.scatter(x, diffs, s=40 * 3 / (10 + x))
-    plt.scatter(x, captured, s=40 * 3 / (10 + x))
     plt.xscale('log')
     plt.yscale('linear')
     fig.epilogue()
     fig.save('capture_diff_distribution')
 
+    fig = Figure(x_label='State rank', y_label='Capture difference', text_font=16, number_font=14, fig_num=3)
+    fig.preamble()
+    plt.scatter(x, captured, s=40 * 3 / (10 + x))
+    plt.xscale('log')
+    plt.yscale('linear')
+    fig.epilogue()
+    fig.save('capture_total')
+
     print('Plotting capture frequency')
-    fig = Figure(x_label='Capture difference', y_label='Frequency', text_font=16, number_font=14, fig_num=3)
+    fig = Figure(x_label='Capture difference', y_label='Frequency', text_font=16, number_font=14, fig_num=4)
     fig.preamble()
     xd=[]
     y=[]
@@ -56,7 +62,7 @@ def capture_diff(state_str, env):
     # calc capture difference in abs value
     if env == 'oware':
         score_x = int(state_str.split('\n')[0][17:19])
-        score_o = int(state_str.split('\n')[0][17:19])
+        score_o = int(state_str.split('\n')[-2][17:19])
     else:
         raise NameError('Environment '+ env + 'not supported')
     return np.abs(score_x - score_o), score_x+score_o
