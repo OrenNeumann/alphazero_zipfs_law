@@ -12,7 +12,7 @@ from tqdm import tqdm
 def plot_capture_differences():
     env = 'oware'
     # Gather states
-    generate = True
+    generate = False
     if generate:
         generate_states()
     with open('../plot_data/capture_diff/counter_no_pruning.pkl', 'rb') as f:
