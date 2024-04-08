@@ -25,6 +25,7 @@ def plot_capture_differences():
     for i, key in tqdm(enumerate(keys), desc='Calc. capture differences'):
         diffs[i], captured[i] = capture_diff(key,env)
         diff_counter[diffs[i]] += board_counter[key]
+    """
     x = np.arange(len(keys)) + 1
     print('Plotting capture distribution')
     fig = Figure(x_label='State rank', y_label='Capture difference', text_font=16, number_font=14, fig_num=2)
@@ -41,7 +42,7 @@ def plot_capture_differences():
     plt.xscale('log')
     plt.yscale('linear')
     fig.epilogue()
-    fig.save('capture_total')
+    fig.save('capture_total')"""
 
     print('Plotting capture frequency')
     fig = Figure(x_label='Capture difference', y_label='Frequency', text_font=16, number_font=14, fig_num=4)
