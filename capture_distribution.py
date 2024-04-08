@@ -9,10 +9,10 @@ from tqdm import tqdm
 """ Plotting frequencies of capture differences (=diff in number of pieces captured by each player)."""
 
 
-def cap_diff():
+def plot_capture_differences():
     env = 'oware'
     # Gather states
-    generate = True
+    generate = False
     if generate:
         generate_states()
     with open('../plot_data/capture_diff/counter.pkl', 'rb') as f:
@@ -20,16 +20,18 @@ def cap_diff():
     board_counter = state_counter.frequencies
     keys = np.array([key for key,_ in board_counter.most_common()])
     diffs = np.zeros(len(keys))
+    captured = np.zeros(len(keys))
     diff_counter = Counter()
     for i, key in tqdm(enumerate(keys), desc='Calc. capture differences'):
         d = capture_diff(key,env)
-        diffs[i] = capture_diff(key,env)
+        diffs[i], captured[i] = capture_diff(key,env)
         diff_counter[d] += board_counter[key]
     x = np.arange(len(keys)) + 1
     print('Plotting capture distribution')
     fig = Figure(x_label='State rank', y_label='Capture difference', text_font=16, number_font=14, fig_num=2)
     fig.preamble()
     plt.scatter(x, diffs, s=40 * 3 / (10 + x))
+    plt.scatter(x, captured, s=40 * 3 / (10 + x))
     plt.xscale('log')
     plt.yscale('linear')
     fig.epilogue()
@@ -41,7 +43,7 @@ def cap_diff():
     xd=[]
     y=[]
     for key, count in diff_counter.most_common():
-        x.append(key)
+        xd.append(key)
         y.append(count)
     plt.scatter(xd, y)
     plt.xscale('linear')
@@ -49,14 +51,17 @@ def cap_diff():
     fig.epilogue()
     fig.save('capture_diff_frequency')
 
+
 def capture_diff(state_str, env):
     # calc capture difference in abs value
     if env == 'oware':
-        score_x = int(state_str.split('\n')[0][17])
-        score_o = int(state_str.split('\n')[0][17])
+        score_x = int(state_str.split('\n')[0][17:19])
+        score_o = int(state_str.split('\n')[0][17:19])
     else:
         raise NameError('Environment '+ env + 'not supported')
-    return np.abs(score_x - score_o)
+    return np.abs(score_x - score_o), score_x+score_o
+
+
 
 def generate_states(env='oware'):
     state_counter = gather_data(env, labels=[0, 1, 2, 3, 4, 5, 6], max_file_num=10)
