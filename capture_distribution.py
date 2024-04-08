@@ -84,3 +84,5 @@ def generate_states(env='oware'):
     plt.yscale('log')
     fig.epilogue()
     fig.save('zipf_distribution')
+
+plot_capture_differences()
