@@ -22,7 +22,7 @@ def plot_capture_differences():
     diffs = np.zeros(len(keys))
     captured = np.zeros(len(keys))
     diff_counter = Counter()
-    for i, key in tqdm(enumerate(keys), desc='Calc. capture differences'):
+    for i, key in enumerate(tqdm(keys), desc='Calc. capture differences'):
         diffs[i], captured[i] = capture_diff(key,env)
         diff_counter[diffs[i]] += board_counter[key]
     x = np.arange(len(keys)) + 1
