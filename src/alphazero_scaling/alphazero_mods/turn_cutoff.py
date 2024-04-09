@@ -50,6 +50,8 @@ class AlphaZeroCaptureCutoff(base.AlphaZero):
         super().__init__(**kwargs)
         self.cutoff = cutoff
         self.disable_rate = disable_rate
+        self.n_cutoffs = 0
+        self.lost_data = 0
 
     def capture_diff(self, state_str):
         if self.config.game == 'oware':
@@ -132,6 +134,10 @@ class AlphaZeroCaptureCutoff(base.AlphaZero):
             for actor_process in self.actors:
                 try: ###
                     trajectory, trajectory_cut = actor_process.queue.get_nowait()
+                    length_diff = len(trajectory.states) - len(trajectory_cut.states)
+                    if length_diff != 0:
+                        self.n_cutoffs += 1
+                        self.lost_data += length_diff
                     if random.random() > self.disable_rate:
                         yield trajectory_cut
                     else:
@@ -143,4 +149,11 @@ class AlphaZeroCaptureCutoff(base.AlphaZero):
                     found += 1
             if found == 0:
                 time.sleep(0.01)  # 10ms
+
+    def _print_step(self, logger, *args, **kwargs):
+        super()._print_step(logger, *args, **kwargs)
+        logger.print("Games cut short: {}. States ignored: {}.".format(
+            self.n_cutoffs, self.lost_data))
+        self.n_cutoffs = 0
+        self.lost_data = 0
 
