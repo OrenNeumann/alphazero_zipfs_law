@@ -22,9 +22,12 @@ def plot_capture_differences():
     diffs = np.zeros(len(keys))
     captured = np.zeros(len(keys))
     diff_counter = Counter()
+    total_counter = Counter()
     for i, key in enumerate(tqdm(keys), desc='Calc. capture differences'):
         diffs[i], captured[i] = capture_diff(key,env)
         diff_counter[diffs[i]] += board_counter[key]
+        total_counter[captured[i]] += board_counter[key]
+    """
     x = np.arange(len(keys)) + 1
     print('Plotting capture distribution')
     fig = Figure(x_label='State rank', y_label='Capture difference', text_font=16, number_font=14, fig_num=2)
@@ -42,7 +45,7 @@ def plot_capture_differences():
     plt.yscale('linear')
     fig.epilogue()
     fig.save('capture_total')
-
+    
     print('Plotting capture frequency')
     fig = Figure(x_label='Capture difference', y_label='Frequency', text_font=16, number_font=14, fig_num=4)
     fig.preamble()
@@ -56,7 +59,20 @@ def plot_capture_differences():
     plt.yscale('log')
     fig.epilogue()
     fig.save('capture_diff_frequency')
-
+    """
+    print('Plotting capture frequency')
+    fig = Figure(x_label='Captured pieces', y_label='Frequency', text_font=16, number_font=14, fig_num=4)
+    fig.preamble()
+    xd=[]
+    y=[]
+    for key, count in diff_counter.most_common():
+        xd.append(key)
+        y.append(count)
+    plt.scatter(xd, y)
+    plt.xscale('linear')
+    plt.yscale('log')
+    fig.epilogue()
+    fig.save('capture_total_frequency')
 
 def capture_diff(state_str, env):
     # calc capture difference in abs value
