@@ -90,7 +90,7 @@ class AlphaZeroCaptureCutoff(base.AlphaZero):
                 trajectory.states.append(self._create_trajectory_state(state, action, policy, root))
                 ###
                 if self.capture_diff(str(state)) < self.cutoff:
-                    trajectory_cut.append(self._create_trajectory_state(state, action, policy, root))
+                    trajectory_cut.states.append(self._create_trajectory_state(state, action, policy, root))
                 ###
                 action_str = state.action_to_string(state.current_player(), action)
                 actions.append(action_str)
