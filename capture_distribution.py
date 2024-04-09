@@ -6,7 +6,9 @@ from src.data_analysis.gather_agent_data import gather_data
 import matplotlib.pyplot as plt
 from tqdm import tqdm
 
-""" Plotting frequencies of capture differences (=diff in number of pieces captured by each player)."""
+""" Plotting frequencies of capture differences (=diff in number of pieces captured by each player).
+could plot the capture frequencies for both pruned and unpruned in the same plot. shows turns is not the only 
+frequency phenomenon."""
 
 
 def plot_capture_differences():
@@ -65,7 +67,7 @@ def plot_capture_differences():
     fig.preamble()
     xd=[]
     y=[]
-    for key, count in diff_counter.most_common():
+    for key, count in total_counter.most_common():
         xd.append(key)
         y.append(count)
     plt.scatter(xd, y)
