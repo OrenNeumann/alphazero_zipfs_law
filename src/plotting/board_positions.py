@@ -71,7 +71,7 @@ def plot_checkers():
 
     print('Plotting subplots')
     # Create a Matplotlib figure and axes
-    fig, axs = plt.subplots(2, 4, figsize=(12, 6))
+    fig, axs = plt.subplots(2, 4, figsize=(12, 8))
     png_dir='plots/board_positions/'
     # Iterate over each name
     for i, name in enumerate(early_turns + late_turns):
