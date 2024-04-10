@@ -182,6 +182,8 @@ class StateCounter(object):
         return np.array([self.turns_played[k] >= threshold for k, _ in self.frequencies.most_common()])
     
     def print_draws(self):
+        if not self.save_value:
+            raise Exception('No draw data saved.')
         print("Drawn {} out of {} games, ratio: {:.3f}".format(self.draws, self.games, self.draws / self.games))
 
 
