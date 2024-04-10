@@ -70,6 +70,29 @@ def plot_checkers():
         plot_checkers_state(keys[index], str(index))
 
     print('Plotting subplots')
+
+    fig = plt.figure(figsize=(12, 8))
+    fig.suptitle('Figure title')
+    names = early_turns + late_turns
+    row_titles = ['Checkers Board states', 'Late-game board states']
+    # create 3x1 subfigs
+    subfigs = fig.subfigures(nrows=2, ncols=1)
+    png_dir = 'plots/board_positions/'
+    # Iterate over each name
+    for row, subfig in enumerate(subfigs):
+        subfig.suptitle(row_titles[row], fontsize=18)
+        # create 1x3 subplots per subfig
+        axs = subfig.subplots(nrows=1, ncols=4)
+        for col, ax in enumerate(axs):
+            name = names[row*4+col]
+            png_file = os.path.join(png_dir, f'checkers-board_{name}.png')
+            img = plt.imread(png_file)
+            ax.imshow(img)
+            ax.axis('off') 
+            ax.set_title(f'State {name}', fontsize=16)
+    plt.tight_layout()
+    fig.savefig('./plots/checkers_positions.png', dpi=600)
+    """
     # Create a Matplotlib figure and axes
     fig, axs = plt.subplots(2, 4, figsize=(12, 8))
     png_dir='plots/board_positions/'
@@ -88,4 +111,4 @@ def plot_checkers():
     create_subtitle(fig, grid[0, ::], 'Checkers board states')
     create_subtitle(fig, grid[1, ::], 'Late-game board states')
     plt.tight_layout()
-    fig.savefig('./plots/checkers_positions.png', dpi=600)
+    fig.savefig('./plots/checkers_positions.png', dpi=600)"""
