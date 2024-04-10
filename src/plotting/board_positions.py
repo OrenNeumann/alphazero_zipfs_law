@@ -2,7 +2,7 @@ from cairosvg import svg2png
 import chess.svg
 from src.data_analysis.gather_agent_data import gather_data
 import pickle
-
+from tqdm import tqdm
 
 checkers_symbols = {'o': 'P', '+': 'p', '8': 'K', '*': 'k'}
 
@@ -47,6 +47,7 @@ def plot_checkers():
         state_counter.prune_low_frequencies(threshold=10)
         with open('../plot_data/board_positions/checkers_counter.pkl', 'wb') as f:
             pickle.dump(state_counter, f)
+    print('Loading data')
     with open('../plot_data/board_positions/checkers_counter.pkl', 'rb') as f:
         state_counter = pickle.load(f)
     #turn_mask = state_counter.late_turn_mask(threshold=40)
@@ -54,5 +55,5 @@ def plot_checkers():
     early_turns = [0,10,100,1000]
     late_turns = [39, 140, 556, 3345]
 
-    for index in early_turns + late_turns:
+    for index in tqdm(early_turns + late_turns):
         plot_checkers_state(keys[index], str(index))
