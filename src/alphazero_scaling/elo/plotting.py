@@ -145,11 +145,19 @@ def plot_new_size_scaling():
     scores=[]
     x=[]
     for size in range(7): 
-        for j in range(2):
+        for j in range(1):
             model = 'q_' + str(size) + '_'+str(j)+',10000'
             scores.append(elo[model])
             x.append(par[size])
-    plt.errorbar(x, scores, fmt='-o')
+    plt.errorbar(x, scores, fmt='o')
+    scores=[]
+    x=[]
+    for size in range(7): 
+        for j in range(1):
+            model = 'q_' + str(size) + '_'+str(j+1)+',10000'
+            scores.append(elo[model])
+            x.append(par[size])
+    plt.errorbar(x, scores, fmt='o')
     plt.xscale('log')
     fig.epilogue()
     fig.save('oware_size_scaling')
