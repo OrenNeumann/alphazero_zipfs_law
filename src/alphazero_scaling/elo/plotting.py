@@ -149,7 +149,7 @@ def plot_new_size_scaling():
             model = 'q_' + str(size) + '_'+str(j)+',10000'
             scores.append(elo[model])
             x.append(par[size])
-    plt.errorbar(x, scores, fmt='o')
+    plt.errorbar(x, scores, fmt='o',label='without disable')
     scores=[]
     x=[]
     for size in range(7): 
@@ -157,8 +157,9 @@ def plot_new_size_scaling():
             model = 'q_' + str(size) + '_'+str(j+1)+',10000'
             scores.append(elo[model])
             x.append(par[size])
-    plt.errorbar(x, scores, fmt='o')
+    plt.errorbar(x, scores, fmt='o',label='with disable')
     plt.xscale('log')
+    plt.legend(fontsize=14)
     fig.epilogue()
     fig.save('oware_size_scaling')
 
