@@ -107,7 +107,7 @@ class StateCounter(object):
         for i in range(max_file_num):
             file_name = f'/log-actor-{i}.txt'
             recorded_games = self._extract_games(path + file_name)
-            games += len(recorded_games)
+            self.games += len(recorded_games)
             # Get board positions from all games and add them to counter
             for game_record in tqdm(recorded_games, desc=f'Processing actor {i}'):
                 board, keys = self._process_game(game_record)
