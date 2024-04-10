@@ -143,8 +143,10 @@ def plot_new_size_scaling():
 
     par = np.load('src/config/parameter_counts/oware.npy')
     scores=[]
-    for model in models:
-        scores.append(elo[model+',10000'])
+    for size in range(7): 
+        for j in range(2):
+            model = 'q_' + str(size) + '_'+str(j)+',10000'
+            scores.append(elo[model])
     plt.errorbar(par, scores, fmt='-o')
     plt.xscale('log')
     fig.epilogue()
