@@ -114,17 +114,15 @@ def plot_oware_size_scaling():
 
 
 def plot_new_size_scaling():
-    dir_name = '../matches/oware_ur/'
+    dir_name = 'oware_ur'
+    path = '../matches/'+dir_name+'/'
     r = BayesElo()
     agents = PlayerNums()
 
     ######## load models ########
     print('Loading matches')
-    models = []
-    for i in range(7):
-        for j in range(1):
-            models.append('q_' + str(i) + '_' + str(j))
-    matches = np.load(dir_name + '/matrix.npy')
+    models = _load_models(dir_name)
+    matches = np.load(path + '/matrix.npy')
     for model in models:
         agents.add(model, 10000)
     for i, j in combinations(range(len(matches)), 2):
@@ -144,13 +142,25 @@ def plot_new_size_scaling():
 
     par = np.load('src/config/parameter_counts/oware.npy')
     scores=[]
-    for size in range(7): 
-        model = 'q_' + str(size) + '_0,10000'
-        scores.append(elo[model])
+    for model in models:
+        scores.append(elo[model+',10000'])
     plt.errorbar(par, scores, fmt='-o')
     plt.xscale('log')
     fig.epilogue()
     fig.save('oware_size_scaling')
+
+def _load_models(dir_name):
+    print('Loading matches')
+    models = []
+    if dir_name == 'oware_ur':
+        for i in range(7):
+            for j in range(1):
+                models.append('q_' + str(i) + '_' + str(j))
+    elif dir_name == 'oware_c/late_turn_cutoffs':
+        for i in range(7):
+            for j in range(2):
+                models.append('q_' + str(i) + '_' + str(j))
+    return models
 
 """
 from scipy.optimize import curve_fit
