@@ -6,6 +6,11 @@ from tqdm import tqdm
 import scienceplots
 from src.plotting.plot_utils import aligned_title
 
+
+"""
+TODO: add horizontal line at turn=40 for oware and checkers.
+"""
+
 plt.style.use(['science','nature','grid'])
 
 def game_turns():
@@ -56,13 +61,13 @@ def game_turns():
             bin_x, ratio =  pickle.load(f)
         ax5.plot(bin_x, ratio, color=colors[i], label=env_names[i], linewidth=3.0)
     ax5.set_xlabel('State rank',fontsize=tf+2)
-    ax5.set_ylabel('Ratio of late ($>40$) turns',fontsize=tf+2)
+    ax5.set_ylabel('Fraction of late turns',fontsize=tf+2)
     ax5.set_xscale('log')
     ax5.set_ylim(top=1)
     ax5.legend(loc="upper left", framealpha=0.6, fontsize=tf)
     ax5.tick_params(axis='both', which='major', labelsize=tf)
     aligned_title(ax1, r'$\bf{a.}$ Turn distribution', font=tf+4)
-    aligned_title(ax5, r'$\bf{b.}$ Turn ratios', font=tf+4)
+    aligned_title(ax5, r'$\bf{b.}$ Late-turn fraction', font=tf+4)
 
     plt.tight_layout()
     fig.savefig('./plots/turns.png', dpi=900)
