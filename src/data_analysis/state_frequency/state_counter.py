@@ -69,6 +69,8 @@ class StateCounter(object):
         self.values = dict()
         self.game = pyspiel.load_game(self.env)
         self.normalized = False
+        self.draws = 0
+        self.games = 0
 
     def reset_counters(self):
         self.frequencies = Counter()
@@ -77,6 +79,8 @@ class StateCounter(object):
         self.turns_to_end = defaultdict(int)
         self.values = dict()
         self.normalized = False
+        self.draws = 0
+        self.games = 0
 
     def _extract_games(self, file_path):
         """ Get the move-list (str) of all games in the file.
@@ -103,6 +107,7 @@ class StateCounter(object):
         for i in range(max_file_num):
             file_name = f'/log-actor-{i}.txt'
             recorded_games = self._extract_games(path + file_name)
+            games += len(recorded_games)
             # Get board positions from all games and add them to counter
             for game_record in tqdm(recorded_games, desc=f'Processing actor {i}'):
                 board, keys = self._process_game(game_record)
@@ -143,6 +148,8 @@ class StateCounter(object):
                 self.turns_to_end[key] += end - turn
         if self.save_value:
             game_return = board.player_return(0)
+            if game_return == 0:
+                self.draws += 1
             for key in keys:
                 self.values[key] = self.values.get(key, 0) + game_return
 
@@ -173,6 +180,9 @@ class StateCounter(object):
         if not self.normalized:
             raise Exception('Normalize first.')
         return np.array([self.turns_played[k] >= threshold for k, _ in self.frequencies.most_common()])
+    
+    def print_draws(self):
+        print("Drawn {} out of {} games, ratio: {:.3f}".format(self.draws, self.games, self.draws / self.games))
 
 
 # check for bugs
