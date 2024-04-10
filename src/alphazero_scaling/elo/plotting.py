@@ -143,11 +143,13 @@ def plot_new_size_scaling():
 
     par = np.load('src/config/parameter_counts/oware.npy')
     scores=[]
+    x=[]
     for size in range(7): 
         for j in range(2):
             model = 'q_' + str(size) + '_'+str(j)+',10000'
             scores.append(elo[model])
-    plt.errorbar(par, scores, fmt='-o')
+            x.append(par[size])
+    plt.errorbar(x, scores, fmt='-o')
     plt.xscale('log')
     fig.epilogue()
     fig.save('oware_size_scaling')
