@@ -2,7 +2,11 @@ from cairosvg import svg2png
 import chess.svg
 from src.data_analysis.gather_agent_data import gather_data
 import pickle
-from tqdm import tqdm
+import matplotlib.pyplot as plt
+import os
+import scienceplots
+
+plt.style.use(['science','nature'])
 
 checkers_symbols = {'o': 'P', '+': 'p', '8': 'K', '*': 'k'}
 
@@ -40,6 +44,14 @@ def plot_checkers_state(state, name):
     svg2png(bytestring=svg_text, write_to='plots/board_positions/checkers-board_'+name+'.png')
 
 
+def create_subtitle(fig, grid, title):
+    row = fig.add_subplot(grid)
+    # the '\n' is important
+    row.set_title(f'{title}\n', fontsize=18)
+    # hide subplot
+    row.set_frame_on(False)
+    row.axis('off')
+
 def plot_checkers():
     save_data = False
     if save_data:
@@ -54,6 +66,26 @@ def plot_checkers():
     keys = [i for i,_ in state_counter.frequencies.most_common()]
     early_turns = [0,10,100,1000]
     late_turns = [39, 140, 556, 3345]
-
-    for index in tqdm(early_turns + late_turns):
+    for index in early_turns + late_turns:
         plot_checkers_state(keys[index], str(index))
+
+    print('Plotting subplots')
+    # Create a Matplotlib figure and axes
+    fig, axs = plt.subplots(2, 4, figsize=(12, 6))
+    png_dir='plots/board_positions/'
+    # Iterate over each name
+    for i, name in enumerate(early_turns + late_turns):
+        # Calculate the subplot position
+        row = i // 4
+        col = i % 4
+        # Load the PNG file
+        png_file = os.path.join(png_dir, f'checkers-board_{name}.png')
+        img = plt.imread(png_file)
+        axs[row, col].imshow(img)
+        axs[row, col].axis('off')  # Hide axis
+        axs[row, col].set_title(f'State {name}', fontsize=16)
+    grid = plt.GridSpec(2, 4)
+    create_subtitle(fig, grid[0, ::], 'Checkers board states')
+    create_subtitle(fig, grid[1, ::], 'Late-game board states')
+    plt.tight_layout()
+    fig.savefig('./plots/checkers_positions.png', dpi=600)
