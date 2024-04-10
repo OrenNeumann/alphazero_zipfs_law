@@ -114,7 +114,8 @@ def plot_oware_size_scaling():
 
 
 def plot_new_size_scaling():
-    dir_name = 'oware_ur'
+    # dir_name = 'oware_ur'
+    dir_name = 'oware_c/late_turn_cutoffs'
     path = '../matches/'+dir_name+'/'
     r = BayesElo()
     agents = PlayerNums()
