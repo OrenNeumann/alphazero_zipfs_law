@@ -2,7 +2,7 @@ import numpy as np
 import pickle
 from src.data_analysis.state_frequency.state_counter import StateCounter
 from src.data_analysis.state_value.value_loss import value_loss
-from src.plotting.plot_utils import BarFigure, incremental_bin
+from src.plotting.plot_utils import BarFigure, incremental_bin, smooth
 from src.general.general_utils import models_path, game_path
 import matplotlib.pyplot as plt
 import matplotlib.cm as cm
@@ -84,14 +84,6 @@ def calc_loss_curves():
 
     return loss_values, rank_values
 
-def smooth(vec):
-    """return a smoothed vec with values averaged with their neighbors."""
-    a = 0.5
-    filter = np.array([a, 1, a]) / (1 + 2 * a)
-    new_vec = np.convolve(vec, filter, mode='same')
-    new_vec[0] = (vec[0] + a * vec[1]) / (1 + a)
-    new_vec[-1] = (vec[-1] + a * vec[-2]) / (1 + a)
-    return new_vec
 
 if load_data:
     print('Loading')

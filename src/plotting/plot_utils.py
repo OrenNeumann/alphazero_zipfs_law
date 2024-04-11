@@ -120,3 +120,12 @@ def aligned_title(ax, title,font):
     bbox = ax.get_yticklabels()[-1].get_window_extent()
     x,_ = ax.transAxes.inverted().transform([bbox.x0, bbox.y0])
     ax.set_title(title, ha='left',x=x,fontsize=font)
+
+def smooth(vec):
+    """return a smoothed vec with values averaged with their neighbors."""
+    a = 0.5
+    filter = np.array([a, 1, a]) / (1 + 2 * a)
+    new_vec = np.convolve(vec, filter, mode='same')
+    new_vec[0] = (vec[0] + a * vec[1]) / (1 + a)
+    new_vec[-1] = (vec[-1] + a * vec[-2]) / (1 + a)
+    return new_vec
