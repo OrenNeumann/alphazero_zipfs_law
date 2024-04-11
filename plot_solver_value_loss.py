@@ -32,7 +32,7 @@ def save_solver_values(data_labels: list[int], file_num: int = 1):
 def plot_solver_value_loss():
     with open('../plot_data/solver/solver_values.pkl', "rb") as f:
         vars = pickle.load(f)
-    state_counter, true_values = vars['state_counter'], vars['solver_values']
+    state_counter, true_values = vars['state_counter'], vars['true_values']
     print('loss part...')
     estimators = [0, 1, 2, 3, 4, 5, 6]
     n_copies = 6
@@ -58,7 +58,7 @@ def plot_solver_value_loss():
     for est in tqdm(estimators, desc='Plotting loss'):
         x = rank_values[est]
         y = loss_values[est]
-        plt.scatter(x, y, color=cm.viridis(color_nums[est]))
+        plt.plot(x, y, color=cm.viridis(color_nums[est]))
     plt.xscale('log')
     fig.epilogue()
     fig.save('solver_value_loss')
@@ -68,7 +68,7 @@ def plot_solver_value_loss():
     for est in tqdm(estimators, desc='Plotting loss (smoothed)'):
         x = rank_values[est]
         y = loss_values[est]
-        plt.scatter(x, smooth(y), color=cm.viridis(color_nums[est]))
+        plt.plot(x, smooth(y), color=cm.viridis(color_nums[est]))
     plt.xscale('log')
     fig.epilogue()
     fig.save('solver_value_loss_smoothed')
