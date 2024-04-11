@@ -33,7 +33,7 @@ def connect_four_solver(state, return_policy=False):
     mask = state.legal_actions_mask()
     p = np.extract(mask, scores)
     # v=[1,0,-1] for win, draw, loss
-    v = np.sign(p.sum()) if p.sum() != 0 else 0
+    v = max(np.sign(p))
     if return_policy:
         if (p > 0).any():  # Win
             p[p < np.amax(p)] = 0
@@ -60,9 +60,10 @@ def get_solver_value_estimator():
         Returns the value for the current player.
         """
         state = game.deserialize_state(serial_state)
+        """
         if state.is_terminal():
             # if the state is terminal, the model has nothing to predict.
-            raise Exception('Terminal state encountered')
+            raise Exception('Terminal state encountered')"""
         solver_v = connect_four_solver(state)
         return solver_v * (1 - 2 * state.current_player())
 
