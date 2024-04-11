@@ -21,7 +21,8 @@ def save_solver_values(data_labels: list[int], file_num: int = 1):
     state_counter.prune_low_frequencies(10)
     solver = get_solver_value_estimator()
     solver_values = dict()
-    for key, serial in tqdm(state_counter.frequencies.items(), desc="Estimating solver values"):
+    for key, _ in tqdm(state_counter.frequencies.items(), desc="Estimating solver values"):
+        serial = state_counter.serials[key]
         solver_values[key] = solver(serial)
     with open('../plot_data/solver/solver_values.pkl', 'wb') as f:
         pickle.dump({'state_counter': state_counter,
