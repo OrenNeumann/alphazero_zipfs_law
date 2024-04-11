@@ -18,7 +18,7 @@ def save_solver_values(data_labels: list[int], file_num: int = 1):
     env = 'connect_four'
     state_counter = gather_data(env, data_labels, max_file_num=file_num, save_serial=True)
     state_counter.prune_low_frequencies(10)
-    chunk_size = 1000
+    chunk_size = 100
     true_values = dict()
     for i in tqdm(range(0, len(state_counter.frequencies), chunk_size), desc="Estimating solver values"): 
         keys = list(state_counter.frequencies.keys())[i:i+chunk_size]
