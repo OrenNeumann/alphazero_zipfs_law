@@ -4,11 +4,14 @@ from src.data_analysis.state_frequency.state_counter import StateCounter
 from tqdm import tqdm
 
 
-def value_loss(env, path_model, state_counter: StateCounter, num_chunks=40):
+def value_loss(env, path_model, state_counter: StateCounter, num_chunks=40, values=None):
     """
     Calculate the value loss of a model on all states, sorted by rank.
+    Uses 'values' as labels if given, otherwise uses the values saved in state_counter.
     """
-    if len(state_counter.serials) == 0 or len(state_counter.values) == 0:
+    if values is None:
+        values = state_counter.values
+    if len(state_counter.serials) == 0 or len(values) == 0:
         raise ValueError('Serials and/or values counter are empty.\n'
                          'Did you forget to call StateCounter with save_serial=True, save_value=True?')
     model_values = get_model_value_estimator(env, path_model)
@@ -16,7 +19,7 @@ def value_loss(env, path_model, state_counter: StateCounter, num_chunks=40):
     z = []
     for key, _ in state_counter.frequencies.most_common():
         sorted_serials.append(state_counter.serials[key])
-        z.append(state_counter.values[key])
+        z.append(values[key])
     z = np.array(z)
 
     # Chunk data to smaller pieces to save memory:
