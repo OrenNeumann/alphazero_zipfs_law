@@ -1,12 +1,10 @@
 import numpy as np
 import pickle
-from src.data_analysis.state_frequency.state_counter import StateCounter
-from src.data_analysis.state_value.value_prediction import get_model_value_estimator
 from src.data_analysis.state_value.solver_values import get_solver_value_estimator
-from src.data_analysis.data_utils import sort_by_frequency
 from src.general.general_utils import models_path, game_path
-import collections
-import matplotlib
+from src.data_analysis.gather_agent_data import gather_data
+from src.data_analysis.state_value.value_loss import value_loss
+from src.plotting.plot_utils import BarFigure, incremental_bin, smooth
 import matplotlib.cm as cm
 import matplotlib.pyplot as plt
 from tqdm import tqdm
@@ -14,154 +12,93 @@ from multiprocessing import Pool
 
 
 """
-IMPORTANT:
-I changed the way values are saved, or calculated by agents. Now an agent returns the value
-according to the first player (player 0). The solver calculates the value for the current player.
-Change the solver code to get the player 0 value.
-
-ALSO:
-I changed the model evaluator function to work with data chunks rather than individual states.
-
-TODO: state collection bugged, use gather_agent_data.py instead.
+Plot connect four loss with solver values as ground truth.
 """
 
-def save_solver_values(env: str, labels: list[int], file_num: int = 1):
+def save_solver_values(data_labels: list[int], file_num: int = 1):
     env = 'connect_four'
-    solver_values = dict()
-    board_counter = collections.Counter()
-    serial_states = dict()
-    state_counter = StateCounter(env, save_serial=True, save_value=True)
-    for label in labels:
-        num = str(label)
-        model_name = 'q_' + num + '_0'
-        path = models_path() + '/connect_four_10000/q_' + num + '_0/'
-        state_counter.collect_data(path=path, max_file_num=file_num)
-        # add counts to the counter, and update new serial states:
-        board_counter.update(state_counter.frequencies)
-        serial_states.update(state_counter.serials)
-
-    #serials = sort_by_frequency(data=serial_states, counter=board_counter)
+    state_counter = gather_data(env, data_labels, max_file_num=file_num, save_serial=True)
+    state_counter.prune_low_frequencies(10)
     solver = get_solver_value_estimator(env)
     solver_values = dict()
-    for key, serial in tqdm(serial_states.items(), desc="Estimating solver values"):
+    for key, serial in tqdm(state_counter.frequencies.items(), desc="Estimating solver values"):
         solver_values[key] = solver(serial)
-    with open('../plot_data/solver/solver_values_' + env + '.pkl', 'wb') as f:
-        pickle.dump({'board counter': board_counter,
+    with open('../plot_data/solver/solver_values.pkl', 'wb') as f:
+        pickle.dump({'state_counter': state_counter,
                      'solver_values': solver_values}, f)
     """
     with Pool(5) as p:
         print(p.map(f, [1, 2, 3]))"""
 
-save_solver_values('connect_four', [0, 2, 4, 6], file_num=1)
-
 
 def plot_solver_value_loss():
-    env = 'connect_four'
-
-    data_labels = [0, 2, 4, 6]
-    solver_values = dict()
-    board_counter = collections.Counter()
-    serial_states = dict()
-    state_counter = StateCounter(env, save_serial=True, save_value=True)
-    for label in data_labels:
-        num = str(label)
-        model_name = 'q_' + num + '_0'
-        model_path = path + game_path(env) + model_name + '/'
-        path = models_path() + '/connect_four_10000/q_' + num + '_0/'
-        state_counter.collect_data(path=path, max_file_num=1)
-        # add counts to the counter, and update new serial states:
-        board_counter.update(state_counter.frequencies)
-        serial_states.update(state_counter.serials)
-
-        with open('solver_values_' + num + '0_1.pkl', "rb") as input_file:
-            solver_values.update(pickle.load(input_file))
-
-    # sort board states:
-    a = board_counter.most_common()
-    freq = np.array([item[1] for item in a])
-
-
-    # Plot
-    def plot_zipfs_law(freq_vec):
-        plt.figure(figsize=(10, 6))
-        n_points = len(freq_vec)  # 5 * 10 ** 6  # Display top n_points
-        plt.scatter(np.arange(n_points) + 1, freq_vec[:n_points], s=4, alpha=0.3)
-        plt.ylabel('Frequency')
-        plt.xlabel('Board state number')
-        plt.xscale('log')
-        plt.yscale('log')
-        plt.xlim(right=n_points)
-        plt.title('Frequency of Board States')
-        plt.tight_layout()
-        plt.show()
-
-
-    plot_zipfs_law(freq)
-
-    #with open('model_values_1.pkl', "rb") as input_file:
-    #    model_values = pickle.load(input_file)
-
-    # Value loss analysis:
+    with open('../plot_data/solver/solver_values.pkl', "rb") as f:
+        vars = pickle.load(f)
+    state_counter, solver_values = vars['state_counter'], vars['solver_values']
     print('loss part...')
     estimators = [0, 1, 2, 3, 4, 5, 6]
-    model_values = list()
-    # losses = dict()
-    for i in estimators:
-        path_model = '/mnt/ceph/neumann/alphazero/scratch_backup/models/connect_four_10000/q_' + str(i) + '_0/'
-        model_value = get_model_value_estimator(env, path_model)
-        values_dict = dict()
-        # temp_losses = dict()
-        for key, serial in tqdm(serial_states.items(), desc="Estimating model state values"):
-            values_dict[key] = model_value(serial)
-            # temp_losses[key] = (solver_values[key] - temp_values[key]) ** 2
-        model_values.append(values_dict)
+    n_copies = 6
+    path = models_path() + game_path('connect_four')
+    losses = {est: np.zeros(len(state_counter.frequencies)) for est in estimators}
+    for est in estimators:
+        for copy in range(n_copies):
+            model_name = f'q_{est}_{copy}'
+            print(model_name)
+            path_model = path + model_name + '/'
+            loss = value_loss(env='connect_four', path_model=path_model, state_counter=state_counter, 
+                              num_chunks=40, values=solver_values)
+            losses[est] += loss
+        losses[est] /= n_copies
+    loss_values, rank_values = bin_loss_curves(estimators, losses)
 
-    n = len(board_counter)
-    par = np.array([608, 1304, 2984, 7496, 21128, 66824, 231944])
+    par = np.load('src/config/parameter_counts/connect_four.npy')
+    fig = BarFigure(par=par, x_label='State rank', y_label='Loss', title='Ground-truth value loss', 
+                    text_font=16, number_font=14)
+    color_nums = fig.colorbar_colors()
 
-    #### compute plot cargo code ###
-    w, h = plt.figaspect(0.6)
-    plt.figure(2, figsize=(w, h))
-    plt.style.use(['grid'])
-    font = 18
-    font_num = 16
-    plt.clf()
-    ax = plt.gca()
-    norm = matplotlib.colors.LogNorm(vmin=par.min(), vmax=par.max())
-    # create a scalarmappable from the colormap
-    sm = matplotlib.cm.ScalarMappable(cmap=plt.get_cmap('viridis'), norm=norm)
-    cbar = plt.colorbar(sm)
-    cbar.ax.tick_params(labelsize=font_num)
-    cbar.ax.set_ylabel('Parameters', rotation=90, fontsize=font)
-    #################################
-
-    # calculate colorbar colors:
-    log_par = np.log(par)
-    color_nums = (log_par - log_par.min()) / (log_par.max() - log_par.min())
-
-    x = np.arange(n) + 1
-    for i in tqdm(estimators, desc='Plotting cumulative average loss'):
-        y_losses = []
-        # sort values by descending frequency:
-        for entry in board_counter.most_common():
-            key = entry[0]
-            y_losses.append((solver_values[key] - model_values[i][key]) ** 2)
-        y_losses = np.array(y_losses)
-        # plotting cumulative average of loss
-        y = np.cumsum(y_losses) / x
-
-        # standad deviation:
-        #std = np.sqrt((y_losses**2).cumsum()/x - y**2)
-
-        # weighted average with frequency:
-        #y = np.cumsum(np.array(y_losses)*freq) / np.cumsum(freq)
-
-        plt.scatter(x, y, s=40 / (10 + x), alpha=0.3, color=cm.viridis(color_nums[i]))
+    fig.preamble()
+    for est in tqdm(estimators, desc='Plotting loss'):
+        x = rank_values[est]
+        y = loss_values[est]
+        plt.scatter(x, y, color=cm.viridis(color_nums[est]))
     plt.xscale('log')
-    plt.xlabel('State rank', fontsize=font)
-    plt.ylabel('Cumulative average of the loss', fontsize=font - 2)
-    plt.title('Value loss of fully-trained agents', fontsize=font)
-    plt.xticks(fontsize=font_num)
-    plt.yticks(fontsize=font_num)
-    plt.tight_layout()
+    fig.epilogue()
+    fig.save('solver_value_loss')
 
+    fig.fig_num += 1
+    fig.preamble()
+    for est in tqdm(estimators, desc='Plotting loss (smoothed)'):
+        x = rank_values[est]
+        y = loss_values[est]
+        plt.scatter(x, smooth(y), color=cm.viridis(color_nums[est]))
+    plt.xscale('log')
+    fig.epilogue()
+    fig.save('solver_value_loss_smoothed')
+
+
+def bin_loss_curves(estimators, losses):
+    """ Collect loss values in bins."""
+    bins = incremental_bin(10**10)
+    widths = (bins[1:] - bins[:-1])
+    x = bins[:-1] + widths/2
+    loss_values = {label: None for label in estimators}
+    rank_values = {label: None for label in estimators}
+    for est in estimators:
+        loss = losses[est]
+        ranks = np.arange(len(loss)) + 1
+        # Calculate histogram.
+        # np.histogram counts how many elements of 'ranks' fall in each bin.
+        bin_count = np.histogram(ranks, bins=bins)[0]
+        loss_sums = np.histogram(ranks, bins=bins, weights=loss)[0]
+        # Divide sum to get average:
+        mask = np.nonzero(bin_count)
+        loss_values[est] = loss_sums[mask] / bin_count[mask]
+        rank_values[est] = x[mask]
+    with open('../plot_data/solver/loss_curves.pkl', 'wb') as f:
+        pickle.dump({'loss_values': loss_values,
+                     'rank_values': rank_values}, f)
+    return loss_values, rank_values
+
+
+save_solver_values(data_labels=[0, 2, 4, 6], file_num=1)
+plot_solver_value_loss()
