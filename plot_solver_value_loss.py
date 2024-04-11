@@ -1,6 +1,6 @@
 import numpy as np
 import pickle
-from src.data_analysis.state_value.solver_values import get_solver_value_estimator
+from src.data_analysis.state_value.solver_values import solver_values
 from src.general.general_utils import models_path, game_path
 from src.data_analysis.gather_agent_data import gather_data
 from src.data_analysis.state_value.value_loss import value_loss
@@ -8,7 +8,6 @@ from src.plotting.plot_utils import BarFigure, incremental_bin, smooth
 import matplotlib.cm as cm
 import matplotlib.pyplot as plt
 from tqdm import tqdm
-from multiprocessing import Pool
 
 
 """
@@ -19,23 +18,21 @@ def save_solver_values(data_labels: list[int], file_num: int = 1):
     env = 'connect_four'
     state_counter = gather_data(env, data_labels, max_file_num=file_num, save_serial=True)
     state_counter.prune_low_frequencies(10)
-    solver = get_solver_value_estimator()
-    solver_values = dict()
-    for key, _ in tqdm(state_counter.frequencies.items(), desc="Estimating solver values"):
-        serial = state_counter.serials[key]
-        solver_values[key] = solver(serial)
+    chunk_size = 1000
+    true_values = dict()
+    for i in tqdm(range(0, len(state_counter.frequencies), chunk_size), desc="Estimating solver values"): 
+        keys = list(state_counter.frequencies.keys())[i:i+chunk_size]
+        solver_values([state_counter.serials[key] for key in keys])
+        true_values.update({key: val for key, val in zip(keys, solver_values)})
     with open('../plot_data/solver/solver_values.pkl', 'wb') as f:
         pickle.dump({'state_counter': state_counter,
-                     'solver_values': solver_values}, f)
-    """
-    with Pool(5) as p:
-        print(p.map(f, [1, 2, 3]))"""
+                     'true_values': true_values}, f)
 
 
 def plot_solver_value_loss():
     with open('../plot_data/solver/solver_values.pkl', "rb") as f:
         vars = pickle.load(f)
-    state_counter, solver_values = vars['state_counter'], vars['solver_values']
+    state_counter, true_values = vars['state_counter'], vars['solver_values']
     print('loss part...')
     estimators = [0, 1, 2, 3, 4, 5, 6]
     n_copies = 6
@@ -47,7 +44,7 @@ def plot_solver_value_loss():
             print(model_name)
             path_model = path + model_name + '/'
             loss = value_loss(env='connect_four', path_model=path_model, state_counter=state_counter, 
-                              num_chunks=40, values=solver_values)
+                              num_chunks=40, values=true_values)
             losses[est] += loss
         losses[est] /= n_copies
     loss_values, rank_values = bin_loss_curves(estimators, losses)
