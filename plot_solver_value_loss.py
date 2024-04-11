@@ -19,7 +19,7 @@ def save_solver_values(data_labels: list[int], file_num: int = 1):
     env = 'connect_four'
     state_counter = gather_data(env, data_labels, max_file_num=file_num, save_serial=True)
     state_counter.prune_low_frequencies(10)
-    solver = get_solver_value_estimator(env)
+    solver = get_solver_value_estimator()
     solver_values = dict()
     for key, serial in tqdm(state_counter.frequencies.items(), desc="Estimating solver values"):
         solver_values[key] = solver(serial)
