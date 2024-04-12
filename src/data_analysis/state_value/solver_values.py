@@ -2,7 +2,6 @@ import numpy as np
 import subprocess
 from subprocess import PIPE
 import pyspiel
-from tqdm import tqdm
 
 GAME = pyspiel.load_game('connect_four')
 
