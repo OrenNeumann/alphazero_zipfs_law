@@ -174,6 +174,9 @@ class StateCounter(object):
             Pruning states below threshold=2 roughly reduces the data by an OOM. Pruning
             states below threshold=4 will reduce it by another OOM."""
         self.frequencies = Counter({k: c for k, c in self.frequencies.items() if c >= threshold})
+        counters = [self.serials ,self.turns_played, self.turns_to_end, self.values]
+        for counter in counters:
+            counter = {k: v for k, v in counter.items() if k in self.frequencies.keys()}
 
     def late_turn_mask(self, threshold):
         """ Create mask for late game states when sorting by frequency."""
