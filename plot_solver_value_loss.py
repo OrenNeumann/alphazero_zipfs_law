@@ -104,5 +104,5 @@ def bin_loss_curves(estimators, losses):
     return loss_values, rank_values
 
 
-save_solver_values(file_num=10)
+save_solver_values(file_num=8)
 plot_solver_value_loss()
