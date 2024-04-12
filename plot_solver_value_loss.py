@@ -2,9 +2,9 @@ import numpy as np
 import pickle
 from src.data_analysis.state_value.solver_values import solver_values
 from src.general.general_utils import models_path, game_path
-from src.data_analysis.gather_agent_data import gather_data
 from src.data_analysis.state_value.value_loss import value_loss
 from src.plotting.plot_utils import BarFigure, incremental_bin, smooth
+from src.data_analysis.state_frequency.state_counter import StateCounter
 import matplotlib.cm as cm
 import matplotlib.pyplot as plt
 from tqdm import tqdm
@@ -14,9 +14,15 @@ from tqdm import tqdm
 Plot connect four loss with solver values as ground truth.
 """
 
-def save_solver_values(data_labels: list[int], file_num: int = 1):
+def save_solver_values(file_num: int = 1):
     env = 'connect_four'
-    state_counter = gather_data(env, data_labels, max_file_num=file_num, save_serial=True)
+    path = models_path() + game_path(env)
+    state_counter = StateCounter(env=env, save_serial=True, cut_early_games=True)
+    for i in range(7):
+        for j in range(6):
+            print(f"Collecting data for agent q_{i}_{j}")
+            agent_path = path + f"q_{i}_{j}"
+            state_counter.collect_data(path=agent_path, max_file_num=file_num)
     state_counter.prune_low_frequencies(10)
     chunk_size = 100
     true_values = dict()
@@ -98,5 +104,5 @@ def bin_loss_curves(estimators, losses):
     return loss_values, rank_values
 
 
-save_solver_values(data_labels=[0, 1, 2, 3, 4, 5, 6], file_num=20)
+save_solver_values(file_num=10)
 plot_solver_value_loss()
