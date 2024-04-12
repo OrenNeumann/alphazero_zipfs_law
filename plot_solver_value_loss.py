@@ -3,7 +3,7 @@ import pickle
 from src.data_analysis.state_value.solver_values import solver_values
 from src.general.general_utils import models_path, game_path
 from src.data_analysis.state_value.value_loss import value_loss
-from src.plotting.plot_utils import BarFigure, incremental_bin, smooth
+from src.plotting.plot_utils import BarFigure, incremental_bin, smooth, gaussian_average
 from src.data_analysis.state_frequency.state_counter import StateCounter
 import matplotlib.cm as cm
 import matplotlib.pyplot as plt
@@ -14,8 +14,8 @@ from tqdm import tqdm
 Plot connect four loss with solver values as ground truth.
 """
 
-def save_solver_values(file_num: int = 1, load=True):
-    if not load:
+def save_solver_values(file_num: int = 1, load_counter=True):
+    if not load_counter:
         collect_states(file_num)
     with open('../plot_data/solver/state_counter.pkl', 'rb') as f:
         state_counter = pickle.load(f)
@@ -27,6 +27,7 @@ def save_solver_values(file_num: int = 1, load=True):
         true_values.update({key: val for key, val in zip(keys, vals)})
     with open('../plot_data/solver/true_values.pkl', 'wb') as f:
         pickle.dump(true_values, f)
+
 
 def collect_states(file_num):
     env = 'connect_four'
@@ -41,10 +42,12 @@ def collect_states(file_num):
     with open('../plot_data/solver/state_counter.pkl', 'wb') as f:
         pickle.dump(state_counter, f)
 
+
 def plot_solver_value_loss():
-    with open('../plot_data/solver/solver_values.pkl', "rb") as f:
-        vars = pickle.load(f)
-    state_counter, true_values = vars['state_counter'], vars['true_values']
+    with open('../plot_data/solver/state_counter.pkl', "rb") as f:
+        state_counter = pickle.load(f)
+    with open('../plot_data/solver/true_values.pkl', "rb") as f:
+        true_values = pickle.load(f)
     print('loss part...')
     estimators = [0, 1, 2, 3, 4, 5, 6]
     n_copies = 6
@@ -59,6 +62,8 @@ def plot_solver_value_loss():
                               num_chunks=40, values=true_values)
             losses[est] += loss
         losses[est] /= n_copies
+    with open('../plot_data/solver/loss_curves.pkl', 'wb') as f:
+        pickle.dump(losses, f)
     loss_values, rank_values = bin_loss_curves(estimators, losses)
 
     par = np.load('src/config/parameter_counts/connect_four.npy')
@@ -85,6 +90,15 @@ def plot_solver_value_loss():
     fig.epilogue()
     fig.save('solver_value_loss_smoothed')
 
+    fig.fig_num += 1
+    fig.preamble()
+    for est in tqdm(estimators, desc='Plotting loss (gaussian smoothed)'):
+        y = losses[est]
+        plt.plot(np.arange(len(y))+1, gaussian_average(y), color=cm.viridis(color_nums[est]))
+    plt.xscale('log')
+    fig.epilogue()
+    fig.save('solver_value_loss_gaussian')
+
 
 def bin_loss_curves(estimators, losses):
     """ Collect loss values in bins."""
@@ -110,5 +124,5 @@ def bin_loss_curves(estimators, losses):
     return loss_values, rank_values
 
 
-#save_solver_values(file_num=8)
+save_solver_values(file_num=8,load_counter=False)
 plot_solver_value_loss()
