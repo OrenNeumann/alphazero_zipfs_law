@@ -40,9 +40,6 @@ def collect_states(file_num):
             agent_path = path + f"q_{i}_{j}"
             state_counter.collect_data(path=agent_path, max_file_num=file_num)
     state_counter.prune_low_frequencies(10)
-    for key in state_counter.serials.keys():
-        if not key in state_counter.frequencies:
-            del state_counter.serials[key]
     with open('../plot_data/solver/state_counter.pkl', 'wb') as f:
         pickle.dump(state_counter, f)
     print('State counter saved.')
