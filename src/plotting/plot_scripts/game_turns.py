@@ -7,9 +7,6 @@ import scienceplots
 from src.plotting.plot_utils import aligned_title
 
 
-"""
-TODO: add horizontal line at turn=40 for oware and checkers.
-"""
 
 plt.style.use(['science','nature','grid'])
 
@@ -45,6 +42,7 @@ def game_turns():
         if i<2:
             ax.legend(loc='upper left', fontsize=tf)
         else:
+            ax.hlines(y=40, linestyle='--', color='black')###
             ax.legend(loc="upper left", bbox_to_anchor=(0.0, 0.8), fontsize=tf)
         ax.tick_params(axis='both', which='major', labelsize=tf-2)
 
