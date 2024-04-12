@@ -30,6 +30,7 @@ def save_solver_values(file_num: int = 1, load_counter=True):
 
 
 def collect_states(file_num):
+    print('Collecting states...')
     env = 'connect_four'
     path = models_path() + game_path(env)
     state_counter = StateCounter(env=env, save_serial=True, cut_early_games=True)
@@ -41,6 +42,7 @@ def collect_states(file_num):
     state_counter.prune_low_frequencies(10)
     with open('../plot_data/solver/state_counter.pkl', 'wb') as f:
         pickle.dump(state_counter, f)
+    print('State counter saved.')
 
 
 def plot_solver_value_loss():
