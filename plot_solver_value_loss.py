@@ -14,7 +14,21 @@ from tqdm import tqdm
 Plot connect four loss with solver values as ground truth.
 """
 
-def save_solver_values(file_num: int = 1):
+def save_solver_values(file_num: int = 1, load=True):
+    if not load:
+        collect_states(file_num)
+    with open('../plot_data/solver/state_counter.pkl', 'rb') as f:
+        state_counter = pickle.load(f)
+    chunk_size = 100
+    true_values = dict()
+    for i in tqdm(range(0, len(state_counter.frequencies), chunk_size), desc="Estimating solver values"): 
+        keys = list(state_counter.frequencies.keys())[i:i+chunk_size]
+        vals = solver_values([state_counter.serials[key] for key in keys])
+        true_values.update({key: val for key, val in zip(keys, vals)})
+    with open('../plot_data/solver/true_values.pkl', 'wb') as f:
+        pickle.dump(true_values, f)
+
+def collect_states(file_num):
     env = 'connect_four'
     path = models_path() + game_path(env)
     state_counter = StateCounter(env=env, save_serial=True, cut_early_games=True)
@@ -24,16 +38,8 @@ def save_solver_values(file_num: int = 1):
             agent_path = path + f"q_{i}_{j}"
             state_counter.collect_data(path=agent_path, max_file_num=file_num)
     state_counter.prune_low_frequencies(10)
-    chunk_size = 100
-    true_values = dict()
-    for i in tqdm(range(0, len(state_counter.frequencies), chunk_size), desc="Estimating solver values"): 
-        keys = list(state_counter.frequencies.keys())[i:i+chunk_size]
-        vals = solver_values([state_counter.serials[key] for key in keys])
-        true_values.update({key: val for key, val in zip(keys, vals)})
-    with open('../plot_data/solver/solver_values.pkl', 'wb') as f:
-        pickle.dump({'state_counter': state_counter,
-                     'true_values': true_values}, f)
-
+    with open('../plot_data/solver/state_counter.pkl', 'wb') as f:
+        pickle.dump(state_counter, f)
 
 def plot_solver_value_loss():
     with open('../plot_data/solver/solver_values.pkl', "rb") as f:
@@ -104,5 +110,5 @@ def bin_loss_curves(estimators, losses):
     return loss_values, rank_values
 
 
-save_solver_values(file_num=8)
+#save_solver_values(file_num=8)
 plot_solver_value_loss()
