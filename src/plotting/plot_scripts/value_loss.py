@@ -5,7 +5,7 @@ import pickle
 from tqdm import tqdm
 import numpy as np
 import scienceplots
-from src.plotting.plot_utils import aligned_title, smooth, gaussian_average
+from src.plotting.plot_utils import aligned_title, smooth, gaussian_average3
 
 plt.style.use(['science','nature','grid'])
 
@@ -33,7 +33,7 @@ def connect4_loss_plots():
                 curves = [np.array(loss_curves[f'q_{label}_{copy}']) for copy in range(6)]
                 l = min([len(curve) for curve in curves])
                 curves = [curve[:l] for curve in curves]
-                y = gaussian_average(np.mean(curves, axis=0))
+                y = gaussian_average3(np.mean(curves, axis=0))
                 plt.plot(np.arange(len(y))+1, y, color=cm.viridis(color_nums[label]))
             ax.set_xscale('log')
             ax.set_yscale('log')
