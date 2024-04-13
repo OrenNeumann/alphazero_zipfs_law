@@ -137,4 +137,5 @@ def oware_value_loss():
     plt.tight_layout()
     fig.savefig('./plots/oware_value_loss.png', dpi=900)
 
-oware_value_loss()
+#oware_value_loss()
+connect4_loss_plots()
