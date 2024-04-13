@@ -135,7 +135,7 @@ def gaussian_average(y, sigma=0.25):
     """ Smooth y by averaging it with a log-scale gaussian kernel."""
     ranks = np.arange(len(y))+1
     y_smooth = np.zeros_like(y)
-    for i,r in tqdm(enumerate(ranks)):
+    for i,r in enumerate(tqdm(ranks)):
         kernel = np.exp(-0.5 * ((np.log10(ranks/r)) / (sigma)) ** 2)
         y_smooth[i] = np.sum(y * kernel) / np.sum(kernel)
     return y_smooth
