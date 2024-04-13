@@ -158,7 +158,7 @@ def gaussian_average3(y, sigma=0.25, chunk_size=1000):
     for i in range(0, n, chunk_size):
         j = min(i + chunk_size, n)  # end of the current chunk
         chunk_ranks = ranks[i:j]
-        kernel = np.exp(-0.5 * ((np.log10(ranks[:, None] / chunk_ranks[None, :])) / sigma) ** 2)
+        kernel = np.exp(-0.5 * ((np.log10(ranks[None, :] / chunk_ranks[:, None])) / sigma) ** 2)
         y_smooth[i:j] = np.dot(kernel, y) / np.sum(kernel, axis=1)
 
     return y_smooth
