@@ -132,10 +132,8 @@ def smooth(vec):
     return new_vec
 
 def gaussian_average(y, sigma=0.25):
-    """ Smooth y by averaging it with a log-scale gaussian kernel."""
-    ranks = np.arange(len(y))+1
-    y_smooth = np.zeros_like(y)
-    for i,r in enumerate(tqdm(ranks)):
-        kernel = np.exp(-0.5 * ((np.log10(ranks/r)) / (sigma)) ** 2)
-        y_smooth[i] = np.sum(y * kernel) / np.sum(kernel)
+    """Smooth y by averaging it with a log-scale gaussian kernel."""
+    ranks = np.arange(len(y)) + 1
+    kernel = np.exp(-0.5 * ((np.log10(ranks[:, None] / ranks[None, :])) / sigma) ** 2)
+    y_smooth = np.dot(kernel, y) / np.sum(kernel, axis=1)
     return y_smooth
