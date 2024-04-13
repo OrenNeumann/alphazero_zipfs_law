@@ -120,9 +120,6 @@ def bin_loss_curves(estimators, losses):
         mask = np.nonzero(bin_count)
         loss_values[est] = loss_sums[mask] / bin_count[mask]
         rank_values[est] = x[mask]
-    with open('../plot_data/solver/loss_curves.pkl', 'wb') as f:
-        pickle.dump({'loss_values': loss_values,
-                     'rank_values': rank_values}, f)
     return loss_values, rank_values
 
 
