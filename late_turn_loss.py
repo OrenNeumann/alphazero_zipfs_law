@@ -79,7 +79,7 @@ def calc_loss_curves():
             loss_values[label][t] = loss_sums[t][mask] / bin_count[t][mask]
             rank_values[label][t] = x[mask]
         
-    with open('../plot_data/value_loss/loss_curves_'+env+'.pkl', 'wb') as f:
+    with open('../plot_data/value_loss/late_turns/loss_curves_'+env+'.pkl', 'wb') as f:
         pickle.dump([loss_values,rank_values], f)
 
     return loss_values, rank_values
@@ -87,7 +87,7 @@ def calc_loss_curves():
 
 if load_data:
     print('Loading')
-    with open('../plot_data/value_loss/loss_curves_'+env+'_extensive_cut.pkl', "rb") as f:
+    with open('../plot_data/value_loss/late_turns/loss_curves_'+env+'_extensive_cut.pkl', "rb") as f:
         loss_values, rank_values =  pickle.load(f)
 else:
     loss_values, rank_values = calc_loss_curves()
