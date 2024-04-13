@@ -2,7 +2,7 @@ import matplotlib
 import matplotlib.pyplot as plt
 import scienceplots
 import numpy as np
-import tqdm
+from tqdm import tqdm
 
 
 class Figure(object):
