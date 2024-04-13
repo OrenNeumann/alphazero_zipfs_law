@@ -2,6 +2,7 @@ import matplotlib
 import matplotlib.pyplot as plt
 import matplotlib.cm as cm
 import pickle
+from tqdm import tqdm
 import numpy as np
 import scienceplots
 from src.plotting.plot_utils import aligned_title, smooth, gaussian_average
@@ -29,7 +30,7 @@ def connect4_loss_plots():
             with open('../plot_data/value_loss/training_loss/loss_curves_connect_four.pkl', 'rb') as f:
                 loss_curves = pickle.load(f)
             for label in [0, 1, 2, 3, 4, 5, 6]:
-                curves = [np.array(loss_curves[f'q_{label}_{copy}']) for copy in range(1)]#7)]
+                curves = [np.array(loss_curves[f'q_{label}_{copy}']) for copy in range(7)]
                 l = min([len(curve) for curve in curves])
                 curves = [curve[:l] for curve in curves]
                 y = gaussian_average(np.mean(curves, axis=0))
@@ -42,7 +43,7 @@ def connect4_loss_plots():
             print('[2/3] Plotting ground-truth loss')
             with open('../plot_data/solver/loss_curves.pkl', "rb") as f:
                 losses = pickle.load(f)
-            for label in [0, 1, 2, 3, 4, 5, 6]:
+            for label in tqdm([0, 1, 2, 3, 4, 5, 6]):
                 y = losses[label]
                 plt.plot(np.arange(len(y))+1, gaussian_average(y), color=cm.viridis(color_nums[label]))
             ax.set_xscale('log')
