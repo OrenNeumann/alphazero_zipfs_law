@@ -25,7 +25,7 @@ def connect4_loss_plots():
               r'$\bf{c.}$ Alpha-beta-pruning complexity']
     for i, ax in enumerate(axs):
         if i == 0:
-            print('Plotting training loss')
+            print('[1/3] Plotting training loss')
             with open('../plot_data/value_loss/training_loss/loss_curves_connect_four.pkl', 'rb') as f:
                 loss_curves = pickle.load(f)
             for label in [0, 1, 2, 3, 4, 5, 6]:
@@ -39,7 +39,7 @@ def connect4_loss_plots():
             ax.tick_params(axis='both', which='major', labelsize=tf-2)
             ax.set_ylabel('Loss',fontsize=tf)
         if i == 1:
-            print('Plotting ground-truth loss')
+            print('[2/3] Plotting ground-truth loss')
             with open('../plot_data/solver/loss_curves.pkl', "rb") as f:
                 losses = pickle.load(f)
             for label in [0, 1, 2, 3, 4, 5, 6]:
@@ -49,7 +49,7 @@ def connect4_loss_plots():
             ax.set_yscale('linear')
             ax.tick_params(axis='both', which='major', labelsize=tf-2)
         if i == 2:
-            print('Plotting AB pruning complexity')
+            print('[3/3] Plotting AB pruning complexity')
             x = ab_data['x']
             y = np.array(ab_data['g_mean'])#
             gstd = np.array(ab_data['gstd'])
