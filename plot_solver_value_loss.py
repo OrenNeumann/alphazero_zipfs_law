@@ -50,7 +50,7 @@ def plot_solver_value_loss():
         state_counter = pickle.load(f)
     with open('../plot_data/solver/true_values.pkl', "rb") as f:
         true_values = pickle.load(f)
-    print('loss part...')
+    print('Plotting loss')
     estimators = [0, 1, 2, 3, 4, 5, 6]
     n_copies = 6
     path = models_path() + game_path('connect_four')
@@ -126,5 +126,5 @@ def bin_loss_curves(estimators, losses):
     return loss_values, rank_values
 
 
-save_solver_values(file_num=8,load_counter=False)
+save_solver_values(file_num=5,load_counter=False)
 plot_solver_value_loss()
