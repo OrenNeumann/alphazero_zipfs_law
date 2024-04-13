@@ -28,8 +28,8 @@ def connect4_loss_plots():
             print('Plotting training loss')
             with open('../plot_data/value_loss/training_loss/loss_curves_connect_four.pkl', 'rb') as f:
                 loss_curves = pickle.load(f)
-            for label in [0, 1, 2, 3, 4, 5]:#, 6]:
-                curves = [np.array(loss_curves[f'q_{label}_{copy}']) for copy in range(7)]
+            for label in [0, 1, 2, 3, 4, 5, 6]:
+                curves = [np.array(loss_curves[f'q_{label}_{copy}']) for copy in range(1)]#7)]
                 l = min([len(curve) for curve in curves])
                 curves = [curve[:l] for curve in curves]
                 y = gaussian_average(np.mean(curves, axis=0))
