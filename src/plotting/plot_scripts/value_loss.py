@@ -29,7 +29,7 @@ def connect4_loss_plots():
             print('[1/3] Plotting training loss')
             with open('../plot_data/value_loss/training_loss/loss_curves_connect_four.pkl', 'rb') as f:
                 loss_curves = pickle.load(f)
-            for label in [0, 1, 2, 3, 4, 5, 6]:
+            for label in tqdm([0, 1, 2, 3, 4, 5, 6]):
                 curves = [np.array(loss_curves[f'q_{label}_{copy}']) for copy in range(6)]
                 l = min([len(curve) for curve in curves])
                 l= min(l,10**5)#
