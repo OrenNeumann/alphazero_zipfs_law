@@ -35,7 +35,7 @@ def connect4_loss_plots():
                 l= min(l,10**5)#
                 curves = [curve[:l] for curve in curves]
                 y = gaussian_average(np.mean(curves, axis=0))
-                plt.plot(np.arange(len(y))+1, y, color=cm.viridis(color_nums[label]))
+                ax.plot(np.arange(len(y))+1, y, color=cm.viridis(color_nums[label]))
             ax.set_xscale('log')
             ax.set_yscale('log')
             ax.tick_params(axis='both', which='major', labelsize=tf-2)
@@ -47,7 +47,7 @@ def connect4_loss_plots():
             for label in tqdm([0, 1, 2, 3, 4, 5, 6]):
                 y = losses[label]
                 y = y[:10**5]#
-                plt.plot(np.arange(len(y))+1, gaussian_average(y), color=cm.viridis(color_nums[label]))
+                ax.plot(np.arange(len(y))+1, gaussian_average(y), color=cm.viridis(color_nums[label]))
             ax.set_xscale('log')
             ax.set_yscale('linear')
             ax.tick_params(axis='both', which='major', labelsize=tf-2)
@@ -69,7 +69,7 @@ def connect4_loss_plots():
     # Colorbar:
     norm = matplotlib.colors.LogNorm(vmin=par.min(), vmax=par.max())
     sm = matplotlib.cm.ScalarMappable(cmap=plt.get_cmap('viridis'), norm=norm)
-    cbar = fig.colorbar(sm, ax=axs[2]) # attach to plot 2, rather than to inset
+    cbar = fig.colorbar(sm, ax=axs[1]) # attach to plot 2, rather than to inset
     cbar.ax.tick_params(labelsize=tf)
     cbar.ax.set_ylabel('Parameters', rotation=90, fontsize=tf)
 
@@ -140,5 +140,4 @@ def oware_value_loss():
     plt.tight_layout()
     fig.savefig('./plots/oware_value_loss.png', dpi=900)
 
-#oware_value_loss()
-connect4_loss_plots()
+
