@@ -155,7 +155,7 @@ def gaussian_average3(y, sigma=0.25, chunk_size=1000):
     n = len(y)
     ranks = np.arange(n) + 1
 
-    for i in range(0, n, chunk_size):
+    for i in tqdm(range(0, n, chunk_size)):
         j = min(i + chunk_size, n)  # end of the current chunk
         chunk_ranks = ranks[i:j]
         kernel = np.exp(-0.5 * ((np.log10(ranks[None, :] / chunk_ranks[:, None])) / sigma) ** 2)
