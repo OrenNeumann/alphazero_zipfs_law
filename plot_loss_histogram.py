@@ -59,7 +59,7 @@ else:
             print(model_name)
             model_path = path + game_path(env) + model_name + '/'
             state_counter.reset_counters()
-            state_counter.collect_data(path=model_path, max_file_num=1)
+            state_counter.collect_data(path=model_path, max_file_num=3)
             state_counter.normalize_counters()
 
             state_counter.prune_low_frequencies(10)#4
@@ -114,6 +114,19 @@ for label in data_labels:
     l = min([len(curve) for curve in curves])
     curves = [curve[:l] for curve in curves]
     y = gaussian_average(np.mean(curves, axis=0))
+    plt.plot(np.arange(len(y))+1, y, color=cm.viridis(color_nums[label]))
+plt.xscale('log')
+plt.yscale('log')
+figure.epilogue()
+figure.save('value_loss_gaussian')
+
+figure.fig_num += 1
+figure.preamble()
+for label in data_labels:
+    curves = [np.array(loss_curves[f'q_{label}_{copy}']) for copy in range(n_copies)]
+    l = min([len(curve) for curve in curves])
+    curves = [curve[:l] for curve in curves]
+    y = gaussian_average(np.mean(curves, axis=0))
     var = gaussian_average(np.var(curves, axis=0))
     plt.plot(np.arange(len(y))+1, y, color=cm.viridis(color_nums[label]))
     plt.fill_between(np.arange(len(y)) + 1, y - np.sqrt(var), y + np.sqrt(var), 
@@ -122,4 +135,4 @@ for label in data_labels:
 plt.xscale('log')
 plt.yscale('log')
 figure.epilogue()
-figure.save('value_loss_gaussian')
+figure.save('value_loss_gaussian_error')
