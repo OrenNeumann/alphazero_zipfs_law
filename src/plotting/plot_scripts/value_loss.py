@@ -69,7 +69,9 @@ def connect4_loss_plots():
     # Colorbar:
     norm = matplotlib.colors.LogNorm(vmin=par.min(), vmax=par.max())
     sm = matplotlib.cm.ScalarMappable(cmap=plt.get_cmap('viridis'), norm=norm)
-    cbar = fig.colorbar(sm, ax=axs[2],location='left') # attach to last plot
+    cbaxes = fig.add_axes([0.1, 0.1, 0.03, 0.8])  # This is the position for the colorbar
+    cbar = fig.colorbar(sm, ax=axs[2], cax = cbaxes)
+    #cbar = fig.colorbar(sm, ax=axs[2],location='left') # attach to last plot
     cbar.ax.tick_params(labelsize=tf)
     cbar.ax.set_ylabel('Parameters', rotation=90, fontsize=tf)
 
