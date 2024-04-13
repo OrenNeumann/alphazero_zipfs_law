@@ -1,7 +1,8 @@
+import pickle
 import numpy as np
 from src.data_analysis.state_frequency.state_counter import StateCounter
 from src.data_analysis.state_value.value_loss import value_loss
-from src.plotting.plot_utils import BarFigure, incremental_bin
+from src.plotting.plot_utils import BarFigure, incremental_bin, gaussian_average
 from src.general.general_utils import models_path, game_path
 import matplotlib.pyplot as plt
 import matplotlib.cm as cm
@@ -11,7 +12,7 @@ Value loss histogram
 """
 
 # Choose game type:
-game_num = 2
+game_num = 0
 games = ['connect_four', 'pentago', 'oware', 'checkers']
 env = games[game_num]
 path = models_path()
@@ -26,12 +27,11 @@ figure = BarFigure(par,
                    title='Value loss on the train set', 
                    text_font=font, 
                    number_font=font_num)
-figure.preamble()
 color_nums = figure.colorbar_colors()
 
-data_labels = [0, 1, 2, 3, 4, 5]#, 6] # for oware no 6
+data_labels = [0, 1, 2, 3, 4, 5, 6] # for oware no 6
 #data_labels = [0]
-n_copies = 2
+n_copies = 6
 
 # initialize bins to cover a range definitely larger than what you'll need:
 bins = incremental_bin(10**10)
@@ -41,7 +41,7 @@ x = bins[:-1] + widths/2
 state_counter = StateCounter(env, save_serial=True, save_value=True)
 total_loss = np.zeros([len(data_labels),n_copies])
 total_counts = np.zeros([len(data_labels),n_copies])
-
+loss_curves = dict()
 for label in data_labels:
     bin_counts = np.zeros(len(x))
     loss_sums = np.zeros(len(x))
@@ -50,7 +50,7 @@ for label in data_labels:
         print(model_name)
         model_path = path + game_path(env) + model_name + '/'
         state_counter.reset_counters()
-        state_counter.collect_data(path=model_path, max_file_num=39)
+        state_counter.collect_data(path=model_path, max_file_num=1)
         state_counter.normalize_counters()
 
         state_counter.prune_low_frequencies(10)#4
@@ -62,6 +62,7 @@ for label in data_labels:
         freq = np.array([item[1] for item in state_counter.frequencies.most_common()])
 
         loss = value_loss(env, model_path, state_counter=state_counter)
+        loss_curves[model_name] = loss
         total_loss[label, copy] = np.sum(loss * freq)
         total_counts[label, copy] = np.sum(freq)
 
@@ -75,15 +76,11 @@ for label in data_labels:
     # Divide sum to get average:
     mask = np.nonzero(bin_counts)
     loss_averages = loss_sums[mask] / bin_counts[mask]
-    # scatter plot:
-    #plt.scatter(x[mask], loss_averages,
-    #            s=4, color=cm.viridis(color_nums[label]))
-    # Line plot:
     plt.plot(x[mask], loss_averages,
                 color=cm.viridis(color_nums[label]))
-    #weighted_loss = loss * freq 
-    #plt.scatter(ranks, weighted_loss,
-    #             s=40 * 3 / (10 + ranks),color=cm.viridis(color_nums[label]))
+with open('../plot_data/value_loss/training_loss/loss_curves_'+env+'.pkl', 'wb') as f:
+    pickle.dump(loss_curves, f)
+
 
 print('Total loss L:', total_loss)
 print('Total counts:', total_counts)
@@ -91,7 +88,7 @@ for copy in range(n_copies):
     total_loss[:, copy] /= total_counts[:, copy]
 print('Average loss L:', total_loss)
     
-
+figure.preamble()
 plt.xscale('log')
 plt.yscale('log')
 figure.epilogue()
@@ -101,8 +98,13 @@ plt.yscale('linear')
 figure.epilogue()   
 figure.save('value_loss_scatter_semilog')
 
-"""
-#old code for plotting cumulative average of loss.
-#It works exactly like binning! but go explain that to reviewers :(
-y = np.cumsum(loss) / (np.arange(len(loss)) + 1)
-"""
+figure.fig_num += 1
+figure.preamble()
+for label in data_labels:
+    for copy in range(n_copies):
+        model_name = f'q_{label}_{copy}'
+        y = loss_curves[model_name]
+        plt.plot(np.arange(len(y))+1, gaussian_average(y), color=cm.viridis(color_nums[label]))
+plt.xscale('log')
+figure.epilogue()
+figure.save('value_loss_gaussian')
