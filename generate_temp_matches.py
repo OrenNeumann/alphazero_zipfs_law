@@ -13,14 +13,14 @@ This code just generates a big bulk of games for calculating board state distrib
 """
 
 # Name of the directory where the models are saved. Don't forget to change 'game' in config.
-dir_name = 'connect_four_checkpoints'
+dir_name = 'connect_four'
 
 checkpoint_number = 10000
 temps = [0.07, 0.1, 0.14, 0.2, 0.25, 0.32, 0.45, 0.6, 0.8, 1, 1.4, 2, 3, 5]
 i = int(sys.argv[1])
 temperature = temps[i]
 # Save all logs to:
-path_logs = '/scratch/compmatsc/neumann/matches/zipf_law/temperature_matches/connect_four/temp_num_' +str(i) + '/'
+path_logs = '/scratch/compmatsc/neumann/matches/zipf_law/temperature_matches/'+str(dir_name)+'/temp_num_' +str(i) + '/'
 if not os.path.exists(path_logs):
     os.makedirs(path_logs)
 
