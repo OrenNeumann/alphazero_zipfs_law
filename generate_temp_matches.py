@@ -1,7 +1,6 @@
 from absl import app
 import os
 from shutil import copyfile
-import scipy
 from open_spiel.python.utils import spawn
 import sys
 from itertools import combinations
@@ -78,8 +77,12 @@ def main(unused_argv):
         for j in range(n_copies):
             nets.append('q_' + str(i) + '_' + str(j))
     n = len(nets)
-    n_games = int(2500 / (2*scipy.special.comb(n,2))) * 2 # round to even number
+    counter = 0
+    total = n*(n-1)/2
+    n_games = int(total/2) * 2 # round to even number
     for pair in combinations(range(n), 2):  # Loop over pairs of nets
+        counter += 1
+        print('Percent complete: %.0f%%' % (counter*100/total))
         net_1 = nets[pair[0]]
         net_2 = nets[pair[1]]
         config = set_config(net_1, net_2, n_games=n_games, output_dir=net_1 + '_vs_' + net_2)
