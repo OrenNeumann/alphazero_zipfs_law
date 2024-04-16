@@ -34,7 +34,7 @@ def connect4_loss_plots():
                 l = min([len(curve) for curve in curves])
                 l= min(l,10**4)#
                 curves = [curve[:l] for curve in curves]
-                y = gaussian_average(np.mean(curves, axis=0))
+                y = gaussian_average(np.mean(curves, axis=0), sigma=0.1)
                 ax.plot(np.arange(len(y))+1, y, color=cm.viridis(color_nums[label]))
             ax.set_xscale('log')
             ax.set_yscale('log')
@@ -47,7 +47,7 @@ def connect4_loss_plots():
             for label in tqdm([0, 1, 2, 3, 4, 5, 6]):
                 y = losses[label]
                 y = y[:10**4]#
-                ax.plot(np.arange(len(y))+1, gaussian_average(y), color=cm.viridis(color_nums[label]))
+                ax.plot(np.arange(len(y))+1, gaussian_average(y, sigma=0.1), color=cm.viridis(color_nums[label]))
             ax.set_xscale('log')
             ax.set_yscale('linear')
             ax.tick_params(axis='both', which='major', labelsize=tf-2)
