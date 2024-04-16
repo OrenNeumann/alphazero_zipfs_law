@@ -36,7 +36,7 @@ def connect4_loss_plots():
                 l= min(l,10**4)#
                 curves = [curve[:l] for curve in curves]
                 y = gaussian_average(np.mean(curves, axis=0), sigma=sigma)
-                y = y[:len(y)/(10**sigma)]
+                y = y[:int(len(y)/(10**sigma))]
                 ax.plot(np.arange(len(y))+1, y, color=cm.viridis(color_nums[label]))
             ax.set_xscale('log')
             ax.set_yscale('log')
@@ -50,7 +50,7 @@ def connect4_loss_plots():
                 y = losses[label]
                 y = y[:10**4]#
                 y = gaussian_average(y, sigma=sigma)
-                y = y[:len(y)/(10**sigma)]
+                y = y[:int(len(y)/(10**sigma))]
                 ax.plot(np.arange(len(y))+1, y, color=cm.viridis(color_nums[label]))
             ax.set_xscale('log')
             ax.set_yscale('linear')
