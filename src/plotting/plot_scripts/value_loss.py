@@ -23,7 +23,7 @@ def connect4_loss_plots(load_data=True):
 
     titles = [r'$\bf{a.}$ Value loss (train set)',
               r'$\bf{b.}$ Value loss (ground truth)',
-              r'$\bf{c.}$ Time complexity w/\nalpha-beta pruning']
+              r'$\bf{c.}$ Time complexity w/ alpha-beta pruning']
     sigma = 0.15
     l_max = 0
     for i, ax in enumerate(axs):
@@ -83,7 +83,7 @@ def connect4_loss_plots(load_data=True):
             ax.tick_params(axis='both', which='major', labelsize=tf-2)
             ax.set_ylabel('CPU time (s)',fontsize=tf)
         ax.set_xlabel('State rank',fontsize=tf)
-        aligned_title(ax, title=titles[i],font=tf+4)
+        aligned_title(ax, title=titles[i],font=tf+4, wrap=True)
     
     # Colorbar:
     norm = matplotlib.colors.LogNorm(vmin=par.min(), vmax=par.max())
