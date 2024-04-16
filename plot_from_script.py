@@ -5,5 +5,5 @@ from src.plotting.plot_scripts.game_turns import plot_game_turns
 
 #plot_oware_size_scaling()
 #plot_new_size_scaling()
-#connect4_loss_plots()
-plot_game_turns()
+connect4_loss_plots()
+#plot_game_turns()
