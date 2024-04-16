@@ -120,7 +120,7 @@ def aligned_title(ax, title,font):
     """ Align the title to the left."""
     bbox = ax.get_yticklabels()[-1].get_window_extent()
     x,_ = ax.transAxes.inverted().transform([bbox.x0, bbox.y0])
-    ax.set_title(title, ha='left',x=x,fontsize=font)
+    ax.set_title(title, ha='left',x=x,fontsize=font, wrap=True)
 
 def smooth(vec):
     """return a smoothed vec with values averaged with their neighbors."""
