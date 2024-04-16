@@ -23,7 +23,7 @@ def connect4_loss_plots(load_data=True):
 
     titles = [r'$\bf{a.}$ Value loss (train set)',
               r'$\bf{b.}$ Value loss (ground truth)',
-              r'$\bf{c.}$ Time complexity w/ alpha-beta pruning)']
+              r'$\bf{c.}$ Time complexity w/\nalpha-beta pruning']
     sigma = 0.15
     l_max = 0
     for i, ax in enumerate(axs):
@@ -61,7 +61,7 @@ def connect4_loss_plots(load_data=True):
                         y = pickle.load(f)
                 else:
                     y = losses[label]
-                    y = y[:l_max]#
+                    y = y[:l_max]
                     y = gaussian_average(y, sigma=sigma, cut_tail=True)
                     with open('../plot_data/solver/gaussian_loss'+str(label)+'.pkl', 'wb') as f:
                         pickle.dump(y, f)
