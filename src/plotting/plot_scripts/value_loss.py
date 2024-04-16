@@ -45,6 +45,7 @@ def connect4_loss_plots():
             ax.set_yscale('log')
             ax.tick_params(axis='both', which='major', labelsize=tf-2)
             ax.set_ylabel('Loss',fontsize=tf)
+            del loss_curves
         if i == 1:
             print('[2/3] Plotting ground-truth loss')
             print('x axis length:', l_max)
@@ -60,6 +61,7 @@ def connect4_loss_plots():
             ax.set_xscale('log')
             ax.set_yscale('linear')
             ax.tick_params(axis='both', which='major', labelsize=tf-2)
+            ax.set_ylabel('Loss',fontsize=tf)
         if i == 2:
             print('[3/3] Plotting AB pruning complexity')
             x = ab_data['x']
