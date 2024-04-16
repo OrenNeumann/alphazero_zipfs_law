@@ -25,6 +25,7 @@ def connect4_loss_plots():
               r'$\bf{b.}$ Value loss on ground truth',
               r'$\bf{c.}$ Alpha-beta-pruning complexity']
     sigma = 0.15
+    l_max = 0
     for i, ax in enumerate(axs):
         if i == 0:
             print('[1/3] Plotting training loss')
@@ -33,7 +34,7 @@ def connect4_loss_plots():
             for label in tqdm([0, 1, 2, 3, 4, 5, 6]):
                 curves = [np.array(loss_curves[f'q_{label}_{copy}']) for copy in range(6)]
                 l = min([len(curve) for curve in curves])
-                #l= min(l,10**5)#
+                l_max = max(l, l_max)
                 curves = [curve[:l] for curve in curves]
                 y = np.mean(curves, axis=0)
                 y = gaussian_average(y, sigma=sigma, cut_tail=True)
@@ -46,11 +47,12 @@ def connect4_loss_plots():
             ax.set_ylabel('Loss',fontsize=tf)
         if i == 1:
             print('[2/3] Plotting ground-truth loss')
+            print('x axis length:', l_max)
             with open('../plot_data/solver/loss_curves.pkl', "rb") as f:
                 losses = pickle.load(f)
             for label in tqdm([0, 1, 2, 3, 4, 5, 6]):
                 y = losses[label]
-                #y = y[:10**5]#
+                y = y[:l_max]#
                 y = gaussian_average(y, sigma=sigma, cut_tail=True)
                 with open('../plot_data/solver/gaussian_loss'+str(label)+'.pkl', 'wb') as f:
                     pickle.dump(y, f)
