@@ -23,7 +23,7 @@ def connect4_loss_plots(load_data=True):
 
     titles = [r'$\bf{a.}$ Value loss (train set)',
               r'$\bf{b.}$ Value loss (ground truth)',
-              r'$\bf{c.}$ Time complexity w/ $\alpha-\beta$ pruning']
+              r'$\bf{c.}$ Time complexity w/ $\alpha$-$\beta$ pruning']
     sigma = 0.15
     l_max = 0
     for i, ax in enumerate(axs):
