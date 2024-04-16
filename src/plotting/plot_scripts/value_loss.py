@@ -33,7 +33,7 @@ def connect4_loss_plots():
             for label in tqdm([0, 1, 2, 3, 4, 5, 6]):
                 curves = [np.array(loss_curves[f'q_{label}_{copy}']) for copy in range(6)]
                 l = min([len(curve) for curve in curves])
-                l= min(l,10**5)#
+                #l= min(l,10**5)#
                 curves = [curve[:l] for curve in curves]
                 y = np.mean(curves, axis=0)
                 y = gaussian_average(y, sigma=sigma, cut_tail=True)
@@ -50,7 +50,7 @@ def connect4_loss_plots():
                 losses = pickle.load(f)
             for label in tqdm([0, 1, 2, 3, 4, 5, 6]):
                 y = losses[label]
-                y = y[:10**5]#
+                #y = y[:10**5]#
                 y = gaussian_average(y, sigma=sigma, cut_tail=True)
                 with open('../plot_data/solver/gaussian_loss'+str(label)+'.pkl', 'wb') as f:
                     pickle.dump(y, f)
