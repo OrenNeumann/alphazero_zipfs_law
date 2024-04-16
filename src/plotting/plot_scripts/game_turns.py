@@ -1,4 +1,3 @@
-import matplotlib
 import matplotlib.pyplot as plt
 import pickle
 import numpy as np
@@ -56,6 +55,8 @@ def game_turns():
 
     # PLot num. 5
     for i, env in enumerate(tqdm(envs, desc='Turn ratio plot')):
+        if env == 'connect_four' or env == 'pentago':
+            continue
         with open('../plot_data/turns/turn_ratio_'+env+'.pkl', "rb") as f:
             bin_x, ratio =  pickle.load(f)
         ax5.plot(bin_x, ratio, color=colors[i], label=env_names[i], linewidth=3.0)
