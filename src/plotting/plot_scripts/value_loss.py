@@ -38,7 +38,7 @@ def connect4_loss_plots():
                 y = gaussian_average(np.mean(curves, axis=0), sigma=sigma)
                 #y = y[:int(len(y)/10**sigma)]
                 ax.plot(np.arange(len(y))+1, y, color=cm.viridis(color_nums[label]))
-                ax.axvline(x=int(len(y)/10**(1.5*sigma)))
+                ax.axvline(x=int(len(y)/10**(2*sigma)))
             ax.set_xscale('log')
             ax.set_yscale('log')
             ax.tick_params(axis='both', which='major', labelsize=tf-2)
@@ -53,7 +53,7 @@ def connect4_loss_plots():
                 y = gaussian_average(y, sigma=sigma)
                 #y = y[:int(len(y)/10**sigma)]
                 ax.plot(np.arange(len(y))+1, y, color=cm.viridis(color_nums[label]))
-                ax.axvline(x=int(len(y)/10**(1.5*sigma)))
+                ax.axvline(x=int(len(y)/10**(2*sigma)))
             ax.set_xscale('log')
             ax.set_yscale('linear')
             ax.tick_params(axis='both', which='major', labelsize=tf-2)
