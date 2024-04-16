@@ -37,13 +37,13 @@ def plot_game_turns():
         ax.scatter(x, y, color=colors[i], s=40 * 3 / (10 + x), label=env_names[i])
         ax.set_xscale('log')
         ax.set_yscale('log')
-        if i != 1:
+        if i >1:
             ax.axhline(y=40, linestyle='--', color='black')###
         # Specific legend positions
         if i<2:
             ax.legend(loc='upper left', fontsize=tf)
         else:
-            ax.legend(loc="upper left", bbox_to_anchor=(0.0, 0.82), fontsize=tf)
+            ax.legend(loc="upper left", bbox_to_anchor=(0.0, 0.83), fontsize=tf)
         ax.tick_params(axis='both', which='major', labelsize=tf-2)
 
 
