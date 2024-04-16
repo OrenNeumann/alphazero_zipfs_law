@@ -9,7 +9,7 @@ from src.plotting.plot_utils import aligned_title
 
 plt.style.use(['science','nature','grid'])
 
-def game_turns():
+def plot_game_turns():
     print('Plotting game turns')
     tf =12
     # Create figure and subplots
@@ -71,7 +71,5 @@ def game_turns():
 
     plt.tight_layout()
     fig.savefig('./plots/turns.png', dpi=900)
-
-game_turns()
 
 
