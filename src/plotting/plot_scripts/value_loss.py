@@ -24,6 +24,7 @@ def connect4_loss_plots():
     titles = [r'$\bf{a.}$ Value loss on train set',
               r'$\bf{b.}$ Value loss on ground truth',
               r'$\bf{c.}$ Alpha-beta-pruning complexity']
+    sigma = 0.15
     for i, ax in enumerate(axs):
         if i == 0:
             print('[1/3] Plotting training loss')
@@ -34,7 +35,8 @@ def connect4_loss_plots():
                 l = min([len(curve) for curve in curves])
                 l= min(l,10**4)#
                 curves = [curve[:l] for curve in curves]
-                y = gaussian_average(np.mean(curves, axis=0), sigma=0.15)
+                y = gaussian_average(np.mean(curves, axis=0), sigma=sigma)
+                y = y[:len(y)/(10**sigma)]
                 ax.plot(np.arange(len(y))+1, y, color=cm.viridis(color_nums[label]))
             ax.set_xscale('log')
             ax.set_yscale('log')
@@ -47,7 +49,9 @@ def connect4_loss_plots():
             for label in tqdm([0, 1, 2, 3, 4, 5, 6]):
                 y = losses[label]
                 y = y[:10**4]#
-                ax.plot(np.arange(len(y))+1, gaussian_average(y, sigma=0.15), color=cm.viridis(color_nums[label]))
+                y = gaussian_average(y, sigma=sigma)
+                y = y[:len(y)/(10**sigma)]
+                ax.plot(np.arange(len(y))+1, y, color=cm.viridis(color_nums[label]))
             ax.set_xscale('log')
             ax.set_yscale('linear')
             ax.tick_params(axis='both', which='major', labelsize=tf-2)
