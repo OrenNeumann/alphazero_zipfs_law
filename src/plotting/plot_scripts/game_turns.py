@@ -38,7 +38,7 @@ def plot_game_turns():
         ax.set_xscale('log')
         ax.set_yscale('log')
         if i != 1:
-            ax.hlines(y=40, linestyle='--', color='black')###
+            ax.axhline(y=40, linestyle='--', color='black')###
         # Specific legend positions
         if i<2:
             ax.legend(loc='upper left', fontsize=tf)
