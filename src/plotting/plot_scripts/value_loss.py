@@ -35,10 +35,11 @@ def connect4_loss_plots():
                 l = min([len(curve) for curve in curves])
                 l= min(l,10**5)#
                 curves = [curve[:l] for curve in curves]
-                y = gaussian_average(np.mean(curves, axis=0), sigma=sigma)
-                #y = y[:int(len(y)/10**sigma)]
+                y = np.mean(curves, axis=0)
+                y = gaussian_average(y, sigma=sigma, cut_tail=True)
+                with open('../plot_data/value_loss/training_loss/gaussian_loss_connect_four_'+str(label)+'.pkl', 'wb') as f:
+                    pickle.dump(y, f)
                 ax.plot(np.arange(len(y))+1, y, color=cm.viridis(color_nums[label]))
-                ax.axvline(x=int(len(y)/10**(2*sigma)))
             ax.set_xscale('log')
             ax.set_yscale('log')
             ax.tick_params(axis='both', which='major', labelsize=tf-2)
@@ -50,10 +51,10 @@ def connect4_loss_plots():
             for label in tqdm([0, 1, 2, 3, 4, 5, 6]):
                 y = losses[label]
                 y = y[:10**5]#
-                y = gaussian_average(y, sigma=sigma)
-                #y = y[:int(len(y)/10**sigma)]
+                y = gaussian_average(y, sigma=sigma, cut_tail=True)
+                with open('../plot_data/solver/gaussian_loss'+str(label)+'.pkl', 'wb') as f:
+                    pickle.dump(y, f)
                 ax.plot(np.arange(len(y))+1, y, color=cm.viridis(color_nums[label]))
-                ax.axvline(x=int(len(y)/10**(2*sigma)))
             ax.set_xscale('log')
             ax.set_yscale('linear')
             ax.tick_params(axis='both', which='major', labelsize=tf-2)
