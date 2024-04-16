@@ -74,8 +74,7 @@ def connect4_loss_plots():
     cbar.ax.tick_params(labelsize=tf)
     cbar.ax.set_ylabel('Parameters', rotation=90, fontsize=tf)
 
-    plt.tight_layout()
-    fig.subplots_adjust(left=0.8)
+    #plt.tight_layout()
     fig.savefig('./plots/connect4_value_loss.png', dpi=900)
 
 
