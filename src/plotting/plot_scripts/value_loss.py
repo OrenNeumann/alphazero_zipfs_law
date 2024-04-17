@@ -129,12 +129,15 @@ def oware_value_loss():
         if i == 0:
             ax.set_ylabel('Loss',fontsize=tf)
             ylim = ax.get_ylim()
+            late_start = min(rank_values[label]['later_turns'][0] for label in data_labels)
+            ax.axvline(x=late_start, linestyle='--', color='black', label='First late-turn states')
         else:
             ax.set_ylim(ylim)
         if i==1:
-            ax.set_ylabel(r'$\bf{=}$', rotation=0, fontsize=tf+6)
+            #ax.set_ylabel(r'$\bf{=}$', rotation=0, fontsize=tf+6)
+            pass
         if i==2:
-            ax.set_ylabel(r'$\bf{+}$', rotation=0, fontsize=tf+6)
+            #ax.set_ylabel(r'$\bf{+}$', rotation=0, fontsize=tf+6)
             ax.set_xlim(left=10**0)
             # Add zoom-in inset
             axin = ax.inset_axes([0.02, 0.02, 0.96, 0.48])
