@@ -70,7 +70,7 @@ def set_config(model_1, model_2, n_games, output_dir):
 
 def main(unused_argv):
     max_q = 6
-    n_copies = 4 #6
+    n_copies = 3 #6
     nets = []
     # Enumerate all models. The order is: First by size, then by copy number.
     for i in range(max_q + 1):
@@ -79,7 +79,7 @@ def main(unused_argv):
     n = len(nets)
     counter = 0
     total = n*(n-1)/2
-    n_games = int(total/2) * 2 # round to even number
+    n_games = 186  # ~ 1500/80
     for pair in combinations(range(n), 2):  # Loop over pairs of nets
         counter += 1
         print('Percent complete: %.0f%%' % (counter*100/total))
