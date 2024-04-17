@@ -90,7 +90,7 @@ def plot_checkers():
             img = plt.imread(png_file)
             ax.imshow(img)
             ax.axis('off') 
-            ax.set_title(f'State \# {name+1}', fontsize=16)
+            ax.set_title(f'State \#{name+1}', fontsize=16)
     plt.tight_layout()
     fig.savefig('./plots/checkers_positions.png', dpi=600)
     """
