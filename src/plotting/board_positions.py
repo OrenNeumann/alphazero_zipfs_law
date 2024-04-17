@@ -135,11 +135,9 @@ def plot_oware_state(state, name):
     board_width = 6
     board_height = 2
     hole_radius = 0.46
-    font_size = 20
+    font_size = 24
     bank_height = 0.8
     # define the initial state of the board
-    #board_state = [[4, 4, 4, 4, 4, 4], [4, 4, 4, 4, 4, 4]]
-    #bank_state = [0, 0]
     board_state, bank_state = parse_oware_state(str(state))
     # create the board
     fig, ax = plt.subplots(figsize=(12, 4.5), facecolor='#A67C52')
@@ -198,7 +196,7 @@ def plot_oware():
 
     print('Plotting subplots')
 
-    fig = plt.figure(figsize=(12, 8))
+    fig = plt.figure(figsize=(12, 4))
     fig.suptitle('Figure title')
     names = early_turns + late_turns
     row_titles = ['Oware Board states', 'Late-game board states']
@@ -216,6 +214,6 @@ def plot_oware():
             img = plt.imread(png_file)
             ax.imshow(img)
             ax.axis('off') 
-            ax.set_title(f'State \# {name+1}', fontsize=16)
+            ax.set_title(f'State \#{name+1}', fontsize=16)
     plt.tight_layout()
     fig.savefig('./plots/oware_positions.png', dpi=600)
