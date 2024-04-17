@@ -9,3 +9,4 @@ from src.plotting import board_positions as board
 #connect4_loss_plots()
 #plot_game_turns()
 board.plot_oware()
+board.plot_checkers()
