@@ -196,7 +196,7 @@ def plot_oware():
 
     print('Plotting subplots')
 
-    fig = plt.figure(figsize=(12, 4))
+    fig = plt.figure(figsize=(12, 5))
     fig.suptitle('Figure title')
     names = early_turns + late_turns
     row_titles = ['Oware Board states', 'Late-game board states']
