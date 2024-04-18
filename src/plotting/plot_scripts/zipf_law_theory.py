@@ -5,18 +5,12 @@ import pickle
 from src.plotting.plot_utils import aligned_title
 from src.data_analysis.state_frequency.state_counter import RandomGamesCounter
 
-"""
-Plot the Zipf law of a theoretical game, which is just a branching tree.
-"""
-
 plt.style.use(['science','nature','grid'])
 
 def _calculate_theory_distribution():
     print('Calculating Zipf law for toy-model game')
     depth = 8
     b_factor = 7
-
-    
     l = 0
     for i in range(depth):
         l+= b_factor**(i+1)
@@ -26,9 +20,8 @@ def _calculate_theory_distribution():
         count = b_factor**(d+1)
         freq[ind:ind+count] = 1./count
         ind = ind+count
-    # normalize
+    # normalize:
     freq = freq/freq.min()
-    #x = np.arange(l) + 1
     with open('../plot_data/zipf_theory/theory_freq.pkl', 'wb') as f:
         pickle.dump(freq, f)
 
@@ -42,8 +35,10 @@ def _generate_random_games(env):
 
 
 def plot_zipf_law_theory(load=True):
+    """
+    Plot Zipf laws of a theoretical toy model, and random rollouts.
+    """
     tf =12
-    l_width = 2
     # Create figure and subplots
     fig, axes = plt.subplots(nrows=1, ncols=2, figsize=(12, 3))
     ax1 = axes[0]
@@ -53,19 +48,14 @@ def plot_zipf_law_theory(load=True):
         _calculate_theory_distribution()
     with open('../plot_data/zipf_theory/theory_freq.pkl', 'rb') as f:
         freq = pickle.load(f)
+    x = np.arange(len(freq)) + 1
 
-    #plt.scatter(x,freq, color='dodgerblue', s=2*40 / (10 + x), alpha=1)
-    #[m, c] = np.polyfit(np.log10(x), np.log10(freq), deg=1, w=2 / np.sqrt(x))
+    # Fit:
     m =-1.
     c = np.log10(freq.max()) + 0.5
     exp = str(round(-m, 2))
-    #const_exp = str(round(-c / m, 2))
-    # equation = r'$ \left( \frac{n}{ 10^{'+const_exp+r'} } \right) ^ {\mathbf{'+exp+r'}}$'
     equation = r'$\alpha = ' + exp + '$'
-
-    # Plot
     upper_bound = int(2.5*10**6)
-    x = np.arange(len(freq)) + 1
     y_fit = 10 ** c * x[:upper_bound] ** m
 
     ax1.scatter(x,freq, color='dodgerblue', s=40 / (10 + np.sqrt(x)), alpha=1)
@@ -77,7 +67,7 @@ def plot_zipf_law_theory(load=True):
     ax1.set_ylabel('Frequency',fontsize=tf)
     ax1.tick_params(axis='both', which='major', labelsize=tf-2)
     ax1.legend(fontsize=tf-2)
-    aligned_title(ax1, title=r'$\bf{a.}$ Toy-model game',font=tf+4)
+    aligned_title(ax1, title=r'$\bf{a.}$ Toy-model distribution',font=tf+4)
 
     ########################################################
     print('Plotting random games')
@@ -92,18 +82,14 @@ def plot_zipf_law_theory(load=True):
         with open('../plot_data/zipf_theory/random_'+env+'.pkl', 'rb') as f:
             freq = pickle.load(f)
         x = np.arange(len(freq)) + 1
-        #ax2.scatter(x, freq, s=2*40 / (10 + x), color=colors[i], label=labels[i])
-        #ax2.scatter(x, freq, s=40 / (10 + np.sqrt(x)), color=colors[i], label=labels[i])
         if env == 'connect_four':
             ax2.scatter(x, freq, s=40 / (10 + np.sqrt(x)), color=colors[i], label=labels[i])
             low = 10**2
             up = int(len(freq)/10**2)
             x_nums = np.arange(up)[low:]
             [m, c] = np.polyfit(np.log10(np.arange(up)[low:] + 1), np.log10(freq[low:up]), deg=1, w=2 / x_nums)
-            #equation = '10^{c:.2f} * n^{m:.2f}'
             exp = str(round(-m, 2))
             equation = r'$\alpha = ' + exp + '$'
-            
             y_fit = 10 ** c * x[:int(10**7)] ** m
             bound = np.argmax(y_fit < 1)
             ax2.plot(x[:bound], y_fit[:bound], color='black', linewidth=1.3, alpha=0.7, label=equation)
@@ -115,14 +101,13 @@ def plot_zipf_law_theory(load=True):
     ax2.set_xlabel('State rank',fontsize=tf)
     ax2.set_ylabel('Frequency',fontsize=tf)
     ax2.tick_params(axis='both', which='major', labelsize=tf-2)
+    # Change legend order:
     handles, labels = plt.gca().get_legend_handles_labels()
     order = [0,2,1]
     ax2.legend([handles[idx] for idx in order],[labels[idx] for idx in order], fontsize=tf-2)
-    #ax2.legend(fontsize=tf-2)
-    aligned_title(ax2, title=r'$\bf{b.}$ Random games',font=tf+4)
-
+    aligned_title(ax2, title=r'$\bf{b.}$ Random-game distribution',font=tf+4)
 
     plt.tight_layout()
-    plt.savefig('plots/theory.png', dpi=900)
+    plt.savefig('plots/theory.png', dpi=600)
 
 
