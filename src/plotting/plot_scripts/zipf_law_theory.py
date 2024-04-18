@@ -77,7 +77,7 @@ def plot_zipf_law_theory(load=True):
     ax1.set_ylabel('Frequency',fontsize=tf)
     ax1.tick_params(axis='both', which='major', labelsize=tf-2)
     ax1.legend(fontsize=tf-2)
-    aligned_title(ax1, title=r'$\bf{a.}$ Random games, theory',font=tf+4)
+    aligned_title(ax1, title=r'$\bf{a.}$ Toy-model game',font=tf+4)
 
     ########################################################
     print('Plotting random games')
@@ -85,28 +85,27 @@ def plot_zipf_law_theory(load=True):
     envs = ['connect_four', 'pentago']
     labels = ['Connect Four', 'Pentago']
     colors = ['#377eb8', '#984ea3']
-    fit_colors = ['#4daf4a', '#ff7f00']
     if not load:
         for env in envs:
             _generate_random_games(env)
     for i, env in enumerate(envs):
         with open('../plot_data/zipf_theory/random_'+env+'.pkl', 'rb') as f:
             freq = pickle.load(f)
-        
-        low = 10**2
-        up = int(len(freq)/10**2)
-        x_nums = np.arange(up)[low:]
-        [m, c] = np.polyfit(np.log10(np.arange(up)[low:] + 1), np.log10(freq[low:up]), deg=1, w=2 / x_nums)
-        #equation = '10^{c:.2f} * n^{m:.2f}'
-        exp = str(round(-m, 2))
-        equation = r'$\alpha = ' + exp + '$'
-
-        upper_bound = int(2.5*10**6)
         x = np.arange(len(freq)) + 1
-        y_fit = 10 ** c * x[:upper_bound] ** m
-
-        ax2.scatter(x, freq, s=2*40 / (10 + x), color=colors[i])
-        ax2.plot(x[:upper_bound], y_fit, color=fit_colors[i], linewidth=1.3, alpha=0.7, label=labels[i]+': '+equation)
+        #ax2.scatter(x, freq, s=2*40 / (10 + x), color=colors[i], label=labels[i])
+        ax2.scatter(x, freq, s=2*40 / (10 + np.sqrt(x)), color=colors[i], label=labels[i])
+        if env == 'connect_four':
+            low = 10**2
+            up = int(len(freq)/10**2)
+            x_nums = np.arange(up)[low:]
+            [m, c] = np.polyfit(np.log10(np.arange(up)[low:] + 1), np.log10(freq[low:up]), deg=1, w=2 / x_nums)
+            #equation = '10^{c:.2f} * n^{m:.2f}'
+            exp = str(round(-m, 2))
+            equation = r'$\alpha = ' + exp + '$'
+            upper_bound = int(2.5*10**6)
+            
+            y_fit = 10 ** c * x[:upper_bound] ** m
+            ax2.plot(x[:upper_bound], y_fit, color='black', linewidth=1.3, alpha=0.7, label=equation)
 
     ax2.set_xscale('log')
     ax2.set_yscale('log')
