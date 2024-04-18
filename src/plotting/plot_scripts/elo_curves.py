@@ -67,43 +67,35 @@ def _oware_size_scaling():
     ######## plot oware size scaling ########
     par = np.array([155, 265, 399, 739, 1175, 2335, 3879, 8119, 13895, 30055, 52359, 115399, 203015])
 
-    i= 0
-    q_scores = []
-    f_scores = []
-    q_sizes = []
-    q_sizes = []
-    q_error=[]
-    q_means=[]
-    f_sizes = []
-    f_error=[]
-    f_means=[]
-    for size in range(6): # Ignore last size, was trained with different temp. drop
-        y=[]
+    q_scores, f_scores = [], []
+    q_sizes, q_error, q_means = [], [], []
+    f_sizes, f_error, f_means = [], [], []
+    for size in range(6):
+        q_y = []
+        f_y = []
         for copy in range(6):
-            model = 'q_' + str(size) + '_' + str(copy) +',10000'
-            if model in elo:
-                q_scores.append(elo[model])
-                y.append(elo[model])
-        q_error.append(np.std(y))
-        q_means.append(np.mean(y))
-        q_sizes.append(par[i])
-        i += 1
-        y = []
+            q_model = f'q_{size}_{copy},10000'
+            if q_model in elo:
+                q_scores.append(elo[q_model])
+                q_y.append(elo[q_model])
+        q_error.append(np.std(q_y))
+        q_means.append(np.mean(q_y))
+        q_sizes.append(par[size])
         for copy in range(4):
-            model = 'f_' + str(size) + '_' + str(copy) +',10000'
-            if model in elo:
-                f_scores.append(elo[model])
-                y.append(elo[model])
-        f_error.append(np.std(y))
-        f_means.append(np.mean(y))
-        f_sizes.append(par[i])
-        i += 1
+            f_model = f'f_{size}_{copy},10000'
+            if f_model in elo:
+                f_scores.append(elo[f_model])
+                f_y.append(elo[f_model])
+        f_error.append(np.std(f_y))
+        f_means.append(np.mean(f_y))
+        f_sizes.append(par[size + 6])
     return q_sizes, q_means, q_error, f_sizes, f_means, f_error
 
 
 def plot_scaling_failure():
     """ plot oware and checkers elo curves."""
     tf =12
+    l_width = 2
     # Create figure and subplots
     fig, axes = plt.subplots(nrows=1, ncols=2, figsize=(12, 3))
     ax1 = axes[0]
@@ -122,7 +114,7 @@ def plot_scaling_failure():
     elo_scores = np.array([elo[f'q_{i}_0,10000'] for i in range(len(matches))])
     # Set Elo score range
     elo_scores -= elo_scores.min() -100
-    ax1.plot(par, elo_scores, '-o', color='#bcbd22', label='Checkers')
+    ax1.plot(par, elo_scores, '-o', color='#bcbd22', linewidth=l_width, label='Checkers')
 
     ######## plot oware size scaling ########
     print('Plotting oware size scaling')
@@ -131,8 +123,10 @@ def plot_scaling_failure():
     min_elo = min(q_means) -100
     q_means = np.array(q_means) - min_elo
     f_means = np.array(f_means) - min_elo
-    ax1.errorbar(q_sizes, q_means, yerr=[q_error, q_error], fmt='-o', color='#2ca02c', label='Oware (T-drop=50')
-    ax1.errorbar(f_sizes, f_means, yerr=[f_error, f_error], fmt='-o', color='limegreen', label='Oware (T-drop=15')
+    ax1.errorbar(q_sizes, q_means, yerr=[q_error, q_error], fmt='-o', 
+                 color='#2ca02c', linewidth=l_width, label='Oware (T-drop=50)')
+    ax1.errorbar(f_sizes, f_means, yerr=[f_error, f_error], fmt='-o', 
+                 color='limegreen', linewidth=l_width, label='Oware (T-drop=15)')
 
     ax1.set_xscale('log')
     ax1.set_xlabel('Neural net parameters',fontsize=tf)
