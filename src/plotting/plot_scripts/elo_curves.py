@@ -70,25 +70,28 @@ def _oware_size_scaling():
     q_scores, f_scores = [], []
     q_sizes, q_error, q_means = [], [], []
     f_sizes, f_error, f_means = [], [], []
-    for size in range(6):
-        q_y = []
-        f_y = []
+    i= 0
+    for size in range(6): # Ignore last size, was trained with different temp. drop
+        y=[]
         for copy in range(6):
-            q_model = f'q_{size}_{copy},10000'
-            if q_model in elo:
-                q_scores.append(elo[q_model])
-                q_y.append(elo[q_model])
-        q_error.append(np.std(q_y))
-        q_means.append(np.mean(q_y))
-        q_sizes.append(par[size])
+            model = 'q_' + str(size) + '_' + str(copy) +',10000'
+            if model in elo:
+                q_scores.append(elo[model])
+                y.append(elo[model])
+        q_error.append(np.std(y))
+        q_means.append(np.mean(y))
+        q_sizes.append(par[i])
+        i += 1
+        y = []
         for copy in range(4):
-            f_model = f'f_{size}_{copy},10000'
-            if f_model in elo:
-                f_scores.append(elo[f_model])
-                f_y.append(elo[f_model])
-        f_error.append(np.std(f_y))
-        f_means.append(np.mean(f_y))
-        f_sizes.append(par[size + 6])
+            model = 'f_' + str(size) + '_' + str(copy) +',10000'
+            if model in elo:
+                f_scores.append(elo[model])
+                y.append(elo[model])
+        f_error.append(np.std(y))
+        f_means.append(np.mean(y))
+        f_sizes.append(par[i])
+        i += 1
     return q_sizes, q_means, q_error, f_sizes, f_means, f_error
 
 
