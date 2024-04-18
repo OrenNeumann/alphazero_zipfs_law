@@ -119,7 +119,7 @@ def plot_scaling_failure():
     for i in range(len(matches)):
         agents.add(f'q_{i}_0', 10000)
     elo = r.extract_elo(agents)
-    ax1.plot(par, [elo[f'q_{i}_0'] for i in range(len(matches))], '-o', color='#bcbd22', label='Checkers')
+    ax1.plot(par, [elo[f'q_{i}_0,10000'] for i in range(len(matches))], '-o', color='#bcbd22', label='Checkers')
 
     ######## plot oware size scaling ########
     print('Plotting oware size scaling')
