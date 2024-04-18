@@ -68,7 +68,7 @@ def plot_zipf_law_theory(load=True):
     x = np.arange(len(freq)) + 1
     y_fit = 10 ** c * x[:upper_bound] ** m
 
-    ax1.scatter(x,freq, color='dodgerblue', s=2*40 / (10 + x), alpha=1)
+    ax1.scatter(x,freq, color='dodgerblue', s=40 / (10 + np.sqrt(x)), alpha=1)
     ax1.plot(x[:upper_bound], y_fit, color='black', linewidth=1.3, alpha=0.7, label=equation)
 
     ax1.set_xscale('log')
@@ -93,8 +93,9 @@ def plot_zipf_law_theory(load=True):
             freq = pickle.load(f)
         x = np.arange(len(freq)) + 1
         #ax2.scatter(x, freq, s=2*40 / (10 + x), color=colors[i], label=labels[i])
-        ax2.scatter(x, freq, s=2*40 / (10 + np.sqrt(x)), color=colors[i], label=labels[i])
+        #ax2.scatter(x, freq, s=40 / (10 + np.sqrt(x)), color=colors[i], label=labels[i])
         if env == 'connect_four':
+            ax2.scatter(x, freq, s=40 / (10 + np.sqrt(x)), color=colors[i], label=labels[i])
             low = 10**2
             up = int(len(freq)/10**2)
             x_nums = np.arange(up)[low:]
@@ -102,17 +103,22 @@ def plot_zipf_law_theory(load=True):
             #equation = '10^{c:.2f} * n^{m:.2f}'
             exp = str(round(-m, 2))
             equation = r'$\alpha = ' + exp + '$'
-            upper_bound = int(2.5*10**6)
             
-            y_fit = 10 ** c * x[:upper_bound] ** m
-            ax2.plot(x[:upper_bound], y_fit, color='black', linewidth=1.3, alpha=0.7, label=equation)
+            y_fit = 10 ** c * x[:int(10**7)] ** m
+            bound = np.argmax(y_fit < 1)
+            ax2.plot(x[:bound], y_fit[:bound], color='black', linewidth=1.3, alpha=0.7, label=equation)
+        else:
+            ax2.scatter(x, freq, s=0.7*40 / (10 + np.sqrt(x)), color=colors[i], label=labels[i])
 
     ax2.set_xscale('log')
     ax2.set_yscale('log')
     ax2.set_xlabel('State rank',fontsize=tf)
     ax2.set_ylabel('Frequency',fontsize=tf)
     ax2.tick_params(axis='both', which='major', labelsize=tf-2)
-    ax2.legend(fontsize=tf-2)
+    handles, labels = plt.gca().get_legend_handles_labels()
+    order = [0,2,1]
+    ax2.legend([handles[idx] for idx in order],[labels[idx] for idx in order], fontsize=tf-2)
+    #ax2.legend(fontsize=tf-2)
     aligned_title(ax2, title=r'$\bf{b.}$ Random games',font=tf+4)
 
 
