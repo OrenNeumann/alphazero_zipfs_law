@@ -119,13 +119,20 @@ def plot_scaling_failure():
     for i in range(len(matches)):
         agents.add(f'q_{i}_0', 10000)
     elo = r.extract_elo(agents)
-    ax1.plot(par, [elo[f'q_{i}_0,10000'] for i in range(len(matches))], '-o', color='#bcbd22', label='Checkers')
+    elo_scores = np.array([elo[f'q_{i}_0,10000'] for i in range(len(matches))])
+    # Set Elo score range
+    elo_scores -= elo_scores.min() -100
+    ax1.plot(par, elo_scores, '-o', color='#bcbd22', label='Checkers')
 
     ######## plot oware size scaling ########
     print('Plotting oware size scaling')
     q_sizes, q_means, q_error, f_sizes, f_means, f_error= _oware_size_scaling()
-    plt.errorbar(q_sizes, q_means, yerr=[q_error, q_error], fmt='-o', color='#2ca02c', label='Oware (T-drop=50')
-    plt.errorbar(f_sizes, f_means, yerr=[f_error, f_error], fmt='-o', color='#238b23', label='Oware (T-drop=15')
+    # Set Elo score range
+    min_elo = min(q_means) -100
+    q_means = np.array(q_means) - min_elo
+    f_means = np.array(f_means) - min_elo
+    ax1.errorbar(q_sizes, q_means, yerr=[q_error, q_error], fmt='-o', color='#2ca02c', label='Oware (T-drop=50')
+    ax1.errorbar(f_sizes, f_means, yerr=[f_error, f_error], fmt='-o', color='limegreen', label='Oware (T-drop=15')
 
     ax1.set_xscale('log')
     ax1.set_xlabel('Neural net parameters',fontsize=tf)
