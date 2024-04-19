@@ -13,5 +13,5 @@ from src.plotting.plot_scripts.zipf_law_theory import plot_zipf_law_theory
 #plot_game_turns()
 #board.plot_oware()
 #board.plot_checkers()
-#plot_scaling_failure()
-plot_zipf_law_theory(load=True)
+plot_scaling_failure(load=False)
+#plot_zipf_law_theory(load=True)
