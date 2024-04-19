@@ -156,7 +156,7 @@ def plot_scaling_failure(load=True):
     ax1.set_xlabel('Neural net parameters',fontsize=tf)
     ax1.set_ylabel('Elo',fontsize=tf)
     ax1.tick_params(axis='both', which='major', labelsize=tf-2)
-    ax1.legend(fontsize=tf-2, loc='upper left')
+    ax1.legend(fontsize=tf-2, loc='upper left', framealpha=0.5)
     aligned_title(ax1, title=r'$\bf{a.}$ Scaling curves',font=tf+4)
 
     #################################################
@@ -177,7 +177,7 @@ def plot_scaling_failure(load=True):
         ax.set_yscale('log')
         ax.set_xlabel('State rank',fontsize=tf)
         ax.set_ylabel('Frequency',fontsize=tf)
-        ax.legend(fontsize=tf-2)
+        ax.legend(fontsize=tf-2, loc='upper right')
         ax.tick_params(axis='both', which='major', labelsize=tf-2)
 
     if not load:
