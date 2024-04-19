@@ -156,7 +156,7 @@ def plot_scaling_failure(load=True):
     ax1.set_xlabel('Neural net parameters',fontsize=tf)
     ax1.set_ylabel('Elo',fontsize=tf)
     ax1.tick_params(axis='both', which='major', labelsize=tf-2)
-    ax1.legend(fontsize=tf-2)
+    ax1.legend(fontsize=tf-2, loc='upper left')
     aligned_title(ax1, title=r'$\bf{a.}$ Scaling curves',font=tf+4)
 
     #################################################
