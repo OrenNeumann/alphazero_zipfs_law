@@ -108,7 +108,7 @@ def _bent_zipf_laws():
         freq_cutoff = np.array([item[1] for item in counter.frequencies.most_common()])
 
         print(f'Gathering data for {env} (no cutoff).')
-        counter = gather_data(env, data_labels, max_file_num=15, save_turn_num=True)#10
+        counter = gather_data(env, data_labels, max_file_num=15)#10
         counter.prune_low_frequencies(10)
         freq_normal = np.array([item[1] for item in counter.frequencies.most_common()])
 
