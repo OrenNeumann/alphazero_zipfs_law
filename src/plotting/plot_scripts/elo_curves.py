@@ -103,12 +103,12 @@ def _bent_zipf_laws():
     data_labels = [0, 1, 2, 3, 4, 5, 6]
     for env in ['oware', 'checkers']:
         print(f'Gathering data for {env} (cutoff=40).')
-        counter = gather_data(env, data_labels, cutoff=50, max_file_num=14, save_turn_num=True)
+        counter = gather_data(env, data_labels, cutoff=50, max_file_num=20, save_turn_num=True)#14
         counter.prune_low_frequencies(10)
         freq_cutoff = np.array([item[1] for item in counter.frequencies.most_common()])
 
         print(f'Gathering data for {env} (no cutoff).')
-        counter = gather_data(env, data_labels, max_file_num=10, save_turn_num=True)
+        counter = gather_data(env, data_labels, max_file_num=15, save_turn_num=True)#10
         counter.prune_low_frequencies(10)
         freq_normal = np.array([item[1] for item in counter.frequencies.most_common()])
 
@@ -166,15 +166,15 @@ def plot_scaling_failure(load=True):
         x = np.arange(len(freqs['freq_cutoff']))+1
         ax.scatter(x,freqs['freq_cutoff'], color='dodgerblue', s=40 / (10 + np.log10(x)))
         xy = (5*10**3, freqs['freq_cutoff'][5*10**3])
-        plt.annotate('Only early-game states', xy = xy, 
-             fontsize = tf, xytext =[xy[0]/10,xy[1]/1.2])
-             #arrowprops = dict(facecolor = 'red'),
+        ax.annotate('Early-game states', xy = xy, 
+             fontsize = tf, xytext =[xy[0]/10**2,xy[1]/1.2],
+             arrowprops = dict(arrowstyle='->,head_width=.15'))
              #color = 'g')
         x = np.arange(len(freqs['freq_normal']))+1
         ax.scatter(x,freqs['freq_normal'], color='gold', s=40 / (10 + np.log10(x)))
         xy = (10**4, freqs['freq_normal'][10**4])
-        plt.annotate('All states', xy = xy, 
-             fontsize = tf, xytext =[xy[0]/1.2,xy[1]*10])
+        ax.annotate('All states', xy = xy, 
+             fontsize = tf, xytext =[xy[0]/1.2,xy[1]*10**2])
         ax.set_xscale('log')
         ax.set_yscale('log')
         ax.set_xlabel('State rank',fontsize=tf)
@@ -188,12 +188,12 @@ def plot_scaling_failure(load=True):
     with open('../plot_data/elo_curves/oware_freqs.pkl', 'rb') as f:
         oware_freqs = pickle.load(f)
     zipf_law_plot(ax2, oware_freqs)
-    aligned_title(ax2, title=r'$\bf{b.}$ Oware Zipf\'s law',font=tf+4)
+    aligned_title(ax2, title=r"$\bf{b.}$ Oware Zipf's law",font=tf+4)
     ax3 = axes[2]
     with open('../plot_data/elo_curves/checkers_freqs.pkl', 'rb') as f:
         checkers_freqs = pickle.load(f)
     zipf_law_plot(ax3, checkers_freqs)
-    aligned_title(ax3, title=r'$\bf{c.}$ Checkers Zipf\'s law',font=tf+4)
+    aligned_title(ax3, title=r"$\bf{c.}$ Checkers Zipf's law",font=tf+4)
 
     fig.tight_layout()
     fig.savefig('plots/oware_checkers_scaling.png', dpi=300)
