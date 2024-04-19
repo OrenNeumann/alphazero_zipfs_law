@@ -58,7 +58,7 @@ def plot_zipf_law_theory(load=True):
     upper_bound = int(2.5*10**6)
     y_fit = 10 ** c * x[:upper_bound] ** m
 
-    ax1.scatter(x,freq, color='dodgerblue', s=40 / (10 + np.sqrt(x)), alpha=1)
+    ax1.scatter(x,freq, color='dodgerblue', s=40 / (10 + np.log10(x)), alpha=1)
     ax1.plot(x[:upper_bound], y_fit, color='black', linewidth=1.3, alpha=0.7, label=equation)
 
     ax1.set_xscale('log')
@@ -83,7 +83,7 @@ def plot_zipf_law_theory(load=True):
             freq = pickle.load(f)
         x = np.arange(len(freq)) + 1
         if env == 'connect_four':
-            ax2.scatter(x, freq, s=40 / (10 + np.sqrt(x)), color=colors[i], label=labels[i])
+            ax2.scatter(x, freq, s=40 / (10 + np.log10(x)), color=colors[i], label=labels[i])
             low = 10**2
             up = int(len(freq)/10**2)
             x_nums = np.arange(up)[low:]
@@ -107,7 +107,7 @@ def plot_zipf_law_theory(load=True):
     ax2.legend([handles[idx] for idx in order],[labels[idx] for idx in order], fontsize=tf-2)
     aligned_title(ax2, title=r'$\bf{b.}$ Random-game distribution',font=tf+4)
 
-    plt.tight_layout()
-    plt.savefig('plots/theory.png', dpi=600)
+    fig.tight_layout()
+    fig.savefig('plots/theory.png', dpi=600)
 
 
