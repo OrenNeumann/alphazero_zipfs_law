@@ -160,9 +160,10 @@ def plot_scaling_failure(load=True):
     aligned_title(ax1, title=r'$\bf{a.}$ Scaling curves',font=tf+4)
 
     #################################################
+    print('Plotting Zipf\'s law curves')
 
     def zipf_law_plot(ax, freqs):
-        x = np.arange(len(freqs['freq_cutoff']))
+        x = np.arange(len(freqs['freq_cutoff']))+1
         ax.scatter(x,freqs['freq_cutoff'], color='dodgerblue', s=40 / (10 + np.log10(x)))
         xy = (5*10**3, freqs['freq_cutoff'][5*10**3])
         plt.annotate('Only early-game states', xy = xy, 
