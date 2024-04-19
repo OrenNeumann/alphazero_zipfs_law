@@ -103,7 +103,7 @@ def _bent_zipf_laws():
     data_labels = [0, 1, 2, 3, 4, 5, 6]
     for env in ['oware', 'checkers']:
         print(f'Gathering data for {env} (cutoff=40).')
-        counter = gather_data(env, data_labels, cutoff=50, max_file_num=30, save_turn_num=True)#14
+        counter = gather_data(env, data_labels, cutoff=50, max_file_num=20, save_turn_num=True)#14
         counter.prune_low_frequencies(10)
         freq_cutoff = np.array([item[1] for item in counter.frequencies.most_common()])
 
@@ -121,7 +121,7 @@ def plot_scaling_failure(load=True):
     tf =12
     l_width = 2
     # Create figure and subplots
-    fig, axes = plt.subplots(nrows=1, ncols=3, figsize=(12, 3))
+    fig, axes = plt.subplots(nrows=1, ncols=3, figsize=(12, 3), gridspec_kw={'width_ratios': [2, 1, 1]})
     ax1 = axes[0]
 
     ######## plot checkers size scaling ########
@@ -164,21 +164,20 @@ def plot_scaling_failure(load=True):
 
     def zipf_law_plot(ax, freqs):
         x = np.arange(len(freqs['freq_cutoff']))+1
-        ax.scatter(x,freqs['freq_cutoff'], color='dodgerblue', s=40 / (10 + np.log10(x)))
+        ax.scatter(x,freqs['freq_cutoff'], color='gold', s=40 / (10 + np.log10(x)), label='No late-game states')
+        """
         xy = (5*10**3, freqs['freq_cutoff'][5*10**3])
         ax.annotate('Early-game states', xy = xy, 
              fontsize = tf, xytext =[xy[0]/10**2,xy[1]/1.2],
              arrowprops = dict(arrowstyle='->,head_width=.15'))
-             #color = 'g')
+        """
         x = np.arange(len(freqs['freq_normal']))+1
-        ax.scatter(x,freqs['freq_normal'], color='gold', s=40 / (10 + np.log10(x)))
-        xy = (10**4, freqs['freq_normal'][10**4])
-        ax.annotate('All states', xy = xy, 
-             fontsize = tf, xytext =[xy[0]/1.2,xy[1]*10**2])
+        ax.scatter(x,freqs['freq_normal'], color='dodgerblue', s=40 / (10 + np.log10(x)), label='All states')
         ax.set_xscale('log')
         ax.set_yscale('log')
         ax.set_xlabel('State rank',fontsize=tf)
         ax.set_ylabel('Frequency',fontsize=tf)
+        ax.legend(fontsize=tf-2)
         ax.tick_params(axis='both', which='major', labelsize=tf-2)
 
     if not load:
