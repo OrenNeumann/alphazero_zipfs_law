@@ -169,7 +169,7 @@ def plot_scaling_failure(load=True):
              fontsize = tf, xytext =[xy[0]/10,xy[1]/1.2])
              #arrowprops = dict(facecolor = 'red'),
              #color = 'g')
-        x = np.arange(len(freqs['freq_normal']))
+        x = np.arange(len(freqs['freq_normal']))+1
         ax.scatter(x,freqs['freq_normal'], color='gold', s=40 / (10 + np.log10(x)))
         xy = (10**4, freqs['freq_normal'][10**4])
         plt.annotate('All states', xy = xy, 
