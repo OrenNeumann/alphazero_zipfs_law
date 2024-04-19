@@ -1,9 +1,12 @@
+from math import pi
+import pickle
 from src.alphazero_scaling.elo.utils import PlayerNums, BayesElo
 import numpy as np
 from tqdm import tqdm
 from itertools import combinations
 import matplotlib.pyplot as plt
 from src.plotting.plot_utils import aligned_title
+from src.data_analysis.gather_agent_data import gather_data
 import scienceplots
 
 plt.style.use(['science','nature','grid'])
@@ -95,12 +98,30 @@ def _oware_size_scaling():
     return q_sizes, q_means, q_error, f_sizes, f_means, f_error
 
 
-def plot_scaling_failure():
+def _bent_zipf_laws():
+    """ Clauculate state frequency distribution with and without turn cutoff."""
+    data_labels = [0, 1, 2, 3, 4, 5, 6]
+    for env in ['oware', 'checkers']:
+        print(f'Gathering data for {env} (cutoff=40).')
+        counter = gather_data(env, data_labels, cutoff=50, max_file_num=14, save_turn_num=True)
+        counter.prune_low_frequencies(10)
+        freq_cutoff = np.array([item[1] for item in counter.frequencies.most_common()])
+
+        print(f'Gathering data for {env} (no cutoff).')
+        counter = gather_data(env, data_labels, max_file_num=10, save_turn_num=True)
+        counter.prune_low_frequencies(10)
+        freq_normal = np.array([item[1] for item in counter.frequencies.most_common()])
+
+        with open(f'../plot_data/elo_curves/{env}_freqs.pkl', 'wb') as f:
+            pickle.dump({'freq_cutoff': freq_cutoff, 'freq_normal': freq_normal}, f)
+
+
+def plot_scaling_failure(load=True):
     """ plot oware and checkers elo curves."""
     tf =12
     l_width = 2
     # Create figure and subplots
-    fig, axes = plt.subplots(nrows=1, ncols=2, figsize=(12, 3))
+    fig, axes = plt.subplots(nrows=1, ncols=3, figsize=(12, 3))
     ax1 = axes[0]
 
     ######## plot checkers size scaling ########
@@ -137,6 +158,42 @@ def plot_scaling_failure():
     ax1.tick_params(axis='both', which='major', labelsize=tf-2)
     ax1.legend(fontsize=tf-2)
     aligned_title(ax1, title=r'$\bf{a.}$ Scaling curves',font=tf+4)
-    plt.tight_layout()
+
+    #################################################
+
+    def zipf_law_plot(ax, freqs):
+        x = np.arange(len(freqs['freq_cutoff']))
+        ax.scatter(x,freqs['freq_cutoff'], color='dodgerblue', s=40 / (10 + np.log10(x)))
+        xy = (5*10**3, freqs['freq_cutoff'][5*10**3])
+        plt.annotate('Only early-game states', xy = xy, 
+             fontsize = tf, xytext =[xy[0]/10,xy[1]/1.2])
+             #arrowprops = dict(facecolor = 'red'),
+             #color = 'g')
+        x = np.arange(len(freqs['freq_normal']))
+        ax.scatter(x,freqs['freq_normal'], color='gold', s=40 / (10 + np.log10(x)))
+        xy = (10**4, freqs['freq_normal'][10**4])
+        plt.annotate('All states', xy = xy, 
+             fontsize = tf, xytext =[xy[0]/1.2,xy[1]*10])
+        ax.set_xscale('log')
+        ax.set_yscale('log')
+        ax.set_xlabel('State rank',fontsize=tf)
+        ax.set_ylabel('Frequency',fontsize=tf)
+        ax.tick_params(axis='both', which='major', labelsize=tf-2)
+
+    if not load:
+        _bent_zipf_laws()
+
+    ax2 = axes[1]
+    with open('../plot_data/elo_curves/oware_freqs.pkl', 'rb') as f:
+        oware_freqs = pickle.load(f)
+    zipf_law_plot(ax2, oware_freqs)
+    aligned_title(ax2, title=r'$\bf{b.}$ Oware Zipf\'s law',font=tf+4)
+    ax3 = axes[2]
+    with open('../plot_data/elo_curves/checkers_freqs.pkl', 'rb') as f:
+        checkers_freqs = pickle.load(f)
+    zipf_law_plot(ax3, checkers_freqs)
+    aligned_title(ax3, title=r'$\bf{c.}$ Checkers Zipf\'s law',font=tf+4)
+
+    fig.tight_layout()
     fig.savefig('plots/oware_checkers_scaling.png', dpi=300)
     
