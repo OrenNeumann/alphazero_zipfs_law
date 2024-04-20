@@ -41,7 +41,7 @@ def _fit_power_law(freq):
 
 def _plot_curve(ax, y, par, tf=12):
     x = np.arange(len(y)) + 1
-    ax.scatter(x, y, colot='dodgerblue')#, s=40 / (10 + x))
+    ax.scatter(x, y, color='dodgerblue')#, s=40 / (10 + x))
     x_fit, y_fit, equation = _fit_power_law(y)
     ax.plot(x_fit, y_fit, color='black', linewidth=1.5, label=equation)
     ax.set_xscale('log')
