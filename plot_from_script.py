@@ -9,9 +9,9 @@ from src.plotting.plot_scripts.zipf_law_theory import plot_zipf_law_theory
 
 #plot_oware_size_scaling()
 #plot_new_size_scaling()
-connect4_loss_plots(load=False)
+connect4_loss_plots(load_data=False)
 #plot_game_turns()
 #board.plot_oware()
 #board.plot_checkers()
-#plot_scaling_failure(load=True)
-#plot_zipf_law_theory(load=True)
+#plot_scaling_failure(load_data=True)
+#plot_zipf_law_theory(load_data=True)

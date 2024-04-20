@@ -34,7 +34,7 @@ def _generate_random_games(env):
         pickle.dump(np.array([item[1] for item in counter.frequencies.most_common()]), f)
 
 
-def plot_zipf_law_theory(load=True):
+def plot_zipf_law_theory(load_data=True):
     """
     Plot Zipf laws of a theoretical toy model, and random rollouts.
     """
@@ -44,7 +44,7 @@ def plot_zipf_law_theory(load=True):
     ax1 = axes[0]
 
     print('Plotting Zipf law theory')
-    if not load:
+    if not load_data:
         _calculate_theory_distribution()
     with open('../plot_data/zipf_theory/theory_freq.pkl', 'rb') as f:
         freq = pickle.load(f)
@@ -75,7 +75,7 @@ def plot_zipf_law_theory(load=True):
     envs = ['connect_four', 'pentago']
     labels = ['Connect Four', 'Pentago']
     colors = ['#377eb8', '#984ea3']
-    if not load:
+    if not load_data:
         for env in envs:
             _generate_random_games(env)
     for i, env in enumerate(envs):

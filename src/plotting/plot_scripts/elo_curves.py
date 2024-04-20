@@ -116,7 +116,7 @@ def _bent_zipf_laws():
             pickle.dump({'freq_cutoff': freq_cutoff, 'freq_normal': freq_normal}, f)
 
 
-def plot_scaling_failure(load=True):
+def plot_scaling_failure(load_data=True):
     """ plot oware and checkers elo curves."""
     tf =12
     l_width = 2
@@ -180,7 +180,7 @@ def plot_scaling_failure(load=True):
         ax.legend(fontsize=tf-2, loc='upper right')
         ax.tick_params(axis='both', which='major', labelsize=tf-2)
 
-    if not load:
+    if not load_data:
         _bent_zipf_laws()
 
     ax2 = axes[1]
