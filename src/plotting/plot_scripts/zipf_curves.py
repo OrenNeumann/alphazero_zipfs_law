@@ -33,7 +33,7 @@ def _fit_power_law(freq):
     equation = r'$\alpha = ' + exp + '$'
     x = np.arange(len(freq)) + 1
     y = 10 ** c * x[:int(10**7)] ** m
-    bound = np.argmax(y_fit < 1)
+    bound = np.argmax(y < 1)
     x_fit = [1, bound+1]
     y_fit = [y[0], y[bound]]
     return x_fit, y_fit, equation
