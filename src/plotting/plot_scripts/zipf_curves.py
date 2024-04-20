@@ -30,7 +30,7 @@ def _generate_zipf_curves(env, models):
 
 def _fit_power_law(freq, ylabel):
     low = np.argmax(freq < 10**2)#10**2
-    up = np.argmin(freq < 10**1)#int(len(freq)/10**2)
+    up = np.argmax(freq < 10**1)#int(len(freq)/10**2)
     x_nums = np.arange(up)[low:]
     [m, c] = np.polyfit(np.log10(np.arange(up)[low:] + 1), np.log10(freq[low:up]), deg=1, w=2 / x_nums)
     exp = str(round(-m, 2))
