@@ -50,7 +50,7 @@ def _plot_curve(ax, y, par, tf=12):
     ax.tick_params(axis='both', which='major', labelsize=tf-2)
     ax.set_xlabel('State rank',fontsize=tf)
     ax.set_ylabel('Frequency',fontsize=tf)
-    ax.legend(fontsize=tf-2)
+    ax.legend(fontsize=tf-2, loc='upper right')
     size = str(round(np.log10(par), 1))
     aligned_title(ax, f'$10^{size}$ parameters', tf)
 
@@ -75,6 +75,19 @@ def plot_zipf_curves(load_data=True):
             y = zipf_curves[model]
             _plot_curve(ax, y, pars[i][j])
         aligned_title(axs[i,0], env, tf)
-
+    print('Tightening...')
     fig.tight_layout()
+    print('Saving figure...')
     fig.savefig('plots/zipf_curves.png', dpi=300)
+
+
+def plot_temperature_curves():
+    print('Plotting Connect Four Zipf curves at different temperatures.')
+    temps = [0.07, 0.1, 0.14, 0.2, 0.25, 0.32, 0.45, 0.6, 0.8, 1, 1.4, 2, 3, 5]
+    counter = StateCounter(env='connect_four')
+    freqs = dict()
+    for t in enumerate(temps):
+        print('Collecting T=' + str(t) + ' games:')
+        #path = models_path() + game_path(env) + model + '/'
+        #counter.collect_data(path=path, max_file_num=39)
+        #freqs[model] = np.array([item[1] for item in counter.frequencies.most_common()])
