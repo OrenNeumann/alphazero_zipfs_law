@@ -2,6 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import scienceplots
 import pickle
+from tqdm import tqdm
 from src.plotting.plot_utils import aligned_title
 from src.data_analysis.state_frequency.state_counter import StateCounter
 from src.data_analysis.gather_agent_data import gather_data
@@ -66,8 +67,7 @@ def plot_zipf_curves(load_data=True):
     # Create figure and subplots
     fig, axs = plt.subplots(nrows=len(envs), ncols=len(models)+1, figsize=(12, 4*3))
 
-    print('Plotting Zipf curves')
-    for i, env in enumerate(envs):
+    for i, env in enumerate(tqdm(envs,desc='Plotting Zipf curves')):
         with open(f'../plot_data/zipf_curves/zipf_curves_{env}.pkl', 'rb') as f:
             zipf_curves = pickle.load(f)
         for j, model in enumerate(models):
