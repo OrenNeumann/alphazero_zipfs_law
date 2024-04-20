@@ -38,9 +38,9 @@ def connect4_loss_plots(load_data=True):
                 else:
                     curves = [np.array(loss_curves[f'q_{label}_{copy}']) for copy in range(6)]
                     l = min([len(curve) for curve in curves])
-                    l = 10**4 #
+                    l = 10**5 #
                     l_max = max(l, l_max)
-                    l_max = 10**4 #
+                    l_max = 10**5 #
                     curves = [curve[:l] for curve in curves]
                     y = np.mean(curves, axis=0)
                     y = gaussian_average(y, sigma=sigma, cut_tail=True)
