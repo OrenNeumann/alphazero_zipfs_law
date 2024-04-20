@@ -55,7 +55,7 @@ def _plot_curve(ax, y, par, tf=12):
 def plot_zipf_curves(load_data=True):
     models = ['q_0_0', 'q_2_0', 'q_4_0', 'q_6_0']
     envs = ['connect_four', 'pentago', 'oware', 'checkers']
-    pars = [np.load(f'src/config/parameter_counts/{env}.npy')[0,2,4,6] for env in envs]
+    pars = [np.load(f'src/config/parameter_counts/{env}.npy').take([0,2,4,6]) for env in envs]
     if not load_data:
         for env in envs:
             _generate_zipf_curves(env, models)
