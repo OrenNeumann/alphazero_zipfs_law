@@ -14,9 +14,11 @@ def _generate_zipf_curves(env, models):
     counter = StateCounter(env=env)
     freqs = dict()
     for model in models:
+        print('Collecting ' + model + ' games:')
         path = models_path() + game_path(env) + model + '/'
         counter.collect_data(path=path, max_file_num=39)
         freqs[model] = np.array([item[1] for item in counter.frequencies.most_common()])
+    print('Collecting mixed states:')
     counter = gather_data(env, labels=[0,2,4,6], max_file_num=10)
     freqs['combined'] = np.array([item[1] for item in counter.frequencies.most_common()])
     with open(f'../plot_data/zipf_curves/zipf_curves_{env}.pkl', 'wb') as f:
