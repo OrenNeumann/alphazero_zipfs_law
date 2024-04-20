@@ -156,8 +156,8 @@ import numpy as np
 def gaussian_average3(y, sigma=0.25, chunk_size=1000, cut_tail=False):
     """Smooth y by averaging it with a log-scale gaussian kernel."""
     y_smooth = np.zeros_like(y)
-    ranks = np.arange(n) + 1
-    x_ranks = np.arange(n) + 1
+    ranks = np.arange(len(y)) + 1
+    x_ranks = np.arange(len(y)) + 1
     if cut_tail:
         y_smooth = np.zeros(int(len(y)/10**(2*sigma)))
         x_ranks =  np.arange(int(len(y)/10**(2*sigma)))+1

@@ -7,16 +7,18 @@ from src.plotting.plot_utils import aligned_title
 
 plt.style.use(['science','nature','grid'])
 
-def _generate_zipf_curves():
+def _generate_zipf_curves(env, models):
 
 
 def plot_zipf_curves(load_data=True):
     """
     Plot Zipf curves.
     """
-    
+    models = ['q_0_0', 'q_2_0', 'q_4_0', 'q_6_0']
+    envs = ['connect_four', 'pentago', 'oware', 'checkers']
     if not load_data:
-        _generate_zipf_curves()
+        for env in envs:
+            _generate_zipf_curves(env, models)
 
     tf =12
     # Create figure and subplots
