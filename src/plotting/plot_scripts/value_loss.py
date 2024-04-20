@@ -5,7 +5,7 @@ import pickle
 from tqdm import tqdm
 import numpy as np
 import scienceplots
-from src.plotting.plot_utils import aligned_title, smooth, gaussian_average, gaussian_average3
+from src.plotting.plot_utils import aligned_title, smooth, gaussian_average
 
 plt.style.use(['science','nature','grid'])
 
@@ -38,15 +38,12 @@ def connect4_loss_plots(load_data=True):
                 else:
                     curves = [np.array(loss_curves[f'q_{label}_{copy}']) for copy in range(6)]
                     l = min([len(curve) for curve in curves])
-                    #l = 10**5 #
                     l_max = max(l, l_max)
-                    #l_max = 10**5 #
                     curves = [curve[:l] for curve in curves]
                     y = np.mean(curves, axis=0)
-                    #y = gaussian_average(y, sigma=sigma, cut_tail=True)
-                    y = gaussian_average3(y, sigma=sigma, cut_tail=True)
-                    #with open('../plot_data/value_loss/training_loss/gaussian_loss_connect_four_'+str(label)+'.pkl', 'wb') as f:
-                    #    pickle.dump(y, f)
+                    y = gaussian_average(y, sigma=sigma, cut_tail=True)
+                    with open('../plot_data/value_loss/training_loss/gaussian_loss_connect_four_'+str(label)+'.pkl', 'wb') as f:
+                        pickle.dump(y, f)
                 ax.plot(np.arange(len(y))+1, y, color=cm.viridis(color_nums[label]))
             ax.set_xscale('log')
             ax.set_yscale('log')
@@ -66,8 +63,8 @@ def connect4_loss_plots(load_data=True):
                     y = losses[label]
                     y = y[:l_max]
                     y = gaussian_average(y, sigma=sigma, cut_tail=True)
-                    #with open('../plot_data/solver/gaussian_loss'+str(label)+'.pkl', 'wb') as f:
-                    #    pickle.dump(y, f)
+                    with open('../plot_data/solver/gaussian_loss'+str(label)+'.pkl', 'wb') as f:
+                        pickle.dump(y, f)
                 ax.plot(np.arange(len(y))+1, y, color=cm.viridis(color_nums[label]))
             ax.set_xscale('log')
             ax.set_yscale('linear')

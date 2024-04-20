@@ -144,14 +144,6 @@ def gaussian_average(y, sigma=0.25, cut_tail=False):
         y_smooth[i] = np.sum(y * kernel) / np.sum(kernel)
     return y_smooth
 
-def gaussian_average2(y, sigma=0.25):
-    """Smooth y by averaging it with a log-scale gaussian kernel."""
-    ranks = np.arange(len(y)) + 1
-    kernel = np.exp(-0.5 * ((np.log10(ranks[:, None] / ranks[None, :])) / sigma) ** 2)
-    y_smooth = np.dot(kernel, y) / np.sum(kernel, axis=1)
-    return y_smooth
-
-import numpy as np
 
 def gaussian_average3(y, sigma=0.25, chunk_size=10, cut_tail=False):
     """Smooth y by averaging it with a log-scale gaussian kernel."""
