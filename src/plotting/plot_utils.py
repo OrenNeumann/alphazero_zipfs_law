@@ -153,15 +153,18 @@ def gaussian_average2(y, sigma=0.25):
 
 import numpy as np
 
-def gaussian_average3(y, sigma=0.25, chunk_size=1000):
+def gaussian_average3(y, sigma=0.25, chunk_size=1000, cut_tail=False):
     """Smooth y by averaging it with a log-scale gaussian kernel."""
     y_smooth = np.zeros_like(y)
-    n = len(y)
     ranks = np.arange(n) + 1
-
+    x_ranks = np.arange(n) + 1
+    if cut_tail:
+        y_smooth = np.zeros(int(len(y)/10**(2*sigma)))
+        x_ranks =  np.arange(int(len(y)/10**(2*sigma)))+1
+    n = len(y_smooth)
     for i in tqdm(range(0, n, chunk_size)):
         j = min(i + chunk_size, n)  # end of the current chunk
-        chunk_ranks = ranks[i:j]
+        chunk_ranks = x_ranks[i:j]
         kernel = np.exp(-0.5 * ((np.log10(ranks[None, :] / chunk_ranks[:, None])) / sigma) ** 2)
         y_smooth[i:j] = np.dot(kernel, y) / np.sum(kernel, axis=1)
 
