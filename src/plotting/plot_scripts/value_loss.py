@@ -43,7 +43,8 @@ def connect4_loss_plots(load_data=True):
                     #l_max = 10**5 #
                     curves = [curve[:l] for curve in curves]
                     y = np.mean(curves, axis=0)
-                    y = gaussian_average(y, sigma=sigma, cut_tail=True)
+                    #y = gaussian_average(y, sigma=sigma, cut_tail=True)
+                    y = gaussian_average3(y, sigma=sigma, cut_tail=True)
                     #with open('../plot_data/value_loss/training_loss/gaussian_loss_connect_four_'+str(label)+'.pkl', 'wb') as f:
                     #    pickle.dump(y, f)
                 ax.plot(np.arange(len(y))+1, y, color=cm.viridis(color_nums[label]))
