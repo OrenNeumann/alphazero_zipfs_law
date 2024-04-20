@@ -31,7 +31,7 @@ def _generate_zipf_curves(env, models):
 def _fit_power_law(freq, ylabel, env):
     if env == 'connect_four' or env == 'pentago':
         low = 10**2
-        up = 10**5
+        up = 10**6
     else:
         low = np.argmax(freq < 10**2)#10**2
         up = np.argmax(freq < 10**1)#int(len(freq)/10**2)
