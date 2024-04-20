@@ -3,12 +3,21 @@ import matplotlib.pyplot as plt
 import scienceplots
 import pickle
 from src.plotting.plot_utils import aligned_title
-
+from src.data_analysis.state_frequency.state_counter import StateCounter
+from src.general.general_utils import models_path
 
 plt.style.use(['science','nature','grid'])
 
 def _generate_zipf_curves(env, models):
-
+    print('Generating Zipf curves for ' + env)
+    state_counter = StateCounter(env=env)
+    freqs = {model: [] for model in models}
+    for model in models:
+        path = models_path() + env + '_10000/' + model + '/'
+        state_counter.collect_data(path=path, max_file_num=39)
+        freqs[model] = np.array([item[1] for item in state_counter.frequencies.most_common()])
+    with open(f'../plot_data/zipf_curves/zipf_curves_{env}.pkl', 'wb') as f:
+        pickle.dump(freqs, f)
 
 def plot_zipf_curves(load_data=True):
     """
