@@ -28,9 +28,13 @@ def _generate_zipf_curves(env, models):
     with open(f'../plot_data/zipf_curves/zipf_curves_{env}.pkl', 'wb') as f:
         pickle.dump(freqs, f)
 
-def _fit_power_law(freq, ylabel):
-    low = np.argmax(freq < 10**2)#10**2
-    up = np.argmax(freq < 10**1)#int(len(freq)/10**2)
+def _fit_power_law(freq, ylabel, env):
+    if env == 'connect_four' or env == 'pentago':
+        low = 10**2
+        up = 10**5
+    else:
+        low = np.argmax(freq < 10**2)#10**2
+        up = np.argmax(freq < 10**1)#int(len(freq)/10**2)
     x_nums = np.arange(up)[low:]
     [m, c] = np.polyfit(np.log10(np.arange(up)[low:] + 1), np.log10(freq[low:up]), deg=1, w=2 / x_nums)
     exp = str(round(-m, 2))
@@ -45,10 +49,10 @@ def _fit_power_law(freq, ylabel):
     return x_fit, y_fit, equation
 
 
-def _plot_curve(ax, y, xlabel=False, ylabel=False, tf=12):
+def _plot_curve(ax, y, env, xlabel=False, ylabel=False, tf=12):
     x = np.arange(len(y)) + 1
     ax.scatter(x, y, color='dodgerblue')
-    x_fit, y_fit, equation = _fit_power_law(y, ylabel)
+    x_fit, y_fit, equation = _fit_power_law(y, ylabel, env)
     ax.plot(x_fit, y_fit, color='black', linewidth=1.5, label=equation)
     ax.set_xscale('log')
     ax.set_yscale('log')
@@ -76,12 +80,13 @@ def plot_zipf_curves(load_data=True):
     for i, env in enumerate(tqdm(envs,desc='Plotting Zipf curves')):
         with open(f'../plot_data/zipf_curves/zipf_curves_{env}.pkl', 'rb') as f:
             zipf_curves = pickle.load(f)
+        xlabel = (i==3)
         for j, model in enumerate(models):
             ax = axs[i, j+1]
-            _plot_curve(ax, zipf_curves[model], xlabel=(j==3))
+            _plot_curve(ax, zipf_curves[model], env, xlabel=xlabel)
             size = str(round(np.log10(pars[i][j]), 1))
             aligned_title(ax, '$10^{'+size+'}$ parameters', tf-2)
-        _plot_curve(axs[i, 0], zipf_curves['combined'], xlabel=(j==3), ylabel=True)
+        _plot_curve(axs[i, 0], zipf_curves['combined'], env, xlabel=xlabel, ylabel=True)
         aligned_title(axs[i,0], titles[i], tf)
     fig.tight_layout()
     print('Saving figure (can take a while)...')
