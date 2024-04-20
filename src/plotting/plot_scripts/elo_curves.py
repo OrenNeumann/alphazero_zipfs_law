@@ -1,4 +1,3 @@
-from math import pi
 import pickle
 from src.alphazero_scaling.elo.utils import PlayerNums, BayesElo
 import numpy as np
@@ -124,7 +123,6 @@ def plot_scaling_failure(load_data=True):
     fig, axs = plt.subplots(nrows=1, ncols=3, figsize=(12, 3), gridspec_kw={'width_ratios': [2, 1, 1]})
     ax1 = axs[0]
 
-    ######## plot checkers size scaling ########
     print('Plotting checkers size scaling')
     par = np.load('src/config/parameter_counts/checkers.npy')
     r = BayesElo()
@@ -140,7 +138,6 @@ def plot_scaling_failure(load_data=True):
     elo_scores -= elo_scores.min() -100
     ax1.plot(par, elo_scores, '-o', color='#bcbd22', linewidth=l_width, label='Checkers')
 
-    ######## plot oware size scaling ########
     print('Plotting oware size scaling')
     q_sizes, q_means, q_error, f_sizes, f_means, f_error= _oware_size_scaling()
     # Set Elo score range
