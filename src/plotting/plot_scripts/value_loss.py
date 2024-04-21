@@ -98,6 +98,7 @@ def connect4_loss_plots(load_data=True):
 
 
 def oware_value_loss():
+    # using data from late_turn_loss.py, oware games had pruning=10
     print('Plotting oware value loss')
     
     tf =12
