@@ -35,7 +35,7 @@ def _state_loss(path):
     # max_file_num=50 is about the max iota can carry (checked on checkers)
     state_counter.collect_data(path=path, max_file_num=78)#50
     state_counter.normalize_counters()
-    state_counter.prune_low_frequencies(threshold=1)#10
+    state_counter.prune_low_frequencies(threshold=2)#10
     turn_mask = state_counter.late_turn_mask(threshold=40)
     loss = value_loss(env, path, state_counter=state_counter, num_chunks=400)# 40 for pruning=10
     total_loss = 0
