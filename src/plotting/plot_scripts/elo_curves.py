@@ -106,13 +106,19 @@ def _bent_zipf_laws():
         counter.prune_low_frequencies(2)#10
         freq_cutoff = np.array([item[1] for item in counter.frequencies.most_common()])
 
+        with open(f'../plot_data/elo_curves/{env}_freq_cutoff.pkl', 'wb') as f:
+            pickle.dump(freq_cutoff, f)
+        del counter
+        del freq_cutoff
+
         print(f'Gathering data for {env} (no cutoff).')
         counter = gather_data(env, data_labels, max_file_num=40)#20
         counter.prune_low_frequencies(2)#10
         freq_normal = np.array([item[1] for item in counter.frequencies.most_common()])
-
-        with open(f'../plot_data/elo_curves/{env}_freqs.pkl', 'wb') as f:
-            pickle.dump({'freq_cutoff': freq_cutoff, 'freq_normal': freq_normal}, f)
+        with open(f'../plot_data/elo_curves/{env}_freq_normal.pkl', 'wb') as f:
+            pickle.dump(freq_normal, f)
+        #with open(f'../plot_data/elo_curves/{env}_freqs.pkl', 'wb') as f:
+        #    pickle.dump({'freq_cutoff': freq_cutoff, 'freq_normal': freq_normal}, f)
 
 
 def plot_scaling_failure(load_data=True):
