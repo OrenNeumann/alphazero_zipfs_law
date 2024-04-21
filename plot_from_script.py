@@ -13,6 +13,6 @@ from src.plotting.plot_scripts.zipf_curves import plot_zipf_curves
 #plot_game_turns()
 #board.plot_oware()
 #board.plot_checkers()
-#plot_scaling_failure(load_data=True)
+plot_scaling_failure(load_data=False)
 #plot_zipf_law_theory(load_data=True)
-plot_zipf_curves(load_data=True)
+#plot_zipf_curves(load_data=True)

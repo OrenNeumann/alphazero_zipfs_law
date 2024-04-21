@@ -103,12 +103,12 @@ def _bent_zipf_laws():
     for env in ['oware', 'checkers']:
         print(f'Gathering data for {env} (cutoff=40).')
         counter = gather_data(env, data_labels, cutoff=50, max_file_num=20, save_turn_num=True)#14
-        counter.prune_low_frequencies(10)
+        counter.prune_low_frequencies(2)#10
         freq_cutoff = np.array([item[1] for item in counter.frequencies.most_common()])
 
         print(f'Gathering data for {env} (no cutoff).')
         counter = gather_data(env, data_labels, max_file_num=20)#10
-        counter.prune_low_frequencies(10)
+        counter.prune_low_frequencies(2)#10
         freq_normal = np.array([item[1] for item in counter.frequencies.most_common()])
 
         with open(f'../plot_data/elo_curves/{env}_freqs.pkl', 'wb') as f:
