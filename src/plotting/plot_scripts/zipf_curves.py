@@ -31,7 +31,7 @@ def _generate_zipf_curves(env, models):
 def _fit_power_law(freq, ylabel, env):
     if env == 'connect_four' or env == 'pentago':
         low = 10**2
-        up = 10**6
+        up = 2*10**6
     else:
         low = np.argmax(freq < 10**2)#10**2
         up = np.argmax(freq < 10**1)#int(len(freq)/10**2)
@@ -67,7 +67,7 @@ def _plot_curve(ax, y, env, xlabel=False, ylabel=False, tf=12):
 def plot_zipf_curves(load_data=True):
     models = ['q_0_0', 'q_2_0', 'q_4_0', 'q_6_0']
     envs = ['connect_four', 'pentago', 'oware', 'checkers']
-    titles = [r'${\bf Connect Four}$', r'${\bf Pentago}$', r'${\bf Oware}$', r'${\bf Checkers}$']
+    titles = [r'${\bf Connect \, Four}$', r'${\bf Pentago}$', r'${\bf Oware}$', r'${\bf Checkers}$']
     pars = [np.load(f'src/config/parameter_counts/{env}.npy').take([0,2,4,6]) for env in envs]
     if not load_data:
         for env in envs:
