@@ -132,7 +132,8 @@ def plot_temperature_curves(load_data=True):
         with open(f'../plot_data/temperature/zipf_curves/temp_num_{k}.pkl', 'rb') as f:
             zipf_curve = pickle.load(f)
         ###
-        if k not in [0,5,10,11,12,13]
+        if k not in [0,5,10,11,12,13]:
+            continue
         zipf_curve = zipf_curve[:np.argmax(zipf_curve == 1)] #prune
         #zipf_curve *= 10**k
         ###
