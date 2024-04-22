@@ -100,7 +100,7 @@ class StateCounter(object):
                 games = games[-include:]
         return games
 
-    def collect_data(self, path, max_file_num):
+    def collect_data(self, path, max_file_num, quiet=False):
         if self.normalized:
             raise Exception('Data already normalized, reset counters to collect new data.')
         # Collect all games from all files
@@ -109,7 +109,7 @@ class StateCounter(object):
             recorded_games = self._extract_games(path + file_name)
             self.games += len(recorded_games)
             # Get board positions from all games and add them to counter
-            for game_record in tqdm(recorded_games, desc=f'Processing actor {i}'):
+            for game_record in tqdm(recorded_games, desc=f'Processing actor {i}', disable=quiet):
                 board, keys = self._process_game(game_record)
                 self._update_frequencies(keys)
                 self._update_info_counters(board, keys)
