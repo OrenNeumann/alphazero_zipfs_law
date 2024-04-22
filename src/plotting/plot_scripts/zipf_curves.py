@@ -1,5 +1,7 @@
 import numpy as np
+import matplotlib
 import matplotlib.pyplot as plt
+import matplotlib.cm as cm
 import scienceplots
 import pickle
 from tqdm import tqdm
@@ -94,34 +96,45 @@ def plot_zipf_curves(load_data=True):
 
 
 def plot_temperature_curves():
-    temps = [0.07, 0.1, 0.14, 0.2, 0.25, 0.32, 0.45, 0.6, 0.8, 1, 1.4, 2, 3, 5]
     print('Plotting size scaling at different temperatures')
+    temps = np.array([0.07, 0.1, 0.14, 0.2, 0.25, 0.32, 0.45, 0.6, 0.8, 1, 1.4, 2, 3, 5])
+    log_t = np.log(temps)
+    color_nums = (log_t - log_t.min()) / (log_t.max() - log_t.min())
     tf =12
+    fig, axs = plt.subplots(1, 2, figsize=(12, 4))
     l_width = 2
     par = np.load('src/config/parameter_counts/connect_four.npy')
-    r = BayesElo()
-    agents = PlayerNums()
-    matches = np.load('../matches/checkers/matrix.npy')
-    sizes = 7
-    copies = 4
-    for i, j in combinations(range(len(matches)), 2):
-        r.add_match(i, j, p=matches[i, j])
-    for i in range(sizes):
-        for j in range(copies):
-            agents.add(f'q_{i}_{j}', 10000)
-    elo = r.extract_elo(agents)
 
-    elo_scores = []
-    elo_stds = []
-    for i in range(sizes):
-        elo_scores.append(np.mean([elo[f'q_{i}_{j},10000'] for j in range(copies)]) )
-        elo_stds.append(np.std([elo[f'q_{i}_{j},10000'] for j in range(copies)]) )
-    elo_scores = np.array(elo_scores)
-    # Set Elo score range
-    elo_scores += 100 - elo_scores.min()
-    plt.errorbar(par, elo_scores, yerr=[elo_stds, elo_stds], fmt='-o', 
-                 color='#2ca02c', linewidth=l_width, label='Oware (T-drop=50)')
-    plt.plot(par, elo_scores, '-o', color='#bcbd22', linewidth=l_width, label='Checkers')
+    for i,t in enumerate(temps):
+        print('Temperature:', t)
+        r = BayesElo()
+        agents = PlayerNums()
+        matches = np.load('../matches/checkers/matrix.npy')
+        sizes = 7
+        copies = 4
+        for i, j in combinations(range(len(matches)), 2):
+            r.add_match(i, j, p=matches[i, j])
+        for i in range(sizes):
+            for j in range(copies):
+                agents.add(f'q_{i}_{j}', 10000)
+        elo = r.extract_elo(agents)
+
+        elo_scores = []
+        elo_stds = []
+        for i in range(sizes):
+            elo_scores.append(np.mean([elo[f'q_{i}_{j},10000'] for j in range(copies)]) )
+            elo_stds.append(np.std([elo[f'q_{i}_{j},10000'] for j in range(copies)]) )
+        elo_scores = np.array(elo_scores)
+        # Set Elo score range
+        elo_scores += 100 - elo_scores.min()
+        axs[0].errorbar(par, elo_scores, yerr=[elo_stds, elo_stds], fmt='-o', 
+                    color=cm.plasma(color_nums[i]), linewidth=l_width)
+    # Colorbar:
+    norm = matplotlib.colors.LogNorm(vmin=temps.min(), vmax=temps.max())
+    sm = matplotlib.cm.ScalarMappable(cmap=plt.get_cmap('plasma'), norm=norm)
+    cbar = fig.colorbar(sm, ax=axs[0])
+    cbar.ax.tick_params(labelsize=tf)
+    cbar.ax.set_ylabel('Temperature', rotation=90, fontsize=tf)
 
     print('Plotting Connect Four Zipf curves at different temperatures.')
     counter = StateCounter(env='connect_four')
@@ -131,3 +144,6 @@ def plot_temperature_curves():
         #path = models_path() + game_path(env) + model + '/'
         #counter.collect_data(path=path, max_file_num=39)
         #freqs[model] = np.array([item[1] for item in counter.frequencies.most_common()])
+
+    fig.tight_layout()
+    fig.savefig('./plots/temperature_curves.png', dpi=300)

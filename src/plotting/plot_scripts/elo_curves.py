@@ -117,6 +117,8 @@ def _bent_zipf_laws():
         freq_normal = np.array([item[1] for item in counter.frequencies.most_common()])
         with open(f'../plot_data/elo_curves/{env}_freq_normal.pkl', 'wb') as f:
             pickle.dump(freq_normal, f)
+        del counter
+        del freq_normal
         #with open(f'../plot_data/elo_curves/{env}_freqs.pkl', 'wb') as f:
         #    pickle.dump({'freq_cutoff': freq_cutoff, 'freq_normal': freq_normal}, f)
 
@@ -186,16 +188,24 @@ def plot_scaling_failure(load_data=True):
     if not load_data:
         _bent_zipf_laws()
 
-    ax2 = axs[1]
-    with open('../plot_data/elo_curves/oware_freqs.pkl', 'rb') as f:
-        oware_freqs = pickle.load(f)
-    zipf_law_plot(ax2, oware_freqs)
-    aligned_title(ax2, title=r"$\bf{b.}$ Oware Zipf's law",font=tf+4)
-    ax3 = axs[2]
-    with open('../plot_data/elo_curves/checkers_freqs.pkl', 'rb') as f:
-        checkers_freqs = pickle.load(f)
-    zipf_law_plot(ax3, checkers_freqs)
-    aligned_title(ax3, title=r"$\bf{c.}$ Checkers Zipf's law",font=tf+4)
+
+    #with open('../plot_data/elo_curves/oware_freqs.pkl', 'rb') as f:
+    #    oware_freqs = pickle.load(f)
+    for i, env in enumerate(['oware', 'checkers']):
+        ax = axs[i+1]
+        with open(f'../plot_data/elo_curves/{env}_freq_cutoff.pkl', 'rb') as f:
+            cutoff_freqs = pickle.load(f)
+        with open(f'../plot_data/elo_curves/{env}_freq_normal.pkl', 'rb') as f:
+            normal_freqs = pickle.load(f)
+        zipf_law_plot(ax, {'freq_cutoff': cutoff_freqs, 'freq_normal': normal_freqs})
+        if env == 'oware':
+            aligned_title(ax, title=r"$\bf{b.}$ Oware Zipf's law",font=tf+4)
+        else:
+            aligned_title(ax, title=r"$\bf{c.}$ Checkers Zipf's law",font=tf+4)
+
+    #with open('../plot_data/elo_curves/checkers_freqs.pkl', 'rb') as f:
+    #    checkers_freqs = pickle.load(f)
+
 
     fig.tight_layout()
     fig.savefig('plots/oware_checkers_scaling.png', dpi=300)
