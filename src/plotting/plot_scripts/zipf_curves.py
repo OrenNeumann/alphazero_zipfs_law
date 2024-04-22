@@ -125,7 +125,7 @@ def plot_temperature_curves(load_data=True):
     print('Plotting Connect Four Zipf curves at different temperatures.')
     if not load_data:
         for k in tqdm(range(len(temps)), desc='Generating Zipf curves'):
-            _generate_temperature_zipf_curves(t)
+            _generate_temperature_zipf_curves(k)
     for k,t in enumerate(tqdm(temps, desc='Plotting Zipf curves')):
         with open(f'../plot_data/temperature/zipf_curves/temp_num_{k}.pkl', 'rb') as f:
             zipf_curve = pickle.load(f)
