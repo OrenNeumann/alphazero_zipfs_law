@@ -141,14 +141,14 @@ def plot_temperature_curves(load_data=True):
         x = np.arange(len(zipf_curve))+1
         axs[0].scatter(x,zipf_curve, color=cm.plasma(color_nums[k]), s=40 / (10 + x))
 
-        #fitting:
+        #fitting between counts 200 and 4:
         low = np.argmax(zipf_curve < 200)
         up = np.argmax(zipf_curve == 4)
         x_nums = np.arange(up)[low:]
         [m, c] = np.polyfit(np.log10(np.arange(up)[low:] + 1), np.log10(zipf_curve[low:up]), deg=1, w=2 / x_nums)
         y_fit = 10 ** c * x[:int(10**7)] ** m
-        bound = np.argmax(y_fit < 1)
-        axs[0].plot(x[:bound], y_fit[:bound], color=cm.plasma(color_nums[k]), linewidth=0.5)
+        #bound = np.argmax(y_fit < 1)
+        axs[0].plot(x, y_fit, color=cm.plasma(color_nums[k]), linewidth=0.5)
 
     axs[0].set_xscale('log')
     axs[0].set_yscale('log')
