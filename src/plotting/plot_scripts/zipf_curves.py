@@ -197,12 +197,6 @@ def plot_temperature_curves(load_data=True):
     axs[1].set_ylabel('Elo',fontsize=tf)
     axs[1].tick_params(axis='both', which='major', labelsize=tf-2)
     
-    # Colorbar:
-    norm = matplotlib.colors.LogNorm(vmin=temps.min(), vmax=temps.max())
-    sm = matplotlib.cm.ScalarMappable(cmap=plt.get_cmap('plasma'), norm=norm)
-    cbar = fig.colorbar(sm, ax=axs[1])
-    cbar.ax.tick_params(labelsize=tf)
-    cbar.ax.set_ylabel('Temperature', rotation=90, fontsize=tf)
 
     ##############################################################
     print('Plotting exponents relation')
@@ -210,9 +204,17 @@ def plot_temperature_curves(load_data=True):
         if k==0:#
             continue
         axs[2].scatter(zipf_exponents[k], elo_exponents[k], color=cm.plasma(color_nums[k]))
+    axs[2].set_xscale('log')
     axs[2].set_xlabel('Zipf exponent',fontsize=tf)
     axs[2].set_ylabel('Elo exponent',fontsize=tf)
     axs[2].tick_params(axis='both', which='major', labelsize=tf-2)
+
+    # Colorbar:
+    norm = matplotlib.colors.LogNorm(vmin=temps.min(), vmax=temps.max())
+    sm = matplotlib.cm.ScalarMappable(cmap=plt.get_cmap('plasma'), norm=norm)
+    cbar = fig.colorbar(sm, ax=axs[2])
+    cbar.ax.tick_params(labelsize=tf)
+    cbar.ax.set_ylabel('Temperature', rotation=90, fontsize=tf)
 
     fig.tight_layout()
     print('Saving figure (can take a while)...')
