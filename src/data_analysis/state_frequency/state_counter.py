@@ -100,12 +100,15 @@ class StateCounter(object):
                 games = games[-include:]
         return games
 
-    def collect_data(self, path, max_file_num, quiet=False):
+    def collect_data(self, path, max_file_num, quiet=False, matches=False):
         if self.normalized:
             raise Exception('Data already normalized, reset counters to collect new data.')
         # Collect all games from all files
         for i in range(max_file_num):
-            file_name = f'/log-actor-{i}.txt'
+            if matches:
+                file_name = f'/log-matches-{i}.txt'
+            else:
+                file_name = f'/log-actor-{i}.txt'
             recorded_games = self._extract_games(path + file_name)
             self.games += len(recorded_games)
             # Get board positions from all games and add them to counter
