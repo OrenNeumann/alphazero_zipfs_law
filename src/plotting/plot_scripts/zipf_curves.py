@@ -132,7 +132,7 @@ def plot_temperature_curves(load_data=True):
         with open(f'../plot_data/temperature/zipf_curves/temp_num_{k}.pkl', 'rb') as f:
             zipf_curve = pickle.load(f)
         ###
-        zipf_curve = zipf_curve[:np.argmax(zipf_curve == 10)] #prune
+        zipf_curve = zipf_curve[:np.argmax(zipf_curve == 1)] #prune
         zipf_curve *= 10**k
         ###
         x = np.arange(len(zipf_curve))+1
