@@ -158,7 +158,7 @@ def plot_scaling_failure(load_data=True):
                  color='limegreen', linewidth=l_width, label='Oware (T-drop=15)')
 
     ax1.set_xscale('log')
-    ax1.set_xlabel('Neural net parameters',fontsize=tf)
+    ax1.set_xlabel('Neural-net parameters',fontsize=tf)
     ax1.set_ylabel('Elo',fontsize=tf)
     ax1.tick_params(axis='both', which='major', labelsize=tf-2)
     ax1.legend(fontsize=tf-2, loc='upper left', framealpha=0.5)

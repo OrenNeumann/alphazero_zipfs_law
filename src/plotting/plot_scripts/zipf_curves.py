@@ -95,21 +95,61 @@ def plot_zipf_curves(load_data=True):
     fig.savefig('plots/zipf_curves.png', dpi=300)
 
 
-def plot_temperature_curves():
-    print('Plotting size scaling at different temperatures')
-    temps = np.array([0.07, 0.1, 0.14, 0.2, 0.25, 0.32, 0.45, 0.6, 0.8, 1, 1.4, 2, 3, 5])
-    log_t = np.log(temps)
-    color_nums = (log_t - log_t.min()) / (log_t.max() - log_t.min())
+def _generate_temperature_zipf_curves(t):
+    max_q = 6
+    n_copies = 3
+    nets = []
+    for i in range(max_q + 1):
+        for j in range(n_copies):
+            nets.append('q_' + str(i) + '_' + str(j))
+    n = len(nets)
+    counter = StateCounter(env='connect_four')
+    freqs = dict()
+    path_dir = f'../plot_data/temperature/game_data/temp_num_{t}'
+    for pair in tqdm(combinations(range(n), 2), desc=f'Collecting T={t} matches'):
+        path = path_dir + '/' + nets[pair[0]] + '_vs_' + nets[pair[1]] + '/'
+        counter.collect_data(path=path, max_file_num=80, quiet=True)
+    freqs= np.array([item[1] for item in counter.frequencies.most_common()])
+    with open(f'../plot_data/temperature/zipf_curves/temp_num_{t}.pkl', 'wb') as f:
+        pickle.dump(freqs, f)
+
+
+def plot_temperature_curves(load_data=True):
+    temps = np.array([0.07, 0.1, 0.14, 0.2, 0.25, 0.32, 0.45, 0.6, 0.8, 1, 1.4, 2, 3, 5])    
     tf =12
     fig, axs = plt.subplots(1, 2, figsize=(12, 4))
     l_width = 2
     par = np.load('src/config/parameter_counts/connect_four.npy')
 
-    for i,t in enumerate(temps):
+    print('Plotting Connect Four Zipf curves at different temperatures.')
+    if not load_data:
+        for t in tqdm(temps, desc='Generating Zipf curves'):
+            _generate_temperature_zipf_curves(t)
+    for k,t in enumerate(tqdm(temps, desc='Plotting Zipf curves')):
+        with open(f'../plot_data/temperature/zipf_curves/temp_num_{t}.pkl', 'rb') as f:
+            zipf_curve = pickle.load(f)
+        x = np.arange(len(zipf_curve))+1
+        axs[0].scatter(x,zipf_curve, color=cm.plasma(color_nums[k]), s=40 / (10 + np.log10(x)))
+
+    axs[0].set_xscale('log')
+    axs[0].set_yscale('log')
+    axs[0].set_xlabel('State rank',fontsize=tf)
+    axs[0].set_ylabel('Frequency',fontsize=tf)
+    axs[0].tick_params(axis='both', which='major', labelsize=tf-2)
+
+    ##############################################################
+
+
+    print('Plotting size scaling at different temperatures')
+    temps = np.array([0.07, 0.1, 0.14, 0.2, 0.25, 0.32, 0.45, 0.6, 0.8, 1, 1.4, 2, 3, 5])
+    log_t = np.log(temps)
+    color_nums = (log_t - log_t.min()) / (log_t.max() - log_t.min())
+
+    for k,t in enumerate(temps):
         print('Temperature:', t)
         r = BayesElo()
         agents = PlayerNums()
-        matches = np.load('../matches/checkers/matrix.npy')
+        matches = np.load(f'../matches/temperature_scaling/connect_four_temp_num_{k}/matrix.npy')
         sizes = 7
         copies = 4
         for i, j in combinations(range(len(matches)), 2):
@@ -127,23 +167,20 @@ def plot_temperature_curves():
         elo_scores = np.array(elo_scores)
         # Set Elo score range
         elo_scores += 100 - elo_scores.min()
-        axs[0].errorbar(par, elo_scores, yerr=[elo_stds, elo_stds], fmt='-o', 
-                    color=cm.plasma(color_nums[i]), linewidth=l_width)
+        axs[1].errorbar(par, elo_scores, yerr=[elo_stds, elo_stds], fmt='-o', 
+                    color=cm.plasma(color_nums[k]), linewidth=l_width)
+    axs[1].set_xscale('log')
+    axs[1].set_xlabel('Neural-net parameters',fontsize=tf)
+    axs[1].set_ylabel('Elo',fontsize=tf)
+    axs[1].tick_params(axis='both', which='major', labelsize=tf-2)
+    
     # Colorbar:
     norm = matplotlib.colors.LogNorm(vmin=temps.min(), vmax=temps.max())
     sm = matplotlib.cm.ScalarMappable(cmap=plt.get_cmap('plasma'), norm=norm)
-    cbar = fig.colorbar(sm, ax=axs[0])
+    cbar = fig.colorbar(sm, ax=axs[1])
     cbar.ax.tick_params(labelsize=tf)
     cbar.ax.set_ylabel('Temperature', rotation=90, fontsize=tf)
 
-    print('Plotting Connect Four Zipf curves at different temperatures.')
-    counter = StateCounter(env='connect_four')
-    freqs = dict()
-    for t in enumerate(temps):
-        print('Collecting T=' + str(t) + ' games:')
-        #path = models_path() + game_path(env) + model + '/'
-        #counter.collect_data(path=path, max_file_num=39)
-        #freqs[model] = np.array([item[1] for item in counter.frequencies.most_common()])
 
     fig.tight_layout()
     fig.savefig('./plots/temperature_curves.png', dpi=300)
