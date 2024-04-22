@@ -107,7 +107,7 @@ def _generate_temperature_zipf_curves(k):
     counter = StateCounter(env='connect_four')
     freqs = dict()
     path_dir = f'../plot_data/temperature/game_data/temp_num_{k}'
-    for pair in tqdm(combinations(range(n), 2), desc=f'Collecting T={temps[k]} matches'):
+    for pair in tqdm(list(combinations(range(n), 2)), desc=f'Collecting T={temps[k]} matches'): 
         path = path_dir + '/' + nets[pair[0]] + '_vs_' + nets[pair[1]] + '/'
         counter.collect_data(path=path, max_file_num=80, quiet=True, matches=True)
     freqs= np.array([item[1] for item in counter.frequencies.most_common()])
@@ -131,6 +131,10 @@ def plot_temperature_curves(load_data=True):
     for k,t in enumerate(tqdm(temps, desc='Plotting Zipf curves')):
         with open(f'../plot_data/temperature/zipf_curves/temp_num_{k}.pkl', 'rb') as f:
             zipf_curve = pickle.load(f)
+        ###
+        zipf_curve = zipf_curve[:np.argmin(zipf_curve == 10)] #prune
+        zipf_curve *= 10**k
+        ###
         x = np.arange(len(zipf_curve))+1
         axs[0].scatter(x,zipf_curve, color=cm.plasma(color_nums[k]), s=40 / (10 + np.log10(x)))
 
@@ -185,4 +189,5 @@ def plot_temperature_curves(load_data=True):
 
 
     fig.tight_layout()
+    print('Saving figure (can take a while)...')
     fig.savefig('./plots/temperature_curves.png', dpi=300)
