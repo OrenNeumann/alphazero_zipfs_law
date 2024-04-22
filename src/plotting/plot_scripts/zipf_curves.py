@@ -145,6 +145,8 @@ def plot_temperature_curves(load_data=True):
         low = np.argmax(zipf_curve > 200)
         up = np.argmax(zipf_curve == 4)
         x_nums = np.arange(up)[low:]
+        print(low)
+        print(up)
         [m, c] = np.polyfit(np.log10(np.arange(up)[low:] + 1), np.log10(zipf_curve[low:up]), deg=1, w=2 / x_nums)
         y_fit = 10 ** c * x[:int(10**7)] ** m
         bound = np.argmax(y_fit < 1)
