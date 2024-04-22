@@ -132,9 +132,8 @@ def plot_temperature_curves(load_data=True):
         with open(f'../plot_data/temperature/zipf_curves/temp_num_{k}.pkl', 'rb') as f:
             zipf_curve = pickle.load(f)
         ###
-        zipf_curve = zipf_curve[:np.argmin(zipf_curve == 10)] #prune
+        zipf_curve = zipf_curve[:np.argmax(zipf_curve == 10)] #prune
         zipf_curve *= 10**k
-        print(len(zipf_curve))
         ###
         x = np.arange(len(zipf_curve))+1
         axs[0].scatter(x,zipf_curve, color=cm.plasma(color_nums[k]), s=40 / (10 + np.log10(x)))
@@ -153,7 +152,7 @@ def plot_temperature_curves(load_data=True):
     for k,t in enumerate(temps):
         if k==0:
             continue
-        print('Temperature:', t)
+        print(f'({k+1}/{len(temps)}) Temperature: {t}')
         r = BayesElo()
         agents = PlayerNums()
         matches = np.load(f'../matches/temperature_scaling/connect_four_temp_num_{k}/matrix.npy')
