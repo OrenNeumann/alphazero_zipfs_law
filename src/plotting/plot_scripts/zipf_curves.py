@@ -146,6 +146,8 @@ def plot_temperature_curves(load_data=True):
     print('Plotting size scaling at different temperatures')
 
     for k,t in enumerate(temps):
+        if k==0:
+            continue
         print('Temperature:', t)
         r = BayesElo()
         agents = PlayerNums()
