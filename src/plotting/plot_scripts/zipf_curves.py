@@ -128,7 +128,8 @@ def plot_temperature_curves(load_data=True):
     if not load_data:
         for k in range(len(temps)):
             _generate_temperature_zipf_curves(k)
-    for k,t in list(enumerate(tqdm(temps, desc='Plotting Zipf curves')))[::-1]:
+    #for k,t in enumerate(tqdm(temps, desc='Plotting Zipf curves')):
+    for k,t in tqdm(list(enumerate(temps))[::-1], desc='Plotting Zipf curves'):
         with open(f'../plot_data/temperature/zipf_curves/temp_num_{k}.pkl', 'rb') as f:
             zipf_curve = pickle.load(f)
         ###
@@ -141,7 +142,7 @@ def plot_temperature_curves(load_data=True):
         axs[0].scatter(x,zipf_curve, color=cm.plasma(color_nums[k]), s=40 / (10 + x))
 
         #fitting:
-        low = np.argmax(zipf_curve == 200)
+        low = np.argmax(zipf_curve > 200)
         up = np.argmax(zipf_curve == 4)
         x_nums = np.arange(up)[low:]
         [m, c] = np.polyfit(np.log10(np.arange(up)[low:] + 1), np.log10(zipf_curve[low:up]), deg=1, w=2 / x_nums)
