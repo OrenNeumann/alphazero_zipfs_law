@@ -109,7 +109,7 @@ def _generate_temperature_zipf_curves(k):
     path_dir = f'../plot_data/temperature/game_data/temp_num_{k}'
     for pair in tqdm(combinations(range(n), 2), desc=f'Collecting T={temps[k]} matches'):
         path = path_dir + '/' + nets[pair[0]] + '_vs_' + nets[pair[1]] + '/'
-        counter.collect_data(path=path, max_file_num=80, quiet=True)
+        counter.collect_data(path=path, max_file_num=80, quiet=True, matches=True)
     freqs= np.array([item[1] for item in counter.frequencies.most_common()])
     with open(f'../plot_data/temperature/zipf_curves/temp_num_{k}.pkl', 'wb') as f:
         pickle.dump(freqs, f)
