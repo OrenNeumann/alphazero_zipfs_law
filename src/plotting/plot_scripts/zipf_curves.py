@@ -120,9 +120,10 @@ def plot_temperature_curves(load_data=True):
     log_t = np.log(temps)
     color_nums = (log_t - log_t.min()) / (log_t.max() - log_t.min()) 
     tf =12
-    fig, axs = plt.subplots(1, 2, figsize=(12, 4))
+    fig, axs = plt.subplots(1, 3, figsize=(12, 4))
     l_width = 2
     par = np.load('src/config/parameter_counts/connect_four.npy')
+    zipf_exponents = np.zeros(len(temps))
 
     print('Plotting Connect Four Zipf curves at different temperatures.')
     if not load_data:
@@ -146,9 +147,9 @@ def plot_temperature_curves(load_data=True):
         up = np.argmax(zipf_curve == 4)
         x_nums = np.arange(up)[low:]
         [m, c] = np.polyfit(np.log10(np.arange(up)[low:] + 1), np.log10(zipf_curve[low:up]), deg=1, w=2 / x_nums)
-        y_fit = 10 ** c * x[:int(10**7)] ** m
-        #bound = np.argmax(y_fit < 1)
-        axs[0].plot(x, y_fit, color=cm.plasma(color_nums[k]), linewidth=0.5)
+        zipf_exponents[k]=-m
+        #y_fit = 10 ** c * x[:int(10**7)] ** m
+        #axs[0].plot(x, y_fit, color=cm.plasma(color_nums[k]), linewidth=0.5)
 
     axs[0].set_xscale('log')
     axs[0].set_yscale('log')
@@ -160,9 +161,10 @@ def plot_temperature_curves(load_data=True):
 
 
     print('Plotting size scaling at different temperatures')
+    elo_exponents = np.zeros(len(temps))
 
     for k,t in enumerate(temps):
-        if k==0:
+        if k==0:#
             continue
         print(f'({k+1}/{len(temps)}) Temperature: {t}')
         r = BayesElo()
@@ -187,6 +189,9 @@ def plot_temperature_curves(load_data=True):
         elo_scores += 100 - elo_scores.min()
         axs[1].errorbar(par, elo_scores, yerr=[elo_stds, elo_stds], fmt='-o', 
                     color=cm.plasma(color_nums[k]), linewidth=l_width)
+        #fitting:
+        [m, c] = np.polyfit(np.log10(par[:-2]), elo_scores[:-2], 1)
+        elo_exponents[k] = m/400
     axs[1].set_xscale('log')
     axs[1].set_xlabel('Neural-net parameters',fontsize=tf)
     axs[1].set_ylabel('Elo',fontsize=tf)
@@ -199,6 +204,15 @@ def plot_temperature_curves(load_data=True):
     cbar.ax.tick_params(labelsize=tf)
     cbar.ax.set_ylabel('Temperature', rotation=90, fontsize=tf)
 
+    ##############################################################
+    print('Plotting exponents relation')
+    for k in range(len(temps)):
+        if k==0:#
+            continue
+        axs[2].scatter(zipf_exponents[k], elo_exponents[k], color=cm.plasma(color_nums[k]))
+    axs[2].set_xlabel('Zipf exponent',fontsize=tf)
+    axs[2].set_ylabel('Elo exponent',fontsize=tf)
+    axs[2].tick_params(axis='both', which='major', labelsize=tf-2)
 
     fig.tight_layout()
     print('Saving figure (can take a while)...')
