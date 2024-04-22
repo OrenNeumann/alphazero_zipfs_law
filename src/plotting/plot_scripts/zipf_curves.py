@@ -95,7 +95,8 @@ def plot_zipf_curves(load_data=True):
     fig.savefig('plots/zipf_curves.png', dpi=300)
 
 
-def _generate_temperature_zipf_curves(t):
+def _generate_temperature_zipf_curves(k):
+    temps = np.array([0.07, 0.1, 0.14, 0.2, 0.25, 0.32, 0.45, 0.6, 0.8, 1, 1.4, 2, 3, 5])   
     max_q = 6
     n_copies = 3
     nets = []
@@ -105,12 +106,12 @@ def _generate_temperature_zipf_curves(t):
     n = len(nets)
     counter = StateCounter(env='connect_four')
     freqs = dict()
-    path_dir = f'../plot_data/temperature/game_data/temp_num_{t}'
-    for pair in tqdm(combinations(range(n), 2), desc=f'Collecting T={t} matches'):
+    path_dir = f'../plot_data/temperature/game_data/temp_num_{k}'
+    for pair in tqdm(combinations(range(n), 2), desc=f'Collecting T={temps[k]} matches'):
         path = path_dir + '/' + nets[pair[0]] + '_vs_' + nets[pair[1]] + '/'
         counter.collect_data(path=path, max_file_num=80, quiet=True)
     freqs= np.array([item[1] for item in counter.frequencies.most_common()])
-    with open(f'../plot_data/temperature/zipf_curves/temp_num_{t}.pkl', 'wb') as f:
+    with open(f'../plot_data/temperature/zipf_curves/temp_num_{k}.pkl', 'wb') as f:
         pickle.dump(freqs, f)
 
 
@@ -123,10 +124,10 @@ def plot_temperature_curves(load_data=True):
 
     print('Plotting Connect Four Zipf curves at different temperatures.')
     if not load_data:
-        for t in tqdm(temps, desc='Generating Zipf curves'):
+        for k in tqdm(range(len(temps)), desc='Generating Zipf curves'):
             _generate_temperature_zipf_curves(t)
     for k,t in enumerate(tqdm(temps, desc='Plotting Zipf curves')):
-        with open(f'../plot_data/temperature/zipf_curves/temp_num_{t}.pkl', 'rb') as f:
+        with open(f'../plot_data/temperature/zipf_curves/temp_num_{k}.pkl', 'rb') as f:
             zipf_curve = pickle.load(f)
         x = np.arange(len(zipf_curve))+1
         axs[0].scatter(x,zipf_curve, color=cm.plasma(color_nums[k]), s=40 / (10 + np.log10(x)))
