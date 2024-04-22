@@ -134,6 +134,7 @@ def plot_temperature_curves(load_data=True):
         ###
         zipf_curve = zipf_curve[:np.argmin(zipf_curve == 10)] #prune
         zipf_curve *= 10**k
+        print(len(zipf_curve))
         ###
         x = np.arange(len(zipf_curve))+1
         axs[0].scatter(x,zipf_curve, color=cm.plasma(color_nums[k]), s=40 / (10 + np.log10(x)))
