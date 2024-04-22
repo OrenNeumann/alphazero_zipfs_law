@@ -116,7 +116,9 @@ def _generate_temperature_zipf_curves(k):
 
 
 def plot_temperature_curves(load_data=True):
-    temps = np.array([0.07, 0.1, 0.14, 0.2, 0.25, 0.32, 0.45, 0.6, 0.8, 1, 1.4, 2, 3, 5])    
+    temps = np.array([0.07, 0.1, 0.14, 0.2, 0.25, 0.32, 0.45, 0.6, 0.8, 1, 1.4, 2, 3, 5])
+    log_t = np.log(temps)
+    color_nums = (log_t - log_t.min()) / (log_t.max() - log_t.min()) 
     tf =12
     fig, axs = plt.subplots(1, 2, figsize=(12, 4))
     l_width = 2
@@ -142,9 +144,6 @@ def plot_temperature_curves(load_data=True):
 
 
     print('Plotting size scaling at different temperatures')
-    temps = np.array([0.07, 0.1, 0.14, 0.2, 0.25, 0.32, 0.45, 0.6, 0.8, 1, 1.4, 2, 3, 5])
-    log_t = np.log(temps)
-    color_nums = (log_t - log_t.min()) / (log_t.max() - log_t.min())
 
     for k,t in enumerate(temps):
         print('Temperature:', t)
