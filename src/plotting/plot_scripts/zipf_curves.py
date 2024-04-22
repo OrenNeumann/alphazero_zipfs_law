@@ -132,11 +132,12 @@ def plot_temperature_curves(load_data=True):
         with open(f'../plot_data/temperature/zipf_curves/temp_num_{k}.pkl', 'rb') as f:
             zipf_curve = pickle.load(f)
         ###
+        if k not in [0,5,10,11,12,13]
         zipf_curve = zipf_curve[:np.argmax(zipf_curve == 1)] #prune
-        zipf_curve *= 10**k
+        #zipf_curve *= 10**k
         ###
         x = np.arange(len(zipf_curve))+1
-        axs[0].scatter(x,zipf_curve, color=cm.plasma(color_nums[k]), s=40 / (10 + np.log10(x)))
+        axs[0].scatter(x,zipf_curve, color=cm.plasma(color_nums[k]), s=40 / (10 + x))
 
     axs[0].set_xscale('log')
     axs[0].set_yscale('log')
