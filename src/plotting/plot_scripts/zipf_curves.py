@@ -211,8 +211,8 @@ def plot_temperature_curves(load_data=True):
         if k > 5:
             continue
         #axs[2].scatter(zipf_exponents[1:6], elo_exponents[1:6], c=cm.plasma(color_nums[1:6]), s=40)
-        axs[2].plot(zipf_exponents[1:6], elo_exponents[1:6], mfc=cm.plasma(color_nums[1:6]), 
-                    s=40,linestyle='--', marker='o')
+    axs[2].plot(zipf_exponents[1:6], elo_exponents[1:6], mfc=cm.plasma(color_nums[1:6]), 
+                    markersize=40, linestyle='--', marker='o')
     axs[2].set_xlabel('Zipf exponent',fontsize=tf)
     axs[2].set_ylabel('Elo exponent',fontsize=tf)
     axs[2].tick_params(axis='both', which='major', labelsize=tf-2)
