@@ -204,7 +204,6 @@ def plot_temperature_curves(load_data=True):
         if k==0:#
             continue
         axs[2].scatter(zipf_exponents[k], elo_exponents[k], color=cm.plasma(color_nums[k]))
-    axs[2].set_xscale('log')
     axs[2].set_xlabel('Zipf exponent',fontsize=tf)
     axs[2].set_ylabel('Elo exponent',fontsize=tf)
     axs[2].tick_params(axis='both', which='major', labelsize=tf-2)
