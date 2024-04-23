@@ -195,7 +195,7 @@ def plot_temperature_curves(load_data=True):
         axs[1].errorbar(par, elo_scores, yerr=[elo_stds, elo_stds], fmt='-o', 
                     color=cm.plasma(color_nums[k]), linewidth=l_width)
         #fitting:
-        [m, c] = np.polyfit(np.log10(all_params[:-2*3]), all_scores[:-2*3], 1)
+        [m, c] = np.polyfit(np.log10(all_params[:-2*copies]), all_scores[:-2*copies], 1)
         elo_exponents[k] = m/400
     axs[1].set_xscale('log')
     axs[1].set_xlabel('Neural-net parameters',fontsize=tf)
@@ -210,7 +210,7 @@ def plot_temperature_curves(load_data=True):
             continue
         if k > 5:
             continue
-        axs[2].scatter(zipf_exponents[k], elo_exponents[k], color=cm.plasma(color_nums[k]), s=4)
+        axs[2].scatter(zipf_exponents[k], elo_exponents[k], color=cm.plasma(color_nums[k]), s=10)
     axs[2].set_xlabel('Zipf exponent',fontsize=tf)
     axs[2].set_ylabel('Elo exponent',fontsize=tf)
     axs[2].tick_params(axis='both', which='major', labelsize=tf-2)
