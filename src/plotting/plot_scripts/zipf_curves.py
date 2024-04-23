@@ -120,7 +120,8 @@ def plot_temperature_curves(load_data=True):
     log_t = np.log(temps)
     color_nums = (log_t - log_t.min()) / (log_t.max() - log_t.min()) 
     tf =12
-    fig, axs = plt.subplots(1, 3, figsize=(12, 4))
+    fig, axs = plt.subplots(1, 5, figsize=(12, 4))
+    ax1 = axs[0, 1:4]
     l_width = 2
     par = np.load('src/config/parameter_counts/connect_four.npy')
     zipf_exponents = np.zeros(len(temps))
@@ -140,7 +141,7 @@ def plot_temperature_curves(load_data=True):
         #zipf_curve *= 10**k
         ###
         x = np.arange(len(zipf_curve))+1
-        axs[0].scatter(x,zipf_curve, color=cm.plasma(color_nums[k]), s=40 / (10 + x))
+        ax1.scatter(x,zipf_curve, color=cm.plasma(color_nums[k]), s=40 / (10 + x))
 
         #fitting between counts 200 and 4:
         low = np.argmax(zipf_curve < 200)
@@ -151,16 +152,17 @@ def plot_temperature_curves(load_data=True):
         #y_fit = 10 ** c * x[:int(10**7)] ** m
         #axs[0].plot(x, y_fit, color=cm.plasma(color_nums[k]), linewidth=0.5)
 
-    axs[0].set_xscale('log')
-    axs[0].set_yscale('log')
-    axs[0].set_xlabel('State rank',fontsize=tf)
-    axs[0].set_ylabel('Frequency',fontsize=tf)
-    axs[0].tick_params(axis='both', which='major', labelsize=tf-2)
+    ax1.set_xscale('log')
+    ax1.set_yscale('log')
+    ax1.set_xlabel('State rank',fontsize=tf)
+    ax1.set_ylabel('Frequency',fontsize=tf)
+    ax1.tick_params(axis='both', which='major', labelsize=tf-2)
 
     ##############################################################
 
 
     print('Plotting size scaling at different temperatures')
+    axin1 = ax1.inset_axes([0.6, 0.6, 0.4, 0.4])
     elo_exponents = np.zeros(len(temps))
 
     for k,t in enumerate(temps):
@@ -192,35 +194,36 @@ def plot_temperature_curves(load_data=True):
         elo_scores = np.array(elo_scores)
         # Set Elo score range
         elo_scores += 100 - elo_scores.min()
-        axs[1].errorbar(par, elo_scores, yerr=[elo_stds, elo_stds], fmt='-o', 
+        axin1.errorbar(par, elo_scores, yerr=[elo_stds, elo_stds], fmt='-o', 
                     color=cm.plasma(color_nums[k]), linewidth=l_width)
         #fitting:
         [m, c] = np.polyfit(np.log10(all_params[:-2*copies]), all_scores[:-2*copies], 1)
         elo_exponents[k] = m/400
-    axs[1].set_xscale('log')
-    axs[1].set_xlabel('Neural-net parameters',fontsize=tf)
-    axs[1].set_ylabel('Elo',fontsize=tf)
-    axs[1].tick_params(axis='both', which='major', labelsize=tf-2)
+    axin1.set_xscale('log')
+    axin1.set_xlabel('Neural-net parameters',fontsize=tf-2)
+    axin1.set_ylabel('Elo',fontsize=tf-2)
+    axin1.tick_params(axis='both', which='major', labelsize=tf-4)
     
 
     ##############################################################
     print('Plotting exponents relation')
+    ax2 = axs[0, 4:]
     for k in range(len(temps)):
         if k==0:#
             continue
         if k > 5:
             continue
-    axs[2].plot(zipf_exponents[1:6], elo_exponents[1:6],  
+    ax2.plot(zipf_exponents[1:6], elo_exponents[1:6],  
                     markersize=0, linestyle='--', color='black')
-    axs[2].scatter(zipf_exponents[1:6], elo_exponents[1:6], c=cm.plasma(color_nums[1:6]), s=40)
-    axs[2].set_xlabel('Zipf exponent',fontsize=tf)
-    axs[2].set_ylabel('Elo exponent',fontsize=tf)
-    axs[2].tick_params(axis='both', which='major', labelsize=tf-2)
+    ax2.scatter(zipf_exponents[1:6], elo_exponents[1:6], c=cm.plasma(color_nums[1:6]), s=40)
+    ax2.set_xlabel('Zipf exponent',fontsize=tf)
+    ax2.set_ylabel('Elo exponent',fontsize=tf)
+    ax2.tick_params(axis='both', which='major', labelsize=tf-2)
 
-    axin = axs[2].inset_axes([0.6, 0.1, 0.4, 0.4])
-    axin.scatter(zipf_exponents[1:], elo_exponents[1:], c=cm.plasma(color_nums[1:]), s=10)
-    axin.axvline(x=1, color='black', linestyle='--')
-    axin.tick_params(axis='both', which='major', labelsize=tf-4)
+    axin2 = ax2.inset_axes([0.6, 0.1, 0.4, 0.4])
+    axin2.scatter(zipf_exponents[1:], elo_exponents[1:], c=cm.plasma(color_nums[1:]), s=10)
+    axin2.axvline(x=1, color='black', linestyle='--')
+    axin2.tick_params(axis='both', which='major', labelsize=tf-4)
 
 
     # Colorbar:
