@@ -121,7 +121,7 @@ def plot_temperature_curves(load_data=True):
     color_nums = (log_t - log_t.min()) / (log_t.max() - log_t.min()) 
     tf =12
     fig, axs = plt.subplots(1, 5, figsize=(12, 4))
-    ax1 = axs[0, 1:4]
+    ax1 = axs[1:4]
     l_width = 2
     par = np.load('src/config/parameter_counts/connect_four.npy')
     zipf_exponents = np.zeros(len(temps))
@@ -207,7 +207,7 @@ def plot_temperature_curves(load_data=True):
 
     ##############################################################
     print('Plotting exponents relation')
-    ax2 = axs[0, 4:]
+    ax2 = axs[4:]
     for k in range(len(temps)):
         if k==0:#
             continue
