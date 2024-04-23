@@ -227,7 +227,7 @@ def plot_temperature_curves(load_data=True):
     # Colorbar:
     norm = matplotlib.colors.LogNorm(vmin=temps.min(), vmax=temps.max())
     sm = matplotlib.cm.ScalarMappable(cmap=plt.get_cmap('plasma'), norm=norm)
-    cbar = fig.colorbar(sm, ax=axs[2])
+    cbar = fig.colorbar(sm, ax=axs[1])
     cbar.ax.tick_params(labelsize=tf)
     cbar.ax.set_ylabel('Temperature', rotation=90, fontsize=tf)
 
