@@ -121,7 +121,6 @@ def plot_temperature_curves(load_data=True):
     color_nums = (log_t - log_t.min()) / (log_t.max() - log_t.min()) 
     tf =12
     fig, axs = plt.subplots(1, 2, figsize=(12, 4), gridspec_kw={'width_ratios': [1.2, 1]})
-    l_width = 2
     par = np.load('src/config/parameter_counts/connect_four.npy')
     zipf_exponents = np.zeros(len(temps))
 
@@ -150,6 +149,7 @@ def plot_temperature_curves(load_data=True):
     axs[0].set_xlabel('State rank',fontsize=tf)
     axs[0].set_ylabel('Frequency',fontsize=tf)
     axs[0].tick_params(axis='both', which='major', labelsize=tf-2)
+    aligned_title(axs[0], r"$\bf{a.}$ Zipf's law and Elo scaling", tf-2)
 
     ##############################################################
     print('Plotting size scaling at different temperatures')
@@ -186,7 +186,7 @@ def plot_temperature_curves(load_data=True):
         # Set Elo score range
         elo_scores += 100 - elo_scores.min()
         axin0.errorbar(par, elo_scores, yerr=[elo_stds, elo_stds], fmt='-o', 
-                    color=cm.plasma(color_nums[k]), linewidth=l_width)
+                    color=cm.plasma(color_nums[k]), linewidth=0.5)
         #fitting:
         [m, c] = np.polyfit(np.log10(all_params[:-2*copies]), all_scores[:-2*copies], 1)
         elo_exponents[k] = m/400
@@ -208,12 +208,13 @@ def plot_temperature_curves(load_data=True):
     axs[1].set_xlabel('Zipf exponent',fontsize=tf)
     axs[1].set_ylabel('Elo exponent',fontsize=tf)
     axs[1].tick_params(axis='both', which='major', labelsize=tf-2)
+    aligned_title(axs[1], r"$\bf{b.}$ Exponent correlation", tf-2)
 
     axin1 = axs[1].inset_axes([0.6, 0.1, 0.4, 0.4])
     axin1.scatter(zipf_exponents[1:], elo_exponents[1:], c=cm.plasma(color_nums[1:]), s=10)
     axin1.axvline(x=1, color='black', linestyle='--')
     axin1.tick_params(axis='both', which='major', labelsize=tf-4)
-    axin1.annotate(r'$T=\infty$'+' \nZipf law', xy=(1, 0.5), xytext=(1.2, 0.5), arrowprops=dict(arrowstyle='->'))
+    axin1.annotate(r'$T=\infty$'+' \nZipf exponent', xy=(1, 0.5), xytext=(1.2, 0.5), arrowprops=dict(arrowstyle='->'))
 
     # Colorbar:
     norm = matplotlib.colors.LogNorm(vmin=temps.min(), vmax=temps.max())
