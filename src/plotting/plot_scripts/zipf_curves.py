@@ -181,16 +181,21 @@ def plot_temperature_curves(load_data=True):
 
         elo_scores = []
         elo_stds = []
+        all_scores = []
+        all_params = []
         for i in range(sizes):
             elo_scores.append(np.mean([elo[f'q_{i}_{j},10000'] for j in range(copies)]) )
             elo_stds.append(np.std([elo[f'q_{i}_{j},10000'] for j in range(copies)]) )
+            for j in range(copies):
+                all_scores.append(elo[f'q_{i}_{j},10000'])
+                all_params.append(par[i])
         elo_scores = np.array(elo_scores)
         # Set Elo score range
         elo_scores += 100 - elo_scores.min()
         axs[1].errorbar(par, elo_scores, yerr=[elo_stds, elo_stds], fmt='-o', 
                     color=cm.plasma(color_nums[k]), linewidth=l_width)
         #fitting:
-        [m, c] = np.polyfit(np.log10(par[:-2]), elo_scores[:-2], 1)
+        [m, c] = np.polyfit(np.log10(all_params[:-2*3]), all_scores[:-2*3], 1)
         elo_exponents[k] = m/400
     axs[1].set_xscale('log')
     axs[1].set_xlabel('Neural-net parameters',fontsize=tf)
@@ -205,7 +210,7 @@ def plot_temperature_curves(load_data=True):
             continue
         if k > 5:
             continue
-        axs[2].scatter(zipf_exponents[k], elo_exponents[k], color=cm.plasma(color_nums[k]))
+        axs[2].scatter(zipf_exponents[k], elo_exponents[k], color=cm.plasma(color_nums[k]), s=4)
     axs[2].set_xlabel('Zipf exponent',fontsize=tf)
     axs[2].set_ylabel('Elo exponent',fontsize=tf)
     axs[2].tick_params(axis='both', which='major', labelsize=tf-2)
