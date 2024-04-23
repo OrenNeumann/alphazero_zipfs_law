@@ -213,7 +213,7 @@ def plot_temperature_curves(load_data=True):
     axin1.scatter(zipf_exponents[1:], elo_exponents[1:], c=cm.plasma(color_nums[1:]), s=10)
     axin1.axvline(x=1, color='black', linestyle='--')
     axin1.tick_params(axis='both', which='major', labelsize=tf-4)
-    axin1.annotate(r'$T=\infty$'+'\nZipf law', xy=(1, 0.5), xytext=(1.2, 0.5), arrowprops=dict(arrowstyle='->'))
+    axin1.annotate(r'$T=\infty$'+' \nZipf law', xy=(1, 0.5), xytext=(1.2, 0.5), arrowprops=dict(arrowstyle='->'))
 
     # Colorbar:
     norm = matplotlib.colors.LogNorm(vmin=temps.min(), vmax=temps.max())
