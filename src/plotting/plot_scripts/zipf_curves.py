@@ -149,7 +149,7 @@ def plot_temperature_curves(load_data=True):
     axs[0].set_xlabel('State rank',fontsize=tf)
     axs[0].set_ylabel('Frequency',fontsize=tf)
     axs[0].tick_params(axis='both', which='major', labelsize=tf-2)
-    aligned_title(axs[0], r"$\bf{a.}$ Zipf's law and Elo scaling", tf-2)
+    aligned_title(axs[0], r"$\bf{a.}$ Zipf's law and Elo scaling", tf+4)
 
     ##############################################################
     print('Plotting size scaling at different temperatures')
@@ -186,7 +186,7 @@ def plot_temperature_curves(load_data=True):
         # Set Elo score range
         elo_scores += 100 - elo_scores.min()
         axin0.errorbar(par, elo_scores, yerr=[elo_stds, elo_stds], fmt='-o', 
-                    color=cm.plasma(color_nums[k]), linewidth=0.5)
+                    color=cm.plasma(color_nums[k]), linewidth=0.5, markersize=5)
         #fitting:
         [m, c] = np.polyfit(np.log10(all_params[:-2*copies]), all_scores[:-2*copies], 1)
         elo_exponents[k] = m/400
@@ -204,11 +204,11 @@ def plot_temperature_curves(load_data=True):
             continue
     axs[1].plot(zipf_exponents[1:6], elo_exponents[1:6],  
                     markersize=0, linestyle='--', color='black')
-    axs[1].scatter(zipf_exponents[1:6], elo_exponents[1:6], c=cm.plasma(color_nums[1:6]), s=40)
+    axs[1].scatter(zipf_exponents[1:6], elo_exponents[1:6], c=cm.plasma(color_nums[1:6]), s=60)
     axs[1].set_xlabel('Zipf exponent',fontsize=tf)
     axs[1].set_ylabel('Elo exponent',fontsize=tf)
     axs[1].tick_params(axis='both', which='major', labelsize=tf-2)
-    aligned_title(axs[1], r"$\bf{b.}$ Exponent correlation", tf-2)
+    aligned_title(axs[1], r"$\bf{b.}$ Exponent correlation", tf+4)
 
     axin1 = axs[1].inset_axes([0.6, 0.1, 0.4, 0.4])
     axin1.scatter(zipf_exponents[1:], elo_exponents[1:], c=cm.plasma(color_nums[1:]), s=10)
