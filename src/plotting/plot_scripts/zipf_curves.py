@@ -197,19 +197,17 @@ def plot_temperature_curves(load_data=True):
     
     ##############################################################
     print('Plotting exponents relation')
-    for k in range(len(temps)):
-        if k==0:#
-            continue
-        if k > 5:
-            continue
+
+    # plotting low-T data:
     axs[1].plot(zipf_exponents[1:6], elo_exponents[1:6],  
-                    markersize=0, linestyle='--', color='black')
+                    markersize=0, linestyle='--', color='gray')
     axs[1].scatter(zipf_exponents[1:6], elo_exponents[1:6], c=cm.plasma(color_nums[1:6]), s=60)
     axs[1].set_xlabel('Zipf exponent',fontsize=tf)
     axs[1].set_ylabel('Elo exponent',fontsize=tf)
     axs[1].tick_params(axis='both', which='major', labelsize=tf-2)
     aligned_title(axs[1], r"$\bf{b.}$ Exponent correlation", tf+4)
 
+    # plotting all-T data:
     axin1 = axs[1].inset_axes([0.6, 0.1, 0.4, 0.4])
     axin1.scatter(zipf_exponents[1:], elo_exponents[1:], c=cm.plasma(color_nums[1:]), s=10)
     axin1.axvline(x=1, color='black', linestyle='--')
