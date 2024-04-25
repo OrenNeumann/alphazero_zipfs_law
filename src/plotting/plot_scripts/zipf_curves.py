@@ -150,7 +150,7 @@ def plot_temperature_curves(load_data=True):
     axs[0].set_xlabel('State rank',fontsize=tf)
     axs[0].set_ylabel('Frequency',fontsize=tf)
     axs[0].tick_params(axis='both', which='major', labelsize=tf-2)
-    aligned_title(axs[0], r"$\bf{a.}$ Zipf's law and Elo scaling", tf+4)
+    aligned_title(axs[0], r"$\bf{A.}$ Zipf's law and Elo scaling", tf+4)
 
     ##############################################################
     print('Plotting size scaling at different temperatures')
@@ -206,7 +206,7 @@ def plot_temperature_curves(load_data=True):
     axs[1].set_xlabel('Zipf exponent',fontsize=tf)
     axs[1].set_ylabel('Elo exponent',fontsize=tf)
     axs[1].tick_params(axis='both', which='major', labelsize=tf-2)
-    aligned_title(axs[1], r"$\bf{b.}$ Exponent correlation", tf+4)
+    aligned_title(axs[1], r"$\bf{B.}$ Exponent correlation", tf+4)
 
     # plotting all-T data:
     axin1 = axs[1].inset_axes([0.6, 0.1, 0.4, 0.4])
