@@ -96,7 +96,8 @@ def plot_zipf_curves(load_data=True):
 
 
 def _generate_temperature_zipf_curves(k):
-    temps = np.array([0.07, 0.1, 0.14, 0.2, 0.25, 0.32, 0.45, 0.6, 0.8, 1, 1.4, 2, 3, 5])   
+    #temps = np.array([0.07, 0.1, 0.14, 0.2, 0.25, 0.32, 0.45, 0.6, 0.8, 1, 1.4, 2, 3, 5]) 
+    temps = np.array([0.07, 0.1, 0.14, 0.2, 0.25, 0.32, 0.45, 0.6, 0.8, 1, 1.4, 2, 3, 5, 0.04, 0.02, 0.01])  
     max_q = 6
     n_copies = 3
     nets = []
