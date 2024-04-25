@@ -129,12 +129,11 @@ def plot_temperature_curves(load_data=True):
     if not load_data:
         for ind in sorted_t:
             _generate_temperature_zipf_curves(ind)
-    #for k,t in tqdm(list(enumerate(temps))[::-1], desc='Plotting Zipf curves'):
     for ind in tqdm(sorted_t[::-1], desc='Plotting Zipf curves'):
         with open(f'../plot_data/temperature/zipf_curves/temp_num_{ind}.pkl', 'rb') as f:
             zipf_curve = pickle.load(f)
         ###
-        zipf_curve = zipf_curve[:np.argmax(zipf_curve == 1)] #prune
+        #zipf_curve = zipf_curve[:np.argmax(zipf_curve == 1)] #prune
         ###
         x = np.arange(len(zipf_curve))+1
         axs[0].scatter(x,zipf_curve, color=cm.plasma(color_nums[ind]), s=40 / (10 + x))
@@ -214,7 +213,7 @@ def plot_temperature_curves(load_data=True):
     axin1.scatter(zipf_exponents, elo_exponents, c=cm.plasma(color_nums), s=10)
     axin1.axvline(x=1, color='black', linestyle='--')
     axin1.tick_params(axis='both', which='major', labelsize=tf-4)
-    axin1.annotate(r'$T=\infty$'+' \nZipf exponent', xy=(1, 0.6), xytext=(2.2, 0.6), arrowprops=dict(arrowstyle='->'), fontsize=tf-2)
+    axin1.annotate(r'$T=\infty$'+' \nZipf exponent', xy=(1, 0.6), xytext=(2.2, 0.5), arrowprops=dict(arrowstyle='->'), fontsize=tf-2)
 
     # Colorbar:
     norm = matplotlib.colors.LogNorm(vmin=temps.min(), vmax=temps.max())
