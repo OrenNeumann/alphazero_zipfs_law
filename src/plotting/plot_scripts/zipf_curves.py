@@ -116,7 +116,9 @@ def _generate_temperature_zipf_curves(k):
 
 
 def plot_temperature_curves(load_data=True):
-    temps = np.array([0.07, 0.1, 0.14, 0.2, 0.25, 0.32, 0.45, 0.6, 0.8, 1, 1.4, 2, 3, 5])
+    temps = np.array([0.07, 0.1, 0.14, 0.2, 0.25, 0.32, 0.45, 0.6, 0.8, 1, 1.4, 2, 3, 5, 0.04, 0.02, 0.01])
+    sorted_t = np.argsort(temps)
+    #temps = np.array([0.07, 0.1, 0.14, 0.2, 0.25, 0.32, 0.45, 0.6, 0.8, 1, 1.4, 2, 3, 5])
     log_t = np.log(temps)
     color_nums = (log_t - log_t.min()) / (log_t.max() - log_t.min()) 
     tf =12
@@ -126,23 +128,26 @@ def plot_temperature_curves(load_data=True):
 
     print('Plotting Connect Four Zipf curves at different temperatures.')
     if not load_data:
-        for k in range(len(temps)):
-            _generate_temperature_zipf_curves(k)
-    for k,t in tqdm(list(enumerate(temps))[::-1], desc='Plotting Zipf curves'):
-        with open(f'../plot_data/temperature/zipf_curves/temp_num_{k}.pkl', 'rb') as f:
+        for ind in sorted_t:
+            if ind not in [14,15,16]: #######
+                continue
+            _generate_temperature_zipf_curves(ind)
+    #for k,t in tqdm(list(enumerate(temps))[::-1], desc='Plotting Zipf curves'):
+    for ind in tqdm(sorted_t[::-1], desc='Plotting Zipf curves'):
+        with open(f'../plot_data/temperature/zipf_curves/temp_num_{ind}.pkl', 'rb') as f:
             zipf_curve = pickle.load(f)
         ###
         zipf_curve = zipf_curve[:np.argmax(zipf_curve == 1)] #prune
         ###
         x = np.arange(len(zipf_curve))+1
-        axs[0].scatter(x,zipf_curve, color=cm.plasma(color_nums[k]), s=40 / (10 + x))
+        axs[0].scatter(x,zipf_curve, color=cm.plasma(color_nums[ind]), s=40 / (10 + x))
 
         #fitting between counts 200 and 4:
         low = np.argmax(zipf_curve < 200)
         up = np.argmax(zipf_curve == 4)
         x_nums = np.arange(up)[low:]
         [m, c] = np.polyfit(np.log10(np.arange(up)[low:] + 1), np.log10(zipf_curve[low:up]), deg=1, w=2 / x_nums)
-        zipf_exponents[k]=-m
+        zipf_exponents[ind]=-m
 
     axs[0].set_xscale('log')
     axs[0].set_yscale('log')
@@ -155,14 +160,13 @@ def plot_temperature_curves(load_data=True):
     print('Plotting size scaling at different temperatures')
     axin0 = axs[0].inset_axes([0.6, 0.6, 0.4, 0.4])
     elo_exponents = np.zeros(len(temps))
-
-    for k,t in enumerate(temps):
-        if k==0:#
-            continue
-        print(f'({k+1}/{len(temps)}) Temperature: {t}')
+    i=0
+    for ind in sorted_t:
+        i+=1
+        print(f'({i}/{len(temps)}) Temperature: {temps[ind]}')
         r = BayesElo()
         agents = PlayerNums()
-        matches = np.load(f'../matches/temperature_scaling/connect_four_temp_num_{k}/matrix.npy')
+        matches = np.load(f'../matches/temperature_scaling/connect_four_temp_num_{ind}/matrix.npy')
         sizes = 7
         copies = 4
         for i, j in combinations(range(len(matches)), 2):
@@ -185,11 +189,11 @@ def plot_temperature_curves(load_data=True):
         elo_scores = np.array(elo_scores)
         # Set Elo score range
         elo_scores += 100 - elo_scores.min()
-        axin0.errorbar(par, elo_scores, yerr=[elo_stds, elo_stds], fmt='-o', 
-                    color=cm.plasma(color_nums[k]), linewidth=0.5, markersize=0.5)
+        axin0.errorbar(par[:-2], elo_scores[:-2], yerr=[elo_stds[:-2], elo_stds[:-2]], fmt='-o', 
+                    color=cm.plasma(color_nums[ind]), linewidth=0.5, markersize=0.5)
         #fitting:
         [m, c] = np.polyfit(np.log10(all_params[:-2*copies]), all_scores[:-2*copies], 1)
-        elo_exponents[k] = m/400
+        elo_exponents[ind] = m/400
     axin0.set_xscale('log')
     axin0.set_xlabel('Neural-net parameters',fontsize=tf-2)
     axin0.set_ylabel('Elo',fontsize=tf-2)
@@ -199,9 +203,10 @@ def plot_temperature_curves(load_data=True):
     print('Plotting exponents relation')
 
     # plotting low-T data:
-    axs[1].plot(zipf_exponents[1:6], elo_exponents[1:6],  
+    indices = sorted_t[:9]
+    axs[1].plot(zipf_exponents[indices], elo_exponents[indices],  
                     markersize=0, linestyle='--', color='gray')
-    axs[1].scatter(zipf_exponents[1:6], elo_exponents[1:6], c=cm.plasma(color_nums[1:6]), s=60)
+    axs[1].scatter(zipf_exponents[indices], elo_exponents[indices], c=cm.plasma(color_nums[indices]), s=60)
     axs[1].set_xlabel('Zipf exponent',fontsize=tf)
     axs[1].set_ylabel('Elo exponent',fontsize=tf)
     axs[1].tick_params(axis='both', which='major', labelsize=tf-2)
@@ -209,7 +214,7 @@ def plot_temperature_curves(load_data=True):
 
     # plotting all-T data:
     axin1 = axs[1].inset_axes([0.6, 0.1, 0.4, 0.4])
-    axin1.scatter(zipf_exponents[1:], elo_exponents[1:], c=cm.plasma(color_nums[1:]), s=10)
+    axin1.scatter(zipf_exponents, elo_exponents, c=cm.plasma(color_nums), s=10)
     axin1.axvline(x=1, color='black', linestyle='--')
     axin1.tick_params(axis='both', which='major', labelsize=tf-4)
     axin1.annotate(r'$T=\infty$'+' \nZipf exponent', xy=(1, 0.5), xytext=(1.2, 0.5), arrowprops=dict(arrowstyle='->'), fontsize=tf-2)

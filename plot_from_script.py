@@ -16,4 +16,4 @@ from src.plotting.plot_scripts.zipf_curves import plot_zipf_curves, plot_tempera
 #plot_scaling_failure(load_data=True)
 #plot_zipf_law_theory(load_data=True)
 #plot_zipf_curves(load_data=True)
-plot_temperature_curves(load_data=True)
+plot_temperature_curves(load_data=False)
