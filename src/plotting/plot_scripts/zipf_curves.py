@@ -130,8 +130,6 @@ def plot_temperature_curves(load_data=True):
     print('Plotting Connect Four Zipf curves at different temperatures.')
     if not load_data:
         for ind in sorted_t:
-            if ind not in [14,15,16]: #######
-                continue
             _generate_temperature_zipf_curves(ind)
     #for k,t in tqdm(list(enumerate(temps))[::-1], desc='Plotting Zipf curves'):
     for ind in tqdm(sorted_t[::-1], desc='Plotting Zipf curves'):
@@ -218,7 +216,7 @@ def plot_temperature_curves(load_data=True):
     axin1.scatter(zipf_exponents, elo_exponents, c=cm.plasma(color_nums), s=10)
     axin1.axvline(x=1, color='black', linestyle='--')
     axin1.tick_params(axis='both', which='major', labelsize=tf-4)
-    axin1.annotate(r'$T=\infty$'+' \nZipf exponent', xy=(1, 0.5), xytext=(1.2, 0.5), arrowprops=dict(arrowstyle='->'), fontsize=tf-2)
+    axin1.annotate(r'$T=\infty$'+' \nZipf exponent', xy=(1, 0.6), xytext=(2.2, 0.6), arrowprops=dict(arrowstyle='->'), fontsize=tf-2)
 
     # Colorbar:
     norm = matplotlib.colors.LogNorm(vmin=temps.min(), vmax=temps.max())
