@@ -66,7 +66,8 @@ def _plot_curve(ax, y, env, xlabel=False, ylabel=False, tf=12):
     ax.legend(fontsize=tf-2, loc='upper right')
 
 
-def plot_zipf_curves(load_data=True):
+def plot_zipf_curves(load_data=True, res=300):
+    print('Plotting Zipf curves (appendix)')
     models = ['q_0_0', 'q_2_0', 'q_4_0', 'q_6_0']
     envs = ['connect_four', 'pentago', 'oware', 'checkers']
     titles = [r'${\bf Connect \, Four}$', r'${\bf Pentago}$', r'${\bf Oware}$', r'${\bf Checkers}$']
@@ -92,7 +93,7 @@ def plot_zipf_curves(load_data=True):
         aligned_title(axs[i,0], titles[i], tf)
     fig.tight_layout()
     print('Saving figure (can take a while)...')
-    fig.savefig('plots/zipf_curves.png', dpi=300)
+    fig.savefig('plots/zipf_curves.png', dpi=res)
 
 
 def _generate_temperature_zipf_curves(k):
@@ -115,7 +116,8 @@ def _generate_temperature_zipf_curves(k):
         pickle.dump(freqs, f)
 
 
-def plot_temperature_curves(load_data=True):
+def plot_temperature_curves(load_data=True, res=300):
+    print('Plotting temperature curves')
     temps = np.array([0.07, 0.1, 0.14, 0.2, 0.25, 0.32, 0.45, 0.6, 0.8, 1, 1.4, 2, 3, 5, 0.04, 0.02, 0.01])
     sorted_t = np.argsort(temps)
     log_t = np.log(temps)
@@ -226,4 +228,4 @@ def plot_temperature_curves(load_data=True):
 
     fig.tight_layout()
     print('Saving figure (can take a while)...')
-    fig.savefig('./plots/temperature_curves.png', dpi=300)
+    fig.savefig('./plots/temperature_curves.png', dpi=res)

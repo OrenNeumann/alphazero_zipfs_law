@@ -9,7 +9,7 @@ from src.plotting.plot_utils import aligned_title, smooth, gaussian_average
 
 plt.style.use(['science','nature','grid'])
 
-def connect4_loss_plots(load_data=True):
+def connect4_loss_plots(load_data=True, res=300):
     print('Plotting Connect Four value loss plots')
     tf =12
     # Create figure and subplots
@@ -94,7 +94,7 @@ def connect4_loss_plots(load_data=True):
     cbar.ax.set_ylabel('Parameters', rotation=90, fontsize=tf)
 
     fig.tight_layout()
-    fig.savefig('./plots/connect4_value_loss.png', dpi=900)
+    fig.savefig('./plots/connect4_value_loss.png', dpi=res)
 
 
 def oware_value_loss():

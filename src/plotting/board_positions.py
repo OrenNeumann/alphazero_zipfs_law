@@ -53,7 +53,7 @@ def create_subtitle(fig, grid, title):
     row.set_frame_on(False)
     row.axis('off')
 
-def plot_checkers():
+def plot_checkers(res=300):
     save_data = False
     if save_data:
         state_counter = gather_data('checkers', [0,1,2,3,4,5,6], max_file_num=10, save_turn_num=True)
@@ -92,27 +92,7 @@ def plot_checkers():
             ax.axis('off') 
             ax.set_title(f'State \#{name+1}', fontsize=16)
     plt.tight_layout()
-    fig.savefig('./plots/checkers_positions.png', dpi=600)
-    """
-    # Create a Matplotlib figure and axes
-    fig, axs = plt.subplots(2, 4, figsize=(12, 8))
-    png_dir='plots/board_positions/'
-    # Iterate over each name
-    for i, name in enumerate(early_turns + late_turns):
-        # Calculate the subplot position
-        row = i // 4
-        col = i % 4
-        # Load the PNG file
-        png_file = os.path.join(png_dir, f'checkers-board_{name}.png')
-        img = plt.imread(png_file)
-        axs[row, col].imshow(img)
-        axs[row, col].axis('off')  # Hide axis
-        axs[row, col].set_title(f'State {name}', fontsize=16)
-    grid = plt.GridSpec(2, 4)
-    create_subtitle(fig, grid[0, ::], 'Checkers board states')
-    create_subtitle(fig, grid[1, ::], 'Late-game board states')
-    plt.tight_layout()
-    fig.savefig('./plots/checkers_positions.png', dpi=600)"""
+    fig.savefig('./plots/checkers_positions.png', dpi=res)
 
 
 def parse_oware_state(state_str):
@@ -178,7 +158,7 @@ def plot_oware_state(state, name):
     fig.savefig(f'plots/board_positions/oware-board_{name}.png', dpi=300, bbox_inches='tight', pad_inches=0)
 
 
-def plot_oware():
+def plot_oware(res=300):
     save_data = False
     if save_data:
         state_counter = gather_data('oware', [0,1,2,3,4,5], max_file_num=10, save_turn_num=True)
@@ -216,4 +196,4 @@ def plot_oware():
             ax.axis('off') 
             ax.set_title(f'State \#{name+1}', fontsize=16)
     plt.tight_layout()
-    fig.savefig('./plots/oware_positions.png', dpi=600)
+    fig.savefig('./plots/oware_positions.png', dpi=res)

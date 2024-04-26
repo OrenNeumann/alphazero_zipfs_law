@@ -123,8 +123,9 @@ def _bent_zipf_laws():
         #    pickle.dump({'freq_cutoff': freq_cutoff, 'freq_normal': freq_normal}, f)
 
 
-def plot_scaling_failure(load_data=True):
+def plot_scaling_failure(load_data=True, res=300):
     """ plot oware and checkers elo curves."""
+    print('Plotting scaling-failure plot')
     tf =12
     l_width = 2
     # Create figure and subplots
@@ -208,5 +209,5 @@ def plot_scaling_failure(load_data=True):
 
 
     fig.tight_layout()
-    fig.savefig('plots/oware_checkers_scaling.png', dpi=300)
+    fig.savefig('plots/oware_checkers_scaling.png', dpi=res)
     

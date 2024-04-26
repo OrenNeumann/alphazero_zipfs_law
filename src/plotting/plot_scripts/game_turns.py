@@ -9,7 +9,7 @@ from src.plotting.plot_utils import aligned_title
 
 plt.style.use(['science','nature','grid'])
 
-def plot_game_turns():
+def plot_game_turns(res=600):
     print('Plotting game turns')
     tf =12
     # Create figure and subplots
@@ -70,6 +70,6 @@ def plot_game_turns():
     aligned_title(ax5, r'$\bf{b.}$ Late-turn fraction', font=tf+4)
 
     plt.tight_layout()
-    fig.savefig('./plots/turns.png', dpi=900)
+    fig.savefig('./plots/turns.png', dpi=res)
 
 

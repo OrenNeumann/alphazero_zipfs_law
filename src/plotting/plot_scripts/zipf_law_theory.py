@@ -34,7 +34,7 @@ def _generate_random_games(env):
         pickle.dump(np.array([item[1] for item in counter.frequencies.most_common()]), f)
 
 
-def plot_zipf_law_theory(load_data=True):
+def plot_zipf_law_theory(load_data=True, res=300):
     """
     Plot Zipf laws of a theoretical toy model, and random rollouts.
     """
@@ -108,6 +108,6 @@ def plot_zipf_law_theory(load_data=True):
     aligned_title(ax2, title=r'$\bf{b.}$ Random-game distribution',font=tf+4)
 
     fig.tight_layout()
-    fig.savefig('plots/theory.png', dpi=600)
+    fig.savefig('plots/theory.png', dpi=res)
 
 
