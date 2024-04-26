@@ -67,7 +67,7 @@ def plot_zipf_law_theory(load_data=True, res=300):
     ax1.set_ylabel('Frequency',fontsize=tf)
     ax1.tick_params(axis='both', which='major', labelsize=tf-2)
     ax1.legend(fontsize=tf-2)
-    aligned_title(ax1, title=r'$\bf{a.}$ Toy-model distribution',font=tf+4)
+    aligned_title(ax1, title=r'$\bf{A.}$ Toy-model distribution',font=tf+4)
 
     ########################################################
     print('Plotting random games')
@@ -105,7 +105,7 @@ def plot_zipf_law_theory(load_data=True, res=300):
     handles, labels = plt.gca().get_legend_handles_labels()
     order = [0,2,1]
     ax2.legend([handles[idx] for idx in order],[labels[idx] for idx in order], fontsize=tf-2)
-    aligned_title(ax2, title=r'$\bf{b.}$ Random-game distribution',font=tf+4)
+    aligned_title(ax2, title=r'$\bf{B.}$ Random-game distribution',font=tf+4)
 
     fig.tight_layout()
     fig.savefig('plots/theory.png', dpi=res)

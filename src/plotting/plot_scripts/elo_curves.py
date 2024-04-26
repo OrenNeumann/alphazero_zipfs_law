@@ -163,7 +163,7 @@ def plot_scaling_failure(load_data=True, res=300):
     ax1.set_ylabel('Elo',fontsize=tf)
     ax1.tick_params(axis='both', which='major', labelsize=tf-2)
     ax1.legend(fontsize=tf-2, loc='upper left', framealpha=0.5)
-    aligned_title(ax1, title=r'$\bf{a.}$ Scaling curves',font=tf+4)
+    aligned_title(ax1, title=r'$\bf{A.}$ Scaling curves',font=tf+4)
 
     #################################################
     print('Plotting Zipf\'s law curves')
@@ -200,9 +200,9 @@ def plot_scaling_failure(load_data=True, res=300):
             normal_freqs = pickle.load(f)
         zipf_law_plot(ax, {'freq_cutoff': cutoff_freqs, 'freq_normal': normal_freqs})
         if env == 'oware':
-            aligned_title(ax, title=r"$\bf{b.}$ Oware Zipf's law",font=tf+4)
+            aligned_title(ax, title=r"$\bf{B.}$ Oware Zipf's law",font=tf+4)
         else:
-            aligned_title(ax, title=r"$\bf{c.}$ Checkers Zipf's law",font=tf+4)
+            aligned_title(ax, title=r"$\bf{C.}$ Checkers Zipf's law",font=tf+4)
 
     #with open('../plot_data/elo_curves/checkers_freqs.pkl', 'rb') as f:
     #    checkers_freqs = pickle.load(f)

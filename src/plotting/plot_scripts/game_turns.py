@@ -66,8 +66,8 @@ def plot_game_turns(res=600):
     ax5.set_ylim(top=1)
     ax5.legend(loc="upper left", framealpha=0.6, fontsize=tf)
     ax5.tick_params(axis='both', which='major', labelsize=tf)
-    aligned_title(ax1, r'$\bf{a.}$ Turn distribution', font=tf+4)
-    aligned_title(ax5, r'$\bf{b.}$ Late-turn fraction', font=tf+4)
+    aligned_title(ax1, r'$\bf{A.}$ Turn distribution', font=tf+4)
+    aligned_title(ax5, r'$\bf{B.}$ Late-turn fraction', font=tf+4)
 
     plt.tight_layout()
     fig.savefig('./plots/turns.png', dpi=res)

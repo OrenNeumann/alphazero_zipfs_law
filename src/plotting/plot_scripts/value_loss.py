@@ -21,9 +21,9 @@ def connect4_loss_plots(load_data=True, res=300):
     log_par = np.log(par)
     color_nums = (log_par - log_par.min()) / (log_par.max() - log_par.min())
 
-    titles = [r'$\bf{a.}$ Value loss (train set)',
-              r'$\bf{b.}$ Value loss (ground truth)',
-              r'$\bf{c.}$ Time required, $\alpha$-$\beta$ pruning']
+    titles = [r'$\bf{A.}$ Value loss (train set)',
+              r'$\bf{B.}$ Value loss (ground truth)',
+              r'$\bf{C.}$ Time required, $\alpha$-$\beta$ pruning']
     sigma = 0.15
     l_max = 0
     for i, ax in enumerate(axs):
@@ -117,7 +117,7 @@ def oware_value_loss(res=300):
     ylim = None
     for i,ax in enumerate(axes.flat):
         t = loss_types[i]
-        ax.set_title(titles[i], fontsize=tf+4)
+        aligned_title(ax, title=titles[i],font=tf+4)
         for label in data_labels:
             x = rank_values[label][t]
             y = loss_values[label][t]
