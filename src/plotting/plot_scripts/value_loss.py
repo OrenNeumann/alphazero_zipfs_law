@@ -97,7 +97,7 @@ def connect4_loss_plots(load_data=True, res=300):
     fig.savefig('./plots/connect4_value_loss.png', dpi=res)
 
 
-def oware_value_loss():
+def oware_value_loss(res=300):
     # using data from late_turn_loss.py, oware games had pruning=10
     print('Plotting oware value loss')
     
@@ -162,6 +162,6 @@ def oware_value_loss():
     cbar.ax.set_ylabel('Parameters', rotation=90, fontsize=tf)
 
     fig.tight_layout()
-    fig.savefig('./plots/oware_value_loss.png', dpi=900)
+    fig.savefig('./plots/oware_value_loss.png', dpi=res)
 
 
