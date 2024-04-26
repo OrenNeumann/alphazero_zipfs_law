@@ -54,7 +54,7 @@ def create_subtitle(fig, grid, title):
     row.axis('off')
 
 def plot_checkers(res=300):
-    print('Plotting checkers board positions')
+    print('~~~~~~~~~~~~~~~~~~~ Plotting checkers board positions (appendix) ~~~~~~~~~~~~~~~~~~~')
     save_data = False
     if save_data:
         state_counter = gather_data('checkers', [0,1,2,3,4,5,6], max_file_num=10, save_turn_num=True)
@@ -160,7 +160,7 @@ def plot_oware_state(state, name):
 
 
 def plot_oware(res=300):
-    print('Plotting Oware board positions')
+    print('~~~~~~~~~~~~~~~~~~~ Plotting Oware board positions (appendix) ~~~~~~~~~~~~~~~~~~~')
     save_data = False
     if save_data:
         state_counter = gather_data('oware', [0,1,2,3,4,5], max_file_num=10, save_turn_num=True)

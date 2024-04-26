@@ -125,7 +125,7 @@ def _bent_zipf_laws():
 
 def plot_scaling_failure(load_data=True, res=300):
     """ plot oware and checkers elo curves."""
-    print('Plotting scaling-failure plot')
+    print('~~~~~~~~~~~~~~~~~~~ Plotting scaling-failure plot ~~~~~~~~~~~~~~~~~~~')
     tf =12
     l_width = 2
     # Create figure and subplots

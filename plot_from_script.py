@@ -9,14 +9,16 @@ from src.plotting.plot_scripts.zipf_curves import plot_zipf_curves, plot_tempera
 
 #plot_oware_size_scaling()
 #plot_new_size_scaling()
-plot_zipf_law_theory(load_data=True, res=50)
-plot_temperature_curves(load_data=True, res=50)
-connect4_loss_plots(load_data=True, res=50)
-plot_scaling_failure(load_data=True, res=50)
-plot_game_turns(res=50)
+
+# Main paper:
+#plot_zipf_law_theory(load_data=True, res=50)
+#plot_temperature_curves(load_data=True, res=50)
+#connect4_loss_plots(load_data=True, res=50)
+#plot_scaling_failure(load_data=True, res=50)
+#plot_game_turns(res=50)
 oware_value_loss(res=50)
 
-# appendix:
+# Appendix:
 plot_zipf_curves(load_data=True, res=50)
 board.plot_oware(res=50)
 board.plot_checkers(res=50)

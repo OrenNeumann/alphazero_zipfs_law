@@ -43,7 +43,7 @@ def plot_zipf_law_theory(load_data=True, res=300):
     fig, axes = plt.subplots(nrows=1, ncols=2, figsize=(12, 3))
     ax1 = axes[0]
 
-    print('Plotting Zipf law theory')
+    print('~~~~~~~~~~~~~~~~~~~ Plotting Zipf law theory ~~~~~~~~~~~~~~~~~~~')
     if not load_data:
         _calculate_theory_distribution()
     with open('../plot_data/zipf_theory/theory_freq.pkl', 'rb') as f:

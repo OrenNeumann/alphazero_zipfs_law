@@ -99,13 +99,13 @@ def connect4_loss_plots(load_data=True, res=300):
 
 def oware_value_loss(res=300):
     # using data from late_turn_loss.py, oware games had pruning=10
-    print('Plotting oware value loss')
+    print('~~~~~~~~~~~~~~~~~~~ Plotting oware value loss ~~~~~~~~~~~~~~~~~~~')
     
     tf =12
     # Create figure and subplots
     fig, axes = plt.subplots(nrows=1, ncols=3, figsize=(12, 4))
 
-    with open('../plot_data/value_loss/loss_curves_oware.pkl', "rb") as f:
+    with open('../plot_data/value_loss/late_turns/loss_curves_oware.pkl', "rb") as f:
         loss_values, rank_values =  pickle.load(f)
     par = np.load('src/config/parameter_counts/oware.npy')
     log_par = np.log(par)

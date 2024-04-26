@@ -10,7 +10,7 @@ from src.plotting.plot_utils import aligned_title
 plt.style.use(['science','nature','grid'])
 
 def plot_game_turns(res=600):
-    print('Plotting game turns')
+    print('~~~~~~~~~~~~~~~~~~~ Plotting game turns ~~~~~~~~~~~~~~~~~~~')
     tf =12
     # Create figure and subplots
     fig = plt.figure(figsize=(12, 6))

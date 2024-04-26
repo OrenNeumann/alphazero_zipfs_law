@@ -67,7 +67,7 @@ def _plot_curve(ax, y, env, xlabel=False, ylabel=False, tf=12):
 
 
 def plot_zipf_curves(load_data=True, res=300):
-    print('Plotting Zipf curves (appendix)')
+    print('~~~~~~~~~~~~~~~~~~~ Plotting Zipf curves (appendix) ~~~~~~~~~~~~~~~~~~~')
     models = ['q_0_0', 'q_2_0', 'q_4_0', 'q_6_0']
     envs = ['connect_four', 'pentago', 'oware', 'checkers']
     titles = [r'${\bf Connect \, Four}$', r'${\bf Pentago}$', r'${\bf Oware}$', r'${\bf Checkers}$']
@@ -117,7 +117,7 @@ def _generate_temperature_zipf_curves(k):
 
 
 def plot_temperature_curves(load_data=True, res=300):
-    print('Plotting temperature curves')
+    print('~~~~~~~~~~~~~~~~~~~ Plotting temperature curves ~~~~~~~~~~~~~~~~~~~')
     temps = np.array([0.07, 0.1, 0.14, 0.2, 0.25, 0.32, 0.45, 0.6, 0.8, 1, 1.4, 2, 3, 5, 0.04, 0.02, 0.01])
     sorted_t = np.argsort(temps)
     log_t = np.log(temps)
@@ -158,10 +158,10 @@ def plot_temperature_curves(load_data=True, res=300):
     print('Plotting size scaling at different temperatures')
     axin0 = axs[0].inset_axes([0.6, 0.6, 0.4, 0.4])
     elo_exponents = np.zeros(len(temps))
-    i=0
+    n=0
     for ind in sorted_t:
-        i+=1
-        print(f'({i}/{len(temps)}) Temperature: {temps[ind]}')
+        n+=1
+        print(f'({n}/{len(temps)}) Temperature: {temps[ind]}')
         r = BayesElo()
         agents = PlayerNums()
         matches = np.load(f'../matches/temperature_scaling/connect_four_temp_num_{ind}/matrix.npy')
