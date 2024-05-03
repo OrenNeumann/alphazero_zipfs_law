@@ -1,5 +1,7 @@
 from src.alphazero_scaling.solver_bot import connect_four_solver
 from src.alphazero_scaling.loading import load_model_from_checkpoint, load_config
+from open_spiel.python.algorithms.alpha_zero import evaluator as evaluator_lib
+from open_spiel.python.algorithms import mcts
 import numpy as np
 import numpy.typing as npt
 import pyspiel
@@ -41,6 +43,44 @@ def get_model_value_estimator(env: str, config_path: str):
 
     return model_value
 
+
+def get_model_policy_estimator(env: str, config_path: str):
+    """ Creates an estimator function that uses a trained model to calculate action policy.
+        OpenSpiel MCTS doesn't re-use the search tree, so no problem estimating policies for multiple states.
+    """
+    game = pyspiel.load_game(env)
+    config = load_config(config_path)
+    model = load_model_from_checkpoint(config=config, path=config_path, checkpoint_number=10_000)
+    az_evaluator = evaluator_lib.AlphaZeroEvaluator(game, model)
+    bot = _init_bot(game, az_evaluator)
+
+    def model_policy(serial_states: list[str], temperature: float) -> list:
+        policies = []
+        for serial in tqdm(serial_states, desc="Estimating model policy"):
+            state = game.deserialize_state(serial)
+            root = bot.mcts_search(state)
+            policy = np.zeros(game.num_distinct_actions())
+            for c in root.children:
+                policy[c.action] = c.explore_count
+            policy = policy ** (1 / temperature)
+            policy /= policy.sum()
+            policies.append(policy)
+        return policies
+
+    return model_policy
+
+def _init_bot(game, evaluator_):
+    """Initializes a bot."""
+    return mcts.MCTSBot(
+        game,
+        2, #c_uct
+        300, #rollouts
+        evaluator_,
+        solve=False,
+        dirichlet_noise=None, #assuming evaluation matches
+        child_selection_fn=mcts.SearchNode.puct_value,
+        verbose=False,
+        dont_return_chance_node=True)
 
 def get_solver_value_estimator(env: str):
     """
