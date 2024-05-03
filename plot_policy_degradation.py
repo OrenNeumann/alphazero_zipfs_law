@@ -38,16 +38,16 @@ def plot_policy_degradation():
         optimal_moves = pickle.load(f)
     print('Plotting policy degradation')
     temps = [0.01, 0.02, 0.04, 0.07, 0.1 , 0.14, 0.2 , 0.25, 0.32, 0.45, 0.6, 0.8 , 1, 1.4 , 2, 3, 5]
-    estimators = [3]#[0, 1, 2, 3, 4, 5, 6]
+    estimators = [0, 1, 2, 3, 4, 5, 6]
     n_copies = 1
     path = models_path() + game_path('connect_four')
     keys = [key for key,_ in state_counter.frequencies.most_common()]
     for i,key in enumerate(keys):
         if all(optimal_moves[key]):
             keys.pop(i)
-    keys = np.random.choice(keys,100,replace=False)
+    keys = np.random.choice(keys,20,replace=False)
     serials = [state_counter.serials[key] for key in keys]
-    prob_of_optimal_move = {t: [] for t in temps}
+    prob_of_optimal_move = {est: {t: [] for t in temps} for est in estimators}
     for est in estimators:
         for copy in range(n_copies):
             model_name = f'q_{est}_{copy}'
@@ -58,7 +58,7 @@ def plot_policy_degradation():
                 policies = _get_optimal_policies(path_model, serials, t)
                 for policy in policies:
                     prob_optimal = np.dot(policy, optimal_moves[key])
-                    prob_of_optimal_move[t].append(prob_optimal)
+                    prob_of_optimal_move[est][t].append(prob_optimal)
     
     with open('../plot_data/solver/temp_probabilities.pkl', 'wb') as f:
         pickle.dump(prob_of_optimal_move, f)
@@ -76,10 +76,11 @@ def plot_policy_degradation():
     plt.xlabel('Temperature')
     plt.ylabel('Probability of optimal move')
     for est in estimators:
-        y = [np.mean(prob_of_optimal_move[t]) for t in temps]
-        plt.plot(temps, y, color=cm.viridis(color_nums[est]))
+        y = [np.mean(prob_of_optimal_move[est][t]) for t in temps]
+        err = [np.std(prob_of_optimal_move[est][t]) for t in temps]
+        plt.errorbar(temps, y, yerr=[err, err], fmt='-o', color=cm.viridis(color_nums[est]))
     plt.xscale('log')
     
-    plt.savefig('policy_degradation.png')
+    plt.savefig('plots/policy_degradation.png')
 
 plot_policy_degradation()
