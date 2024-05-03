@@ -45,6 +45,7 @@ def plot_policy_degradation():
     for i,key in enumerate(keys):
         if all(optimal_moves[key]):
             keys.pop(i)
+    keys = np.random.choice(keys,1000,replace=False)
     serials = [state_counter.serials[key] for key in keys]
     prob_of_optimal_move = {t: [] for t in temps}
     for est in estimators:
@@ -80,3 +81,5 @@ def plot_policy_degradation():
     plt.xscale('log')
     
     plt.savefig('policy_degradation.png')
+
+plot_policy_degradation()
