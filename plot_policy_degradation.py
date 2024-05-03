@@ -36,7 +36,7 @@ def plot_policy_degradation():
         state_counter = pickle.load(f)
     with open('../plot_data/solver/optimal_moves.pkl', "rb") as f:
         optimal_moves = pickle.load(f)
-    print('Plotting loss')
+    print('Plotting policy degradation')
     temps = [0.01, 0.02, 0.04, 0.07, 0.1 , 0.14, 0.2 , 0.25, 0.32, 0.45, 0.6, 0.8 , 1, 1.4 , 2, 3, 5]
     estimators = [3]#[0, 1, 2, 3, 4, 5, 6]
     n_copies = 1
@@ -45,7 +45,7 @@ def plot_policy_degradation():
     for i,key in enumerate(keys):
         if all(optimal_moves[key]):
             keys.pop(i)
-    keys = np.random.choice(keys,1000,replace=False)
+    keys = np.random.choice(keys,100,replace=False)
     serials = [state_counter.serials[key] for key in keys]
     prob_of_optimal_move = {t: [] for t in temps}
     for est in estimators:
