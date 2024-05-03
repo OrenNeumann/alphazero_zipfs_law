@@ -40,12 +40,14 @@ def plot_policy_degradation():
     temps = [0.01, 0.02, 0.04, 0.07, 0.1 , 0.14, 0.2 , 0.25, 0.32, 0.45, 0.6, 0.8 , 1, 1.4 , 2, 3, 5]
     estimators = [0, 1, 2, 3, 4, 5, 6]
     n_copies = 1
+    n_samples = 20
     path = models_path() + game_path('connect_four')
     keys = [key for key,_ in state_counter.frequencies.most_common()]
     for i,key in enumerate(keys):
         if all(optimal_moves[key]):
             keys.pop(i)
-    keys = np.random.choice(keys,100,replace=False)
+    #keys = np.random.choice(keys,n_samples,replace=False)
+    keys = keys[:n_samples]
     serials = [state_counter.serials[key] for key in keys]
     prob_of_optimal_move = {est: {t: [] for t in temps} for est in estimators}
     for est in estimators:
@@ -60,8 +62,8 @@ def plot_policy_degradation():
                     prob_optimal = np.dot(policy, optimal_moves[key])
                     prob_of_optimal_move[est][t].append(prob_optimal)
     
-    with open('../plot_data/solver/temp_probabilities.pkl', 'wb') as f:
-        pickle.dump(prob_of_optimal_move, f)
+    #with open('../plot_data/solver/temp_probabilities.pkl', 'wb') as f:
+    #    pickle.dump(prob_of_optimal_move, f)
 
     par = np.load('src/config/parameter_counts/connect_four.npy')
     log_par = np.log(par)
@@ -77,7 +79,7 @@ def plot_policy_degradation():
     plt.ylabel('Probability of optimal move')
     for est in estimators:
         y = [np.mean(prob_of_optimal_move[est][t]) for t in temps]
-        err = [np.std(prob_of_optimal_move[est][t]) for t in temps]
+        err = [np.std(prob_of_optimal_move[est][t])/np.sqrt(n_samples) for t in temps] # SEM
         plt.errorbar(temps, y, yerr=[err, err], fmt='-o', color=cm.viridis(color_nums[est]))
     plt.xscale('log')
     plt.axvline(x=0.45, color='black', linestyle='--', label='data cutoff')
