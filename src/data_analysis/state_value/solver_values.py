@@ -19,7 +19,7 @@ def connect_four_solver(states: list):
         Hit 'make' and copy the call_solver.sh script into the folder.
         Then download the openings book here: (7x6.book)
         https://github.com/PascalPons/connect4/releases/tag/book
-        and place it in the top directory.
+        and place it in the working directory.
         """
     procs = []
     masks = []
@@ -86,7 +86,7 @@ def solver_values(serial_states: list[str]) -> list[float]:
     return player_0_values
 
 
-def solver_optimal_moves(serial_state: list[str]) -> list[float]:
+def solver_optimal_moves(serial_state: list[str]) -> list[np.array]:
     """
     Returns a mask of optimal moves (all moves that lead to the best possible game outcome).
     If no win/draw is possible, returns True for all moves (including illegal moves!)
