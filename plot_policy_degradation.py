@@ -45,7 +45,7 @@ def plot_policy_degradation():
     for i,key in enumerate(keys):
         if all(optimal_moves[key]):
             keys.pop(i)
-    keys = np.random.choice(keys,20,replace=False)
+    keys = np.random.choice(keys,100,replace=False)
     serials = [state_counter.serials[key] for key in keys]
     prob_of_optimal_move = {est: {t: [] for t in temps} for est in estimators}
     for est in estimators:
@@ -80,7 +80,8 @@ def plot_policy_degradation():
         err = [np.std(prob_of_optimal_move[est][t]) for t in temps]
         plt.errorbar(temps, y, yerr=[err, err], fmt='-o', color=cm.viridis(color_nums[est]))
     plt.xscale('log')
-    
+    plt.axvline(x=0.45, color='black', linestyle='--', label='data cutoff')
+    plt.title('Decrease of policy quality with temperature')
     plt.savefig('plots/policy_degradation.png')
 
 plot_policy_degradation()
