@@ -38,7 +38,7 @@ def plot_policy_degradation():
         optimal_moves = pickle.load(f)
     print('Plotting policy degradation')
     temps = [0.01, 0.02, 0.04, 0.07, 0.1 , 0.14, 0.2 , 0.25, 0.32, 0.45, 0.6, 0.8 , 1, 1.4 , 2, 3, 5]
-    estimators = [0, 1, 2, 3, 4, 5, 6]
+    estimators = [6]#[0, 1, 2, 3, 4, 5, 6]
     n_copies = 1
     n_samples = 20
     path = models_path() + game_path('connect_four')
