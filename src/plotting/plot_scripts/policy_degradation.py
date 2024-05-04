@@ -1,11 +1,8 @@
 import numpy as np
 import pickle
-
-from pyparsing import line
 from src.data_analysis.state_value.solver_values import solver_optimal_moves
 from src.general.general_utils import models_path, game_path
 from src.data_analysis.state_value.value_prediction import get_model_policy_estimator
-from src.plotting.plot_utils import aligned_title
 import matplotlib
 import matplotlib.cm as cm
 import matplotlib.pyplot as plt
@@ -105,8 +102,10 @@ def plot_policy_degradation(load_data=True, res=300):
     plt.xscale('log')
     plt.tick_params(axis='both', which='major', labelsize=tf-2)
 
-    plt.axvline(x=0.45, color='black', linestyle='--', label='data cutoff')
+    plt.axvline(x=0.45, color='black', linestyle='--', label='data cutoff', linewidth=2)
+    plt.text(0.4, 0.1, 'Policy quality\n unaffected', transform=plt.gca().transAxes, fontsize=12, fontweight='bold')
+    plt.text(0.7, 0.1, 'Policy quality\n decreasing', transform=plt.gca().transAxes, fontsize=12, fontweight='bold')
+    plt.legend(fontsize=tf-2)
     plt.title('Decrease of policy quality with temperature', fontsize=tf+4, loc='left')
-    #aligned_title(fig, title='Decrease of policy quality with temperature',font=tf+4)
     fig.tight_layout()
     fig.savefig('./plots/policy_degradation.png', dpi=res)
