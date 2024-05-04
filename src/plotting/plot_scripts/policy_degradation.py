@@ -101,7 +101,7 @@ def plot_policy_degradation(load_data=True, res=300):
         err = [np.std(prob_of_optimal_move[est][t])/np.sqrt(N_SAMPLES) for t in TEMPERATURES] # SEM
         plt.errorbar(TEMPERATURES, y, yerr=[err, err], fmt='-o', color=cm.viridis(color_nums[est]))
     plt.xscale('log')
-    fig.tick_params(axis='both', which='major', labelsize=tf-2)
+    plt.tick_params(axis='both', which='major', labelsize=tf-2)
 
     plt.axvline(x=0.45, color='black', linestyle='--', label='data cutoff')
     #plt.title('Decrease of policy quality with temperature', fontsize=tf+4)
