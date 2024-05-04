@@ -48,6 +48,7 @@ def plot_policy_degradation():
             keys.pop(i)
     #keys = np.random.choice(keys,n_samples,replace=False)
     keys = keys[:n_samples]
+    print(keys)
     serials = [state_counter.serials[key] for key in keys]
     prob_of_optimal_move = {est: {t: [] for t in temps} for est in estimators}
     for est in estimators:
@@ -61,6 +62,8 @@ def plot_policy_degradation():
                 for policy in policies:
                     prob_optimal = np.dot(policy, optimal_moves[key])
                     prob_of_optimal_move[est][t].append(prob_optimal)
+                    print(policy)
+                    print(optimal_moves[key])
     
     #with open('../plot_data/solver/temp_probabilities.pkl', 'wb') as f:
     #    pickle.dump(prob_of_optimal_move, f)
