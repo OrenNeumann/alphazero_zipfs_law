@@ -38,9 +38,9 @@ def plot_policy_degradation():
         optimal_moves = pickle.load(f)
     print('Plotting policy degradation')
     temps = [0.01, 0.02, 0.04, 0.07, 0.1 , 0.14, 0.2 , 0.25, 0.32, 0.45, 0.6, 0.8 , 1, 1.4 , 2, 3, 5]
-    estimators = [6]#[0, 1, 2, 3, 4, 5, 6]
+    estimators = [0, 1, 2, 3, 4, 5, 6]
     n_copies = 1
-    n_samples = 20
+    n_samples = 10
     path = models_path() + game_path('connect_four')
     keys = [key for key,_ in state_counter.frequencies.most_common()]
     for i,key in enumerate(keys):
@@ -59,14 +59,14 @@ def plot_policy_degradation():
             for t in temps:
                 print('Temperature:', t)
                 policies = _get_optimal_policies(path_model, serials, t)
-                for policy in policies:
-                    prob_optimal = np.dot(policy, optimal_moves[key])
+                for i,policy in enumerate(policies):
+                    prob_optimal = np.dot(policy, optimal_moves[keys[i]])
                     prob_of_optimal_move[est][t].append(prob_optimal)
                     print(policy)
                     print(optimal_moves[key])
     
-    #with open('../plot_data/solver/temp_probabilities.pkl', 'wb') as f:
-    #    pickle.dump(prob_of_optimal_move, f)
+    with open('../plot_data/solver/temp_probabilities.pkl', 'wb') as f:
+        pickle.dump(prob_of_optimal_move, f)
 
     par = np.load('src/config/parameter_counts/connect_four.npy')
     log_par = np.log(par)
