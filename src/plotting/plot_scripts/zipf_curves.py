@@ -211,7 +211,7 @@ def plot_temperature_curves(load_data=True, res=300):
     aligned_title(axs[1], r"$\bf{B.}$ Exponent correlation", tf+4)
 
     # plotting all-T data:
-    axin1 = axs[1].inset_axes([0.45, 0.1, 0.55, 0.55])
+    axin1 = axs[1].inset_axes([0.5, 0.1, 0.5, 0.5])
     axin1.scatter(zipf_exponents, elo_exponents, c=cm.plasma(color_nums), s=10)
     axin1.axvline(x=1, color='black', linestyle='--')
     axin1.tick_params(axis='both', which='major', labelsize=tf-4)
