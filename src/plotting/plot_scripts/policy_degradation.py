@@ -82,7 +82,7 @@ def plot_policy_degradation(load_data=True, res=300):
         prob_of_optimal_move = pickle.load(f)
 
     tf =16
-    fig = plt.figure(figsize=(12, 8))
+    fig = plt.figure(figsize=(12, 6))
 
     par = np.load('src/config/parameter_counts/connect_four.npy')
     log_par = np.log(par)
@@ -105,7 +105,7 @@ def plot_policy_degradation(load_data=True, res=300):
     plt.axvline(x=0.45, color='black', linestyle='--', label='Fig. 3 cutoff', linewidth=2)
     plt.text(0.4, 0.1, 'Policy quality\n unaffected', transform=plt.gca().transAxes, fontsize=tf, fontweight='bold')
     plt.text(0.7, 0.1, 'Policy quality\n decreasing', transform=plt.gca().transAxes, fontsize=tf, fontweight='bold')
-    plt.legend(fontsize=tf-2)
+    plt.legend(fontsize=tf)
     plt.title('Decrease of policy quality with temperature', fontsize=tf+4, loc='left')
     fig.tight_layout()
     fig.savefig('./plots/policy_degradation.png', dpi=res)
