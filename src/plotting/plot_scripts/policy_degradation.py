@@ -102,9 +102,9 @@ def plot_policy_degradation(load_data=True, res=300):
     plt.xscale('log')
     plt.tick_params(axis='both', which='major', labelsize=tf-2)
 
-    plt.axvline(x=0.45, color='black', linestyle='--', label='data cutoff', linewidth=2)
-    plt.text(0.4, 0.1, 'Policy quality\n unaffected', transform=plt.gca().transAxes, fontsize=12, fontweight='bold')
-    plt.text(0.7, 0.1, 'Policy quality\n decreasing', transform=plt.gca().transAxes, fontsize=12, fontweight='bold')
+    plt.axvline(x=0.45, color='black', linestyle='--', label='Fig. 3 cutoff', linewidth=2)
+    plt.text(0.4, 0.1, 'Policy quality\n unaffected', transform=plt.gca().transAxes, fontsize=tf, fontweight='bold')
+    plt.text(0.7, 0.1, 'Policy quality\n decreasing', transform=plt.gca().transAxes, fontsize=tf, fontweight='bold')
     plt.legend(fontsize=tf-2)
     plt.title('Decrease of policy quality with temperature', fontsize=tf+4, loc='left')
     fig.tight_layout()
