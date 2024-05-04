@@ -1,5 +1,7 @@
 import numpy as np
 import pickle
+
+from pyparsing import line
 from src.data_analysis.state_value.solver_values import solver_optimal_moves
 from src.general.general_utils import models_path, game_path
 from src.data_analysis.state_value.value_prediction import get_model_policy_estimator
@@ -82,7 +84,7 @@ def plot_policy_degradation(load_data=True, res=300):
     with open('../plot_data/solver/temp_probabilities.pkl', 'rb') as f:
         prob_of_optimal_move = pickle.load(f)
 
-    tf =12
+    tf =16
     fig = plt.figure(figsize=(12, 8))
 
     par = np.load('src/config/parameter_counts/connect_four.npy')
@@ -99,7 +101,7 @@ def plot_policy_degradation(load_data=True, res=300):
     for est in ESTIMATORS:
         y = [np.mean(prob_of_optimal_move[est][t]) for t in TEMPERATURES]
         err = [np.std(prob_of_optimal_move[est][t])/np.sqrt(N_SAMPLES) for t in TEMPERATURES] # SEM
-        plt.errorbar(TEMPERATURES, y, yerr=[err, err], fmt='-o', color=cm.viridis(color_nums[est]))
+        plt.errorbar(TEMPERATURES, y, yerr=[err, err], fmt='-o', color=cm.viridis(color_nums[est]), linewidth=2, markersize=8)
     plt.xscale('log')
     plt.tick_params(axis='both', which='major', labelsize=tf-2)
 
