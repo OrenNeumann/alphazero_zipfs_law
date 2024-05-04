@@ -5,7 +5,7 @@ from src.plotting.plot_scripts.elo_curves import plot_scaling_failure
 from src.plotting.plot_scripts import board_positions as board
 from src.plotting.plot_scripts.zipf_law_theory import plot_zipf_law_theory
 from src.plotting.plot_scripts.zipf_curves import plot_zipf_curves, plot_temperature_curves
-from plotting.plot_scripts.policy_degradation import plot_policy_degradation
+from src.plotting.plot_scripts.policy_degradation import plot_policy_degradation
 
 """
 Re-create all plots from the paper.
