@@ -1,0 +1,105 @@
+import numpy as np
+import pickle
+from src.data_analysis.state_value.solver_values import solver_optimal_moves
+from src.general.general_utils import models_path, game_path
+from src.data_analysis.state_value.value_prediction import get_model_policy_estimator
+import matplotlib
+import matplotlib.cm as cm
+import matplotlib.pyplot as plt
+from tqdm import tqdm
+
+"""
+Plot the effect of temperature on agent's strategy quality.
+Calculates the probability that an agent takes an optimal move.
+Using the same states from plot_solver_value_loss.py
+(run plot_solver_value_loss.py first)
+"""
+
+TEMPERATURES = [0.01, 0.02, 0.04, 0.07, 0.1 , 0.14, 0.2 , 0.25, 0.32, 0.45, 0.6, 0.8 , 1, 1.4 , 2, 3, 5]
+ESTIMATORS = [0, 1, 2, 3, 4, 5, 6]
+N_SAMPLES = 200
+
+
+def save_optimal_moves():
+    print('Calculating optimal policies.')
+    with open('../plot_data/solver/state_counter.pkl', 'rb') as f:
+        state_counter = pickle.load(f)
+    chunk_size = 100
+    optimal_moves = dict()
+    all_keys = [key for key,_ in state_counter.frequencies.most_common()]
+    all_keys = all_keys[:N_SAMPLES*100]
+    for i in tqdm(range(0, len(state_counter.frequencies), chunk_size), desc="Estimating optimal moves"):
+        keys = all_keys[i:i+chunk_size]
+        vals = solver_optimal_moves([state_counter.serials[key] for key in keys])
+        optimal_moves.update({key: val for key, val in zip(keys, vals)})
+    with open('../plot_data/solver/optimal_moves.pkl', 'wb') as f:
+        pickle.dump(optimal_moves, f)
+
+
+def _get_optimal_policies(path_model, serials, temperature):
+    model_policies = get_model_policy_estimator('connect_four', path_model)
+    return model_policies(serials, temperature=temperature)
+
+
+def save_agent_probs():
+    print('Calculating agent probabilities')
+    with open('../plot_data/solver/state_counter.pkl', "rb") as f:
+        state_counter = pickle.load(f)
+    with open('../plot_data/solver/optimal_moves.pkl', "rb") as f:
+        optimal_moves = pickle.load(f)
+    n_copies = 1
+    path = models_path() + game_path('connect_four')
+    keys = [key for key,_ in state_counter.frequencies.most_common()]
+    for i,key in enumerate(keys):
+        if all(optimal_moves[key]):
+            keys.pop(i)
+    keys = keys[:N_SAMPLES]
+    serials = [state_counter.serials[key] for key in keys]
+    prob_of_optimal_move = {est: {t: [] for t in TEMPERATURES} for est in ESTIMATORS}
+    for est in ESTIMATORS:
+        for copy in range(n_copies):
+            model_name = f'q_{est}_{copy}'
+            print(model_name)
+            path_model = path + model_name + '/'
+            for t in TEMPERATURES:
+                print('Temperature:', t)
+                policies = _get_optimal_policies(path_model, serials, t)
+                for i,policy in enumerate(policies):
+                    prob_optimal = np.dot(policy, optimal_moves[keys[i]])
+                    prob_of_optimal_move[est][t].append(prob_optimal)
+    with open('../plot_data/solver/temp_probabilities.pkl', 'wb') as f:
+        pickle.dump(prob_of_optimal_move, f)
+
+
+def plot_policy_degradation(load_data=True, res=300):
+    if not load_data:
+        save_optimal_moves()
+        save_agent_probs()
+    with open('../plot_data/solver/temp_probabilities.pkl', 'rb') as f:
+        prob_of_optimal_move = pickle.load(f)
+
+    tf =12
+    fig = plt.figure(figsize=(12, 8))
+
+    par = np.load('src/config/parameter_counts/connect_four.npy')
+    log_par = np.log(par)
+    color_nums = (log_par - log_par.min()) / (log_par.max() - log_par.min())
+    norm = matplotlib.colors.LogNorm(vmin=par.min(), vmax=par.max())
+    sm = matplotlib.cm.ScalarMappable(cmap=plt.get_cmap('viridis'), norm=norm)
+    cbar = plt.colorbar(sm)
+    cbar.ax.tick_params(labelsize=tf)
+    cbar.ax.set_ylabel('Parameters', rotation=90, fontsize=tf)
+
+    fig.xlabel('Temperature', fontsize=tf)
+    fig.ylabel('Probability of optimal move', fontsize=tf)
+    for est in ESTIMATORS:
+        y = [np.mean(prob_of_optimal_move[est][t]) for t in TEMPERATURES]
+        err = [np.std(prob_of_optimal_move[est][t])/np.sqrt(N_SAMPLES) for t in TEMPERATURES] # SEM
+        plt.errorbar(TEMPERATURES, y, yerr=[err, err], fmt='-o', color=cm.viridis(color_nums[est]))
+    fig.set_xscale('log')
+    fig.tick_params(axis='both', which='major', labelsize=tf-2)
+
+    fig.axvline(x=0.45, color='black', linestyle='--', label='data cutoff')
+    fig.title('Decrease of policy quality with temperature', fontsize=tf)
+    fig.tight_layout()
+    fig.savefig('./plots/policy_degradation.png', dpi=res)
