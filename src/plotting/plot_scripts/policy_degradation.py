@@ -72,6 +72,7 @@ def save_agent_probs():
 
 
 def plot_policy_degradation(load_data=True, res=300):
+    print('~~~~~~~~~~~~~~~~~~~ Plotting policy degradation with temperature (appendix) ~~~~~~~~~~~~~~~~~~~')
     if not load_data:
         save_optimal_moves()
         save_agent_probs()
@@ -90,16 +91,16 @@ def plot_policy_degradation(load_data=True, res=300):
     cbar.ax.tick_params(labelsize=tf)
     cbar.ax.set_ylabel('Parameters', rotation=90, fontsize=tf)
 
-    fig.xlabel('Temperature', fontsize=tf)
-    fig.ylabel('Probability of optimal move', fontsize=tf)
+    plt.xlabel('Temperature', fontsize=tf)
+    plt.ylabel('Probability of optimal move', fontsize=tf)
     for est in ESTIMATORS:
         y = [np.mean(prob_of_optimal_move[est][t]) for t in TEMPERATURES]
         err = [np.std(prob_of_optimal_move[est][t])/np.sqrt(N_SAMPLES) for t in TEMPERATURES] # SEM
         plt.errorbar(TEMPERATURES, y, yerr=[err, err], fmt='-o', color=cm.viridis(color_nums[est]))
-    fig.set_xscale('log')
+    plt.set_xscale('log')
     fig.tick_params(axis='both', which='major', labelsize=tf-2)
 
-    fig.axvline(x=0.45, color='black', linestyle='--', label='data cutoff')
-    fig.title('Decrease of policy quality with temperature', fontsize=tf)
+    plt.axvline(x=0.45, color='black', linestyle='--', label='data cutoff')
+    plt.title('Decrease of policy quality with temperature', fontsize=tf)
     fig.tight_layout()
     fig.savefig('./plots/policy_degradation.png', dpi=res)
