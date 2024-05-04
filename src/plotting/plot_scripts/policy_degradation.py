@@ -104,7 +104,7 @@ def plot_policy_degradation(load_data=True, res=300):
     plt.tick_params(axis='both', which='major', labelsize=tf-2)
 
     plt.axvline(x=0.45, color='black', linestyle='--', label='data cutoff')
-    #plt.title('Decrease of policy quality with temperature', fontsize=tf+4)
-    aligned_title(fig, title='Decrease of policy quality with temperature',font=tf+4)
+    plt.title('Decrease of policy quality with temperature', fontsize=tf+4, loc='left'))
+    #aligned_title(fig, title='Decrease of policy quality with temperature',font=tf+4)
     fig.tight_layout()
     fig.savefig('./plots/policy_degradation.png', dpi=res)
