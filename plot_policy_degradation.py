@@ -63,7 +63,7 @@ def plot_policy_degradation():
                     prob_optimal = np.dot(policy, optimal_moves[keys[i]])
                     prob_of_optimal_move[est][t].append(prob_optimal)
                     print(policy)
-                    print(optimal_moves[key])
+                    print(optimal_moves[keys[i]])
     
     with open('../plot_data/solver/temp_probabilities.pkl', 'wb') as f:
         pickle.dump(prob_of_optimal_move, f)
