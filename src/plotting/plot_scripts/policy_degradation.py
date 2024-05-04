@@ -3,10 +3,12 @@ import pickle
 from src.data_analysis.state_value.solver_values import solver_optimal_moves
 from src.general.general_utils import models_path, game_path
 from src.data_analysis.state_value.value_prediction import get_model_policy_estimator
+from src.plotting.plot_utils import aligned_title
 import matplotlib
 import matplotlib.cm as cm
 import matplotlib.pyplot as plt
 from tqdm import tqdm
+import scienceplots
 
 """
 Plot the effect of temperature on agent's strategy quality.
@@ -15,6 +17,7 @@ Using the same states from plot_solver_value_loss.py
 (run plot_solver_value_loss.py first)
 """
 
+plt.style.use(['science','nature'])
 TEMPERATURES = [0.01, 0.02, 0.04, 0.07, 0.1 , 0.14, 0.2 , 0.25, 0.32, 0.45, 0.6, 0.8 , 1, 1.4 , 2, 3, 5]
 ESTIMATORS = [0, 1, 2, 3, 4, 5, 6]
 N_SAMPLES = 200
@@ -97,10 +100,11 @@ def plot_policy_degradation(load_data=True, res=300):
         y = [np.mean(prob_of_optimal_move[est][t]) for t in TEMPERATURES]
         err = [np.std(prob_of_optimal_move[est][t])/np.sqrt(N_SAMPLES) for t in TEMPERATURES] # SEM
         plt.errorbar(TEMPERATURES, y, yerr=[err, err], fmt='-o', color=cm.viridis(color_nums[est]))
-    plt.set_xscale('log')
+    plt.xscale('log')
     fig.tick_params(axis='both', which='major', labelsize=tf-2)
 
     plt.axvline(x=0.45, color='black', linestyle='--', label='data cutoff')
-    plt.title('Decrease of policy quality with temperature', fontsize=tf)
+    #plt.title('Decrease of policy quality with temperature', fontsize=tf+4)
+    aligned_title(fig, title='Decrease of policy quality with temperature',font=tf+4)
     fig.tight_layout()
     fig.savefig('./plots/policy_degradation.png', dpi=res)
