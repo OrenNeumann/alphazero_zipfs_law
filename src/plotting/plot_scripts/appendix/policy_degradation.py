@@ -94,7 +94,7 @@ def plot_policy_degradation(load_data=True, res=300):
     cbar.ax.set_ylabel('Parameters', rotation=90, fontsize=tf)
 
     plt.xlabel('Temperature', fontsize=tf)
-    plt.ylabel('Probability of optimal move', fontsize=tf)
+    plt.ylabel('Probability to play an optimal move', fontsize=tf)
     for est in ESTIMATORS:
         y = [np.mean(prob_of_optimal_move[est][t]) for t in TEMPERATURES]
         err = [np.std(prob_of_optimal_move[est][t])/np.sqrt(N_SAMPLES) for t in TEMPERATURES] # SEM
@@ -102,9 +102,9 @@ def plot_policy_degradation(load_data=True, res=300):
     plt.xscale('log')
     plt.tick_params(axis='both', which='major', labelsize=tf-2)
 
-    plt.axvline(x=0.45, color='black', linestyle='--', label='Fig. 3 cutoff', linewidth=2)
-    plt.text(0.4, 0.1, 'Policy quality\n unaffected', transform=plt.gca().transAxes, fontsize=tf, fontweight='bold')
-    plt.text(0.7, 0.1, 'Policy quality\n decreasing', transform=plt.gca().transAxes, fontsize=tf, fontweight='bold')
+    plt.axvline(x=0.45, color='black', linestyle='--', label='Fig. 3 B cutoff', linewidth=2)
+    plt.text(0.4, 0.1, 'Policy quality\n unaffected', transform=plt.gca().transAxes, fontsize=tf, weight='bold')
+    plt.text(0.65, 0.1, 'Policy quality\n decreasing', transform=plt.gca().transAxes, fontsize=tf, weight='bold')
     plt.legend(fontsize=tf)
     plt.title('Decrease of policy quality with temperature', fontsize=tf+4, loc='left')
     fig.tight_layout()

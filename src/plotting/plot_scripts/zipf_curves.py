@@ -205,13 +205,13 @@ def plot_temperature_curves(load_data=True, res=300):
     axs[1].plot(zipf_exponents[indices], elo_exponents[indices],  
                     markersize=0, linestyle='--', color='gray')
     axs[1].scatter(zipf_exponents[indices], elo_exponents[indices], c=cm.plasma(color_nums[indices]), s=60)
-    axs[1].set_xlabel('Zipf exponent',fontsize=tf)
+    axs[1].set_xlabel('Zipf exponent (tail)',fontsize=tf)
     axs[1].set_ylabel('Elo exponent',fontsize=tf)
     axs[1].tick_params(axis='both', which='major', labelsize=tf-2)
     aligned_title(axs[1], r"$\bf{B.}$ Exponent correlation", tf+4)
 
     # plotting all-T data:
-    axin1 = axs[1].inset_axes([0.6, 0.1, 0.4, 0.4])
+    axin1 = axs[1].inset_axes([0.45, 0.1, 0.55, 0.55])
     axin1.scatter(zipf_exponents, elo_exponents, c=cm.plasma(color_nums), s=10)
     axin1.axvline(x=1, color='black', linestyle='--')
     axin1.tick_params(axis='both', which='major', labelsize=tf-4)
