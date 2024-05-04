@@ -24,6 +24,6 @@ res = 50
 
 # Appendix:
 #plot_zipf_curves(load_data=True, res=50)
-plot_policy_degradation(load_data=True, res=300)
+plot_policy_degradation(load_data=True, res=50)
 #board.plot_oware(res=50)
 #board.plot_checkers(res=50)
