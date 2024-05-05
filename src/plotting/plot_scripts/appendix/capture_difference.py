@@ -17,35 +17,37 @@ def plot_capture_differences(load_data=True,res=300):
     print('~~~~~~~~~~~~~~~~~~~ Plotting capture difference (appendix) ~~~~~~~~~~~~~~~~~~~')
     tf =12
     fig, axs = plt.subplots(1, 2, figsize=(12, 4))
-    env = 'oware'
-    env = 'checkers'
+    envs = ['oware', 'checkers']
 
 
     if not load_data:
-        _generate_states(env)
+        for env in envs:
+            _generate_states(env)
 
-    ax = axs[0]
+    
+    for i, env in enumerate(envs):
+        ax = axs[i]
+        with open(f'../plot_data/capture_diff/{env}_counter.pkl', 'rb') as f:
+            state_counter = pickle.load(f)
 
-    with open(f'../plot_data/capture_diff/{env}_counter.pkl', 'rb') as f:
-        state_counter = pickle.load(f)
+        diff_counter = _get_diff_counter(state_counter, env)
+        x, y = _get_curve(diff_counter)
+        ax.plot(x, y,color='dodgerblue', label='All states', linewidth=3)
 
-    diff_counter = _get_diff_counter(state_counter, env)
-    x, y = _get_curve(diff_counter)
-    ax.plot(x, y,color='dodgerblue', label='All states')
+        print('Plotting pruned capture difference:')
+        state_counter.prune_low_frequencies(10)
+        diff_counter = _get_diff_counter(state_counter, env)
+        x, y = _get_curve(diff_counter)
+        ax.plot(x, y, color='gold', label='Only high-frequency states', linewidth=3)
 
-    print('Plotting pruned capture difference:')
-    state_counter.prune_low_frequencies(10)
-    diff_counter = _get_diff_counter(state_counter, env)
-    x, y = _get_curve(diff_counter)
-    ax.plot(x, y, color='gold', label='Only high-frequency states', linewidth=2)
-
-    #ax.set_xscale('log')
-    ax.set_yscale('log')
-    ax.set_xlabel('Capture difference',fontsize=tf)
-    ax.set_ylabel('Frequency',fontsize=tf)
-    ax.tick_params(axis='both', which='major', labelsize=tf-2)
-    ax.legend(fontsize=tf-2, loc='upper right')
-    aligned_title(axs[0], r"$\bf{A.}$ Oware", tf+4)
+        #ax.set_xscale('log')
+        ax.set_yscale('log')
+        ax.set_xlabel('Capture difference',fontsize=tf)
+        ax.set_ylabel('Frequency',fontsize=tf)
+        ax.tick_params(axis='both', which='major', labelsize=tf-2)
+        ax.legend(fontsize=tf-2, loc='upper right')
+    aligned_title(axs[0], r"$\bf{A.}$ Oware capture distribution", tf+4)
+    aligned_title(axs[1], r"$\bf{B.}$ Checkers capture distribution", tf+4)
     
     fig.tight_layout()
     fig.savefig('./plots/capture_difference.png', dpi=res)
