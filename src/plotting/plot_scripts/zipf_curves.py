@@ -80,7 +80,7 @@ def plot_main_zipf_curves(res=300):
         x = np.arange(len(y)) + 1
         plt.scatter(x, y, color=colors[i])
         x_fit, y_fit, equation = _fit_power_law(y, True, env)
-        labels[i] = equation
+        labels.append(equation)
         if env == 'connect_four':
             equation = 'Connect Four: ' +equation
         else:
