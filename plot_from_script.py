@@ -12,7 +12,7 @@ from src.plotting.plot_scripts.appendix.capture_difference import plot_capture_d
 Re-create all plots from the paper.
 If 'load_data' is False, generates all the plot data from scratch. This will take a while.
 """
-load_data = True
+load_data = False
 res = 50
 
 # Main paper:

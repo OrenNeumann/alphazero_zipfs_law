@@ -1,5 +1,4 @@
 from collections import Counter
-import re
 import numpy as np
 import pickle
 from src.data_analysis.gather_agent_data import gather_data
@@ -19,6 +18,8 @@ def plot_capture_differences(load_data=True,res=300):
     tf =12
     fig, axs = plt.subplots(1, 2, figsize=(12, 4))
     env = 'oware'
+    env = 'checkers'
+
 
     if not load_data:
         _generate_states(env)
@@ -36,13 +37,14 @@ def plot_capture_differences(load_data=True,res=300):
     state_counter.prune_low_frequencies(10)
     diff_counter = _get_diff_counter(state_counter, env)
     x, y = _get_curve(diff_counter)
-    ax.plot(x, y, color='gold', label='Only high-frequency states')
+    ax.plot(x, y, color='gold', label='Only high-frequency states', linewidth=2)
 
     #ax.set_xscale('log')
     ax.set_yscale('log')
     ax.set_xlabel('Capture difference',fontsize=tf)
     ax.set_ylabel('Frequency',fontsize=tf)
     ax.tick_params(axis='both', which='major', labelsize=tf-2)
+    ax.legend(fontsize=tf-2, loc='upper right')
     aligned_title(axs[0], r"$\bf{A.}$ Oware", tf+4)
     
     fig.tight_layout()
@@ -53,12 +55,6 @@ def _get_curve(diff_counter):
     y = list(diff_counter.values())
     # sort by x
     x, y = zip(*sorted(zip(x, y)))
-    return x, y
-    x=[]
-    y=[]
-    for key, count in diff_counter.most_common():
-        x.append(key)
-        y.append(count)
     return x, y
 
 def _get_diff_counter(counter, env):
@@ -76,6 +72,9 @@ def _capture_diff(state_str, env):
     if env == 'oware':
         score_x = int(state_str.split('\n')[0][17:19])
         score_o = int(state_str.split('\n')[-2][17:19])
+    elif env == 'checkers':
+        score_x = state_str.count('o') + state_str.count('8') -1
+        score_o = state_str.count('+') + state_str.count('*')
     else:
         raise NameError('Environment '+ env + 'not supported')
     return np.abs(score_x - score_o), score_x+score_o
