@@ -1,4 +1,5 @@
 from collections import Counter
+import re
 import numpy as np
 import pickle
 from src.data_analysis.gather_agent_data import gather_data
@@ -37,7 +38,7 @@ def plot_capture_differences(load_data=True,res=300):
     x, y = _get_curve(diff_counter)
     ax.plot(x, y, color='gold', label='Only high-frequency states')
 
-    ax.set_xscale('log')
+    #ax.set_xscale('log')
     ax.set_yscale('log')
     ax.set_xlabel('Capture difference',fontsize=tf)
     ax.set_ylabel('Frequency',fontsize=tf)
@@ -48,6 +49,11 @@ def plot_capture_differences(load_data=True,res=300):
     fig.savefig('./plots/capture_difference.png', dpi=res)
 
 def _get_curve(diff_counter):
+    x = list(diff_counter.keys())
+    y = list(diff_counter.values())
+    # sort by x
+    x, y = zip(*sorted(zip(x, y)))
+    return x, y
     x=[]
     y=[]
     for key, count in diff_counter.most_common():
