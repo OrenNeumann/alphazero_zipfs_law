@@ -70,7 +70,7 @@ def plot_main_zipf_curves(res=300):
     print('~~~~~~~~~~~~~~~~~~~ Plotting Zipf curves (main paper) ~~~~~~~~~~~~~~~~~~~')
     envs = ['connect_four', 'pentago']
     colors = ['#377eb8', '#984ea3']
-    tf =22
+    tf =25
     fig = plt.figure(figsize=(12, 8))
     labels = []
     for i, env in enumerate(tqdm(envs,desc='Plotting Zipf curves')):
