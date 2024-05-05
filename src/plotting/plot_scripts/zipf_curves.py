@@ -70,8 +70,8 @@ def plot_main_zipf_curves(res=300):
     print('~~~~~~~~~~~~~~~~~~~ Plotting Zipf curves (main paper) ~~~~~~~~~~~~~~~~~~~')
     envs = ['connect_four', 'pentago']
     colors = ['#377eb8', '#984ea3']
-    tf =16
-    fig = plt.figure(figsize=(12, 6))
+    tf =18
+    fig = plt.figure(figsize=(12, 8))
     for i, env in enumerate(tqdm(envs,desc='Plotting Zipf curves')):
         with open(f'../plot_data/zipf_curves/zipf_curves_{env}.pkl', 'rb') as f:
             zipf_curves = pickle.load(f)
