@@ -66,7 +66,36 @@ def _plot_curve(ax, y, env, xlabel=False, ylabel=False, tf=12):
     ax.legend(fontsize=tf-2, loc='upper right')
 
 
-def plot_zipf_curves(load_data=True, res=300):
+def plot_main_zipf_curves(res=300):
+    print('~~~~~~~~~~~~~~~~~~~ Plotting Zipf curves (main paper) ~~~~~~~~~~~~~~~~~~~')
+    envs = ['connect_four', 'pentago']
+    colors = ['#377eb8', '#984ea3']
+    tf =16
+    fig = plt.figure(figsize=(12, 6))
+    for i, env in enumerate(tqdm(envs,desc='Plotting Zipf curves')):
+        with open(f'../plot_data/zipf_curves/zipf_curves_{env}.pkl', 'rb') as f:
+            zipf_curves = pickle.load(f)
+        y = zipf_curves['combined']
+        x = np.arange(len(y)) + 1
+        plt.scatter(x, y, color=colors[i])
+        x_fit, y_fit, equation = _fit_power_law(y, True, env)
+        if env == 'connect_four':
+            equation = 'Connect Four: ' +equation
+        else:
+            equation = 'Pentago: ' +equation
+        plt.plot(x_fit, y_fit, color='black', linewidth=1.5, label=equation)
+        plt.xscale('log')
+        plt.yscale('log')
+        plt.tick_params(axis='both', which='major', labelsize=tf-2)
+    plt.xlabel('State rank',fontsize=tf)
+    plt.ylabel('Frequency',fontsize=tf)
+    plt.legend(fontsize=tf-2, loc='upper right')
+    fig.tight_layout()
+    print('Saving figure (can take a while)...')
+    fig.savefig('plots/main_zipf_curves.png', dpi=res)
+
+
+def plot_appendix_zipf_curves(load_data=True, res=300):
     print('~~~~~~~~~~~~~~~~~~~ Plotting Zipf curves (appendix) ~~~~~~~~~~~~~~~~~~~')
     models = ['q_0_0', 'q_2_0', 'q_4_0', 'q_6_0']
     envs = ['connect_four', 'pentago', 'oware', 'checkers']
@@ -93,7 +122,7 @@ def plot_zipf_curves(load_data=True, res=300):
         aligned_title(axs[i,0], titles[i], tf)
     fig.tight_layout()
     print('Saving figure (can take a while)...')
-    fig.savefig('plots/zipf_curves.png', dpi=res)
+    fig.savefig('plots/appendix_zipf_curves.png', dpi=res)
 
 
 def _generate_temperature_zipf_curves(k):
