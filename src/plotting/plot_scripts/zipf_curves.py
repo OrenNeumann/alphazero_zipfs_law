@@ -78,22 +78,16 @@ def plot_main_zipf_curves(res=300):
             zipf_curves = pickle.load(f)
         y = zipf_curves['combined']
         x = np.arange(len(y)) + 1
-        plt.scatter(x, y, color=colors[i])
+        plt.scatter(x, y, color=colors[i], s=15)
         x_fit, y_fit, equation = _fit_power_law(y, True, env)
         labels.append(equation)
-        if env == 'connect_four':
-            equation = 'Connect Four: ' +equation
-        else:
-            equation = 'Pentago: ' +equation
-        plt.plot(x_fit, y_fit, color='black', linewidth=1.5, label=equation)
+        plt.plot(x_fit, y_fit, color='black', linewidth=1.5)
         plt.xscale('log')
         plt.yscale('log')
         plt.tick_params(axis='both', which='major', labelsize=tf-2)
     loc1 = np.array([10**4, 4*10**2])
-    plt.annotate('Connect Four: ' + labels[0], xy=loc1, xytext=loc1*10, 
-                 arrowprops=dict(arrowstyle='->'), fontsize=tf-2)
-    plt.annotate('Pentago: ' + labels[1], xy=(0.5, 0.5), xycoords='axes fraction', xytext=(0.2, 0.2), textcoords='axes fraction',
-                 arrowprops=dict(arrowstyle='->'), fontsize=tf-2)
+    plt.annotate('Connect Four: ' + labels[0], xy=loc1, xytext=loc1*10, arrowprops=dict(arrowstyle='->'), fontsize=tf)
+    plt.annotate('Pentago: ' + labels[1], xy=[10**3, 4*10**2], xytext=[10**3/3, 4*10**2/10], arrowprops=dict(arrowstyle='->'), fontsize=tf)
     plt.xlabel('State rank',fontsize=tf)
     plt.ylabel('Frequency',fontsize=tf)
     #plt.legend(fontsize=tf-2, loc='upper right')
