@@ -28,4 +28,4 @@ res = 50
 #plot_policy_degradation(load_data, res=50)
 #board.plot_oware(res=50)
 #board.plot_checkers(res=50)
-plot_capture_differences(load_data, res=300)
+plot_capture_differences(load_data, res)
