@@ -23,7 +23,7 @@ res = 50
 #plot_appendix_zipf_curves(load_data, res=50) # Generates data for plot_main_zipf_curves
 
 # Main paper:
-plot_main_zipf_curves(res=300)
+#plot_main_zipf_curves(res=300)
 #plot_zipf_law_theory(load_data, res=50)
 #plot_temperature_curves(load_data, res=100)
 #connect4_loss_plots(load_data, res=50)
