@@ -116,7 +116,8 @@ def plot_zipf_law_theory(load_data=True, res=300):
 def _policy_theory_curve(ax, tf, branch_prob):
     pB = branch_prob
     max_game_length = 20
-    for i in range(8): #8
+    iterations = 10 #8
+    for i in range(iterations):
         state_probs = [1.0] 
         all_states = [] 
         n_turns = max_game_length - i*2
@@ -131,7 +132,7 @@ def _policy_theory_curve(ax, tf, branch_prob):
 
         x = np.arange(len(all_states)) + 1
         y = all_states
-        color = (n_turns - max_game_length + 8*2) / (8*2)
+        color = (n_turns - max_game_length + iterations*2) / (iterations*2)
         ax.scatter(x, y, s=3.0, color=cm.cividis(color))
         if i==0:
             # Fit:
@@ -155,14 +156,16 @@ def plot_appendix_theory_zipf(res=300):
     tf =14
     # Create figure and subplots
     fig, axes = plt.subplots(nrows=1, ncols=2, figsize=(12, 4))
-    max_game_length = 20
-    norm = matplotlib.colors.Normalize(vmin=max_game_length- 2*8, vmax=max_game_length)
+    max_game_length = 24
+    norm = matplotlib.colors.Normalize(vmin=max_game_length- 2*10, vmax=max_game_length)
     sm = matplotlib.cm.ScalarMappable(cmap=plt.get_cmap('cividis'), norm=norm)
     cbar = fig.colorbar(sm, ax=axes[1])
     cbar.ax.tick_params(labelsize=tf)
     cbar.ax.set_ylabel('Game length', rotation=90, fontsize=tf)
+    print('Calculating first curve...')
     _policy_theory_curve(axes[0],tf,0.7)
     aligned_title(axes[0], title=r'$\bf{A.}$ Lightly-skewed policy, $\boldsymbol{p}=(0.7,0.3)$',font=tf+2)
+    print('Calculating second curve...')
     _policy_theory_curve(axes[1],tf,0.95)
     aligned_title(axes[1], title=r'$\bf{B.}$ Heavily-skewed policy, $\boldsymbol{p}=(0.95,0.05)$',font=tf+2)
 
