@@ -112,11 +112,6 @@ def plot_zipf_law_theory(load_data=True, res=300):
     fig.tight_layout()
     fig.savefig('plots/theory.png', dpi=res)
 
-    
-import numpy as np
-import matplotlib
-import matplotlib.cm as cm
-import matplotlib.pyplot as plt
 
 def _policy_theory_curve(ax, tf, branch_prob):
     pB = branch_prob
@@ -150,7 +145,7 @@ def _policy_theory_curve(ax, tf, branch_prob):
     ax.set_xlabel('State rank',fontsize=tf)
     ax.set_ylabel('Frequency',fontsize=tf)
     ax.tick_params(axis='both', which='major', labelsize=tf-2)
-    ax.legend(fontsize=tf-2)
+    ax.legend(fontsize=tf)
 
 
 def plot_appendix_theory_zipf(res=300):  
@@ -167,9 +162,10 @@ def plot_appendix_theory_zipf(res=300):
     cbar.ax.tick_params(labelsize=tf)
     cbar.ax.set_ylabel('Game length', rotation=90, fontsize=tf)
     _policy_theory_curve(axes[0],tf,0.7)
-    aligned_title(axes[0], title=r'$\bf{A.}$ Lightly-skewed policy, $\boldsymbol{p}=(0.7,0.3)$',font=tf+4)
+    aligned_title(axes[0], title=r'$\bf{A.}$ Lightly-skewed policy, $\boldsymbol{p}=(0.7,0.3)$',font=tf+2)
     _policy_theory_curve(axes[1],tf,0.95)
-    aligned_title(axes[1], title=r'$\bf{B.}$ Heavily-skewed policy, $\boldsymbol{p}=(0.95,0.05)$',font=tf+4)
+    aligned_title(axes[1], title=r'$\bf{B.}$ Heavily-skewed policy, $\boldsymbol{p}=(0.95,0.05)$',font=tf+2)
 
     fig.tight_layout()
+    print('Saving...')
     fig.savefig('plots/appendix_zipf_theory.png', dpi=res)
