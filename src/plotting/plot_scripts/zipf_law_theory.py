@@ -172,3 +172,4 @@ def plot_appendix_theory_zipf(res=300):
     fig.tight_layout()
     print('Saving...')
     fig.savefig('plots/appendix_zipf_theory.png', dpi=res)
+    fig.savefig('plots/appendix_zipf_theory2.png', dpi=70)
