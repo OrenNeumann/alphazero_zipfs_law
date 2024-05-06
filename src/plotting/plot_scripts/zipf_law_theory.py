@@ -1,4 +1,6 @@
 import numpy as np
+import matplotlib
+import matplotlib.cm as cm
 import matplotlib.pyplot as plt
 import scienceplots
 import pickle
@@ -110,4 +112,64 @@ def plot_zipf_law_theory(load_data=True, res=300):
     fig.tight_layout()
     fig.savefig('plots/theory.png', dpi=res)
 
+    
+import numpy as np
+import matplotlib
+import matplotlib.cm as cm
+import matplotlib.pyplot as plt
 
+def _policy_theory_curve(ax, tf, branch_prob):
+    pB = branch_prob
+    max_game_length = 20
+    for i in range(8): #8
+        state_probs = [1.0] 
+        all_states = [] 
+        n_turns = max_game_length - i*2
+        for turn in range(n_turns): 
+            branch_A = [pB *p for p in state_probs]
+            branch_B = [(1.0-pB)*p for p in state_probs]
+            state_probs = branch_A + branch_B
+            all_states += state_probs
+        all_states = [p for p in all_states if p >= 10**(-10)]
+
+        all_states.sort(reverse = True)
+
+        x = np.arange(len(all_states)) + 1
+        y = all_states
+        color = (n_turns - max_game_length + 8*2) / (8*2)
+        ax.scatter(x, y, s=3.0, color=cm.cividis(color))
+        if i==0:
+            # Fit:
+            m =-1.
+            c = np.log10(max(y)) + 0.3
+            y_fit = 10 ** c * np.array(x) ** m
+            ax.plot(x, y_fit, "black", markersize=1.0, label=r'$\alpha = 1$')
+
+    ax.set_xscale('log')
+    ax.set_yscale('log')
+    ax.set_xlabel('State rank',fontsize=tf)
+    ax.set_ylabel('Frequency',fontsize=tf)
+    ax.tick_params(axis='both', which='major', labelsize=tf-2)
+    ax.legend(fontsize=tf-2)
+
+
+def plot_appendix_theory_zipf(res=300):  
+    """ Plot frequency curves for an exponentially branching tree, with different policies."""
+    print('~~~~~~~~~~~~~~~~~~~ Plotting Zipf law theory (appendix) ~~~~~~~~~~~~~~~~~~~')
+
+    tf =14
+    # Create figure and subplots
+    fig, axes = plt.subplots(nrows=1, ncols=2, figsize=(12, 4))
+    max_game_length = 20
+    norm = matplotlib.colors.Normalize(vmin=max_game_length- 2*8, vmax=max_game_length)
+    sm = matplotlib.cm.ScalarMappable(cmap=plt.get_cmap('cividis'), norm=norm)
+    cbar = fig.colorbar(sm, ax=axes[1])
+    cbar.ax.tick_params(labelsize=tf)
+    cbar.ax.set_ylabel('Game length', rotation=90, fontsize=tf)
+    _policy_theory_curve(axes[0],tf,0.7)
+    aligned_title(axes[0], title=r'$\bf{A.}$ Lightly-skewed policy, $\boldsymbol{p}=(0.7,0.3)$',font=tf+4)
+    _policy_theory_curve(axes[1],tf,0.95)
+    aligned_title(axes[1], title=r'$\bf{B.}$ Heavily-skewed policy, $\boldsymbol{p}=(0.95,0.05)$',font=tf+4)
+
+    fig.tight_layout()
+    fig.savefig('plots/appendix_zipf_theory.png', dpi=res)
