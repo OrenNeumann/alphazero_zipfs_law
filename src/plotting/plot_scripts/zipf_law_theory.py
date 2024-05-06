@@ -113,9 +113,8 @@ def plot_zipf_law_theory(load_data=True, res=300):
     fig.savefig('plots/theory.png', dpi=res)
 
 
-def _policy_theory_curve(ax, tf, branch_prob):
+def _policy_theory_curve(ax, tf, branch_prob, max_game_length):
     pB = branch_prob
-    max_game_length = 20
     iterations = 10 #8
     for i in range(iterations):
         state_probs = [1.0] 
@@ -162,11 +161,11 @@ def plot_appendix_theory_zipf(res=300):
     cbar = fig.colorbar(sm, ax=axes[1])
     cbar.ax.tick_params(labelsize=tf)
     cbar.ax.set_ylabel('Game length', rotation=90, fontsize=tf)
-    print('Calculating first curve...')
-    _policy_theory_curve(axes[0],tf,0.7)
+    print('Calculating first plot...')
+    _policy_theory_curve(axes[0],tf,0.7, max_game_length)
     aligned_title(axes[0], title=r'$\bf{A.}$ Lightly-skewed policy, $\boldsymbol{p}=(0.7,0.3)$',font=tf+2)
-    print('Calculating second curve...')
-    _policy_theory_curve(axes[1],tf,0.95)
+    print('Calculating second plot...')
+    _policy_theory_curve(axes[1],tf,0.95, max_game_length)
     aligned_title(axes[1], title=r'$\bf{B.}$ Heavily-skewed policy, $\boldsymbol{p}=(0.95,0.05)$',font=tf+2)
 
     fig.tight_layout()
