@@ -6,8 +6,29 @@ from tqdm import tqdm
 import numpy as np
 import scienceplots
 from src.plotting.plot_utils import aligned_title, smooth, gaussian_average
+from src.data_analysis.state_value.alpha_beta_pruning_time import save_pruning_time
 
 plt.style.use(['science','nature','grid'])
+
+
+def _generate_gaussian_smoothed_loss(label, loss_curves, sigma):
+    curves = [np.array(loss_curves[f'q_{label}_{copy}']) for copy in range(6)]
+    l = min([len(curve) for curve in curves])
+    l_max = max(l, l_max)
+    curves = [curve[:l] for curve in curves]
+    y = np.mean(curves, axis=0)
+    y = gaussian_average(y, sigma=sigma, cut_tail=True)
+    with open('../plot_data/value_loss/training_loss/gaussian_loss_connect_four_'+str(label)+'.pkl', 'wb') as f:
+        pickle.dump(y, f)
+
+
+def _generate_solver_gaussian_loss(losses, label, l_max, sigma):
+    y = losses[label]
+    y = y[:l_max]
+    y = gaussian_average(y, sigma=sigma, cut_tail=True)
+    with open('../plot_data/solver/gaussian_loss'+str(label)+'.pkl', 'wb') as f:
+        pickle.dump(y, f)
+
 
 def connect4_loss_plots(load_data=True, res=300):
     print('Plotting Connect Four value loss plots')
@@ -15,8 +36,6 @@ def connect4_loss_plots(load_data=True, res=300):
     # Create figure and subplots
     fig, axs = plt.subplots(1, 3, figsize=(12, 4))
 
-    with open('../plot_data/ab_pruning/data.pkl', 'rb') as f:
-        ab_data = pickle.load(f)
     par = np.load('src/config/parameter_counts/connect_four.npy')
     log_par = np.log(par)
     color_nums = (log_par - log_par.min()) / (log_par.max() - log_par.min())
@@ -32,18 +51,10 @@ def connect4_loss_plots(load_data=True, res=300):
             with open('../plot_data/value_loss/training_loss/loss_curves_connect_four.pkl', 'rb') as f:
                 loss_curves = pickle.load(f)
             for label in tqdm([0, 1, 2, 3, 4, 5, 6]):
-                if load_data:
-                    with open('../plot_data/value_loss/training_loss/gaussian_loss_connect_four_'+str(label)+'.pkl', 'rb') as f:
-                        y = pickle.load(f)
-                else:
-                    curves = [np.array(loss_curves[f'q_{label}_{copy}']) for copy in range(6)]
-                    l = min([len(curve) for curve in curves])
-                    l_max = max(l, l_max)
-                    curves = [curve[:l] for curve in curves]
-                    y = np.mean(curves, axis=0)
-                    y = gaussian_average(y, sigma=sigma, cut_tail=True)
-                    with open('../plot_data/value_loss/training_loss/gaussian_loss_connect_four_'+str(label)+'.pkl', 'wb') as f:
-                        pickle.dump(y, f)
+                if not load_data:
+                    _generate_gaussian_smoothed_loss(label, loss_curves, sigma)
+                with open('../plot_data/value_loss/training_loss/gaussian_loss_connect_four_'+str(label)+'.pkl', 'rb') as f:
+                    y = pickle.load(f)
                 ax.plot(np.arange(len(y))+1, y, color=cm.viridis(color_nums[label]))
             ax.set_xscale('log')
             ax.set_yscale('log')
@@ -56,15 +67,10 @@ def connect4_loss_plots(load_data=True, res=300):
             with open('../plot_data/solver/loss_curves.pkl', "rb") as f:
                 losses = pickle.load(f)
             for label in tqdm([0, 1, 2, 3, 4, 5, 6]):
-                if load_data:
-                    with open('../plot_data/solver/gaussian_loss'+str(label)+'.pkl', 'rb') as f:
-                        y = pickle.load(f)
-                else:
-                    y = losses[label]
-                    y = y[:l_max]
-                    y = gaussian_average(y, sigma=sigma, cut_tail=True)
-                    with open('../plot_data/solver/gaussian_loss'+str(label)+'.pkl', 'wb') as f:
-                        pickle.dump(y, f)
+                if not load_data:
+                    _generate_solver_gaussian_loss(losses, label, l_max, sigma)
+                with open('../plot_data/solver/gaussian_loss'+str(label)+'.pkl', 'rb') as f:
+                    y = pickle.load(f)
                 ax.plot(np.arange(len(y))+1, y, color=cm.viridis(color_nums[label]))
             ax.set_xscale('log')
             ax.set_yscale('linear')
@@ -72,6 +78,10 @@ def connect4_loss_plots(load_data=True, res=300):
             ax.set_ylabel('Loss',fontsize=tf)
         if i == 2:
             print('[3/3] Plotting AB pruning complexity')
+            if not load_data:
+                save_pruning_time(generate_counter=True, plot=False)
+            with open('../plot_data/ab_pruning/data.pkl', 'rb') as f:
+                ab_data = pickle.load(f)
             x = ab_data['x']
             y = np.array(ab_data['g_mean'])#
             gstd = np.array(ab_data['gstd'])

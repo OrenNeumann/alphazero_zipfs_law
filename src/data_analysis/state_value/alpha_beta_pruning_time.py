@@ -7,7 +7,6 @@ from src.plotting.plot_utils import Figure, incremental_bin
 from src.data_analysis.gather_agent_data import gather_data
 from scipy.stats import gmean, gstd
 import matplotlib.pyplot as plt
-#from tqdm import tqdm
 import pyspiel
 
 """
@@ -38,10 +37,12 @@ def time_alpha_beta_pruning(states, max_time=2*60):
     return np.mean(times), np.std(times), gmean(times), gstd(times)
     
 
-def save_pruning_time():
+def save_pruning_time(generate_counter=False, plot=False):
+    print("""Generating alpha-beta pruning data.
+          NOTICE: Generating this data from scratch takes a prohibitively long amount of time,
+          since it measures the wall-time of exponentially-longer ab-pruning runs.""")
     # Gather states
-    generate = False
-    if generate:
+    if generate_counter:
         generate_states()
     with open('../plot_data/ab_pruning/counter.pkl', 'rb') as f:
         state_counter = pickle.load(f)
@@ -60,7 +61,6 @@ def save_pruning_time():
     indices = []
     bin_range = np.arange(0,len(bins))
     rng = np.random.default_rng()
-    #for i in tqdm(indices,desc='Calculating times'):
     for i in bin_range:
         print('loop',i)
         if int(bins[i+1]) > len(keys):
@@ -97,23 +97,24 @@ def save_pruning_time():
                      'g_mean': g_mean_times,
                      'std': standard_devs,
                      'gstd': gstds}, f)
-        
-    fig = Figure(text_font=16,
-                number_font=14,
-                fig_num=3)
-    fig.preamble()
-    # Plot with geometric standard deviation error bars
-    err = [np.array(g_mean_times)*np.array(gstds), np.array(g_mean_times)/np.array(gstds)]
-    plt.errorbar(bin_x[indices], g_mean_times, yerr=err, fmt='-o')
-    err = [np.array(times)*np.array(gstds), np.array(times)/np.array(gstds)]
-    plt.errorbar(bin_x[indices], times, yerr=err, fmt='-o')
-    plt.xscale('log')
-    plt.yscale('log')
-    fig.y_label = 'CPU time (s)'
-    fig.x_label = 'State rank'
-    fig.title = 'Alpha-beta pruning resources'
-    fig.epilogue()
-    fig.save('search_time')
+    
+    if plot:
+        fig = Figure(text_font=16,
+                    number_font=14,
+                    fig_num=3)
+        fig.preamble()
+        # Plot with geometric standard deviation error bars
+        err = [np.array(g_mean_times)*np.array(gstds), np.array(g_mean_times)/np.array(gstds)]
+        plt.errorbar(bin_x[indices], g_mean_times, yerr=err, fmt='-o')
+        err = [np.array(times)*np.array(gstds), np.array(times)/np.array(gstds)]
+        plt.errorbar(bin_x[indices], times, yerr=err, fmt='-o')
+        plt.xscale('log')
+        plt.yscale('log')
+        fig.y_label = 'CPU time (s)'
+        fig.x_label = 'State rank'
+        fig.title = 'Alpha-beta pruning resources'
+        fig.epilogue()
+        fig.save('search_time')
     
 
 def generate_states():
@@ -121,19 +122,4 @@ def generate_states():
     state_counter.prune_low_frequencies(10)
     with open('../plot_data/ab_pruning/counter.pkl', 'wb') as f:
         pickle.dump(state_counter, f)
-    font = 16
-    font_num = 14
-    print('Plotting zipf distribution')
-    fig = Figure(x_label='State rank',
-                y_label='Frequency',
-                text_font=font,
-                number_font=font_num,
-                legend=True,
-                fig_num=2)
-    freq = np.array([item[1] for item in state_counter.frequencies.most_common()])
-    x = np.arange(len(state_counter.frequencies)) + 1
-    plt.scatter(x, freq, s=40 / (10 + x))
-    plt.xscale('log')
-    plt.yscale('log')
-    fig.epilogue()
-    fig.save('zipf_distribution')
+
