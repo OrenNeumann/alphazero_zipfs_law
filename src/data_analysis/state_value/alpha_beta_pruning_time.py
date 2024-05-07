@@ -41,6 +41,7 @@ def save_pruning_time(generate_counter=False, plot=False):
     print("""Generating alpha-beta pruning data.
           NOTICE: Generating this data from scratch takes a prohibitively long amount of time,
           since it measures the wall-time of exponentially-longer ab-pruning runs.""")
+    print("""IMPORTANT: This code requires that the connect four opening book ("7x6.book") is NOT present in the parent directory.""")
     # Gather states
     if generate_counter:
         generate_states()
