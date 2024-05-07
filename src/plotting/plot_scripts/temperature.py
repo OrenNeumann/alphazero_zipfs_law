@@ -41,7 +41,7 @@ def plot_temperature_curves(load_data=True, res=300):
     log_t = np.log(temps)
     color_nums = (log_t - log_t.min()) / (log_t.max() - log_t.min()) 
     tf =12
-    fig, axs = plt.subplots(1, 3, figsize=(12, 4), gridspec_kw={'width_ratios': [1.2, 1.2, 1]})
+    fig, axs = plt.subplots(1, 3, figsize=(12, 4), gridspec_kw={'width_ratios': [1.2, 1, 1]})
     par = np.load('src/config/parameter_counts/connect_four.npy')
     zipf_exponents = np.zeros(len(temps))
 
@@ -70,7 +70,7 @@ def plot_temperature_curves(load_data=True, res=300):
     axs[0].set_xlabel('State rank',fontsize=tf)
     axs[0].set_ylabel('Frequency',fontsize=tf)
     axs[0].tick_params(axis='both', which='major', labelsize=tf-2)
-    aligned_title(axs[0], r"$\bf{A.}$ Inference Zipf's law with temperature", tf+4)
+    aligned_title(axs[0], r"$\bf{A.}$ Inference Zipf's law", tf+4)
 
     ##############################################################
     print('Plotting size scaling at different temperatures')
@@ -110,9 +110,9 @@ def plot_temperature_curves(load_data=True, res=300):
         [m, c] = np.polyfit(np.log10(all_params[:-2*copies]), all_scores[:-2*copies], 1)
         elo_exponents[ind] = m/400
     axs[1].set_xscale('log')
-    axs[1].set_xlabel('Neural-net parameters',fontsize=tf-2)
-    axs[1].set_ylabel('Elo',fontsize=tf-2)
-    axs[1].tick_params(axis='both', which='major', labelsize=tf-4)
+    axs[1].set_xlabel('Neural-net parameters',fontsize=tf)
+    axs[1].set_ylabel('Elo',fontsize=tf)
+    axs[1].tick_params(axis='both', which='major', labelsize=tf-2)
     aligned_title(axs[1], r"$\bf{B.}$ Size scaling law", tf+4)
     
     ##############################################################
@@ -138,6 +138,7 @@ def plot_temperature_curves(load_data=True, res=300):
     fig.tight_layout()
     print('Saving figure (can take a while)...')
     fig.savefig('./plots/temperature_curves.png', dpi=res)
+    fig.savefig('./plots/temperature_curves2.png', dpi=300)
 
     ##############################################################
     print('Plotting exponents relation (appendix)')
@@ -146,8 +147,10 @@ def plot_temperature_curves(load_data=True, res=300):
     # plotting all-T data:
     plt.scatter(zipf_exponents, elo_exponents, c=cm.plasma(color_nums), s=10)
     plt.axvline(x=1, color='black', linestyle='--')
-    plt.tick_params(axis='both', which='major', labelsize=tf-4)
-    plt.annotate(r'Infinite $T$'+' \nZipf exponent', xy=(1, 0.6), xytext=(2.2, 0.5), arrowprops=dict(arrowstyle='->'), fontsize=tf-2)
+    plt.xlabel('Zipf exponent (tail)',fontsize=tf+4)
+    plt.ylabel('Elo exponent',fontsize=tf+4)
+    plt.tick_params(axis='both', which='major', labelsize=tf+2)
+    plt.annotate('Fig. 3B cutoff', xy=(1, 0.6), xytext=(2.2, 0.5), arrowprops=dict(arrowstyle='->'), fontsize=tf+4)
     print(zipf_exponents)
     print(elo_exponents)
     
@@ -158,3 +161,4 @@ def plot_temperature_curves(load_data=True, res=300):
 
     fig.tight_layout()
     fig.savefig('./plots/exponent_correlation.png', dpi=res)
+    fig.savefig('./plots/exponent_correlation2.png', dpi=300)
