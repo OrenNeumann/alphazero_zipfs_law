@@ -1,6 +1,5 @@
 import pickle
 import numpy as np
-from scipy.datasets import face
 from src.data_analysis.state_frequency.state_counter import StateCounter
 from src.data_analysis.state_value.value_loss import value_loss
 from src.plotting.plot_utils import BarFigure, incremental_bin, gaussian_average
