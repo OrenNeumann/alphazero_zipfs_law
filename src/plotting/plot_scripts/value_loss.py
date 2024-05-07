@@ -1,6 +1,6 @@
 import matplotlib
-import matplotlib.pyplot as plt
 import matplotlib.cm as cm
+import matplotlib.pyplot as plt
 import pickle
 from tqdm import tqdm
 import numpy as np
@@ -99,7 +99,6 @@ def connect4_loss_plots(load_data=True, res=300):
     norm = matplotlib.colors.LogNorm(vmin=par.min(), vmax=par.max())
     sm = matplotlib.cm.ScalarMappable(cmap=plt.get_cmap('viridis'), norm=norm)
     cbar = fig.colorbar(sm, ax=axs[2])
-    #cbar = fig.colorbar(sm, ax=axs[2],location='left') # attach to last plot
     cbar.ax.tick_params(labelsize=tf)
     cbar.ax.set_ylabel('Parameters', rotation=90, fontsize=tf)
 
@@ -144,11 +143,7 @@ def oware_value_loss(res=300):
             ax.axvline(x=late_start, linestyle='--', color='black', label='First late-turn states')
         else:
             ax.set_ylim(ylim)
-        if i==1:
-            #ax.set_ylabel(r'$\bf{=}$', rotation=0, fontsize=tf+6)
-            pass
         if i==2:
-            #ax.set_ylabel(r'$\bf{+}$', rotation=0, fontsize=tf+6)
             ax.set_xlim(left=10**0)
             # Add zoom-in inset
             axin = ax.inset_axes([0.02, 0.02, 0.96, 0.48])
