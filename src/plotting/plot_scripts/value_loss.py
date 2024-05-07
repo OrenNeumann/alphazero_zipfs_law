@@ -134,7 +134,45 @@ def connect4_loss_plots(load_data=True, res=300):
     fig.savefig('./plots/connect4_value_loss.png', dpi=res)
 
 
-def oware_value_loss(res=300):
+def _state_loss(env, path):
+    state_counter = StateCounter(env, save_serial=True, save_value=True, save_turn_num=True, cut_extensive=True)
+    # max_file_num=50 is about the max iota can carry (checked on checkers)
+    state_counter.collect_data(path=path, max_file_num=78)#50
+    state_counter.normalize_counters()
+    state_counter.prune_low_frequencies(threshold=2)#10
+    turn_mask = state_counter.late_turn_mask(threshold=40)
+    loss = value_loss(env, path, state_counter=state_counter, num_chunks=400)# 40 for pruning=10
+    total_loss = 0
+    counts = 0
+    i=0
+    for _, count in state_counter.frequencies.most_common():
+        total_loss += loss[i]*count
+        i+=1
+        counts += count
+    print('Model loss on train set:', total_loss/counts)
+    return loss, turn_mask
+
+
+def _gereate_oware_loss_curves(data_labels, n_copies=1):
+    env='oware'
+    loss_types = ('later_turns','early_turns','every_state')
+    losses = {label: {k: None for k in loss_types} for label in data_labels}
+    loss_values = {label: {k: None for k in loss_types} for label in data_labels}
+    rank_values = {label: {k: None for k in loss_types} for label in data_labels}
+    for label in data_labels:
+        for copy in range(n_copies):
+            model_name = f'q_{label}_{copy}'
+            print(model_name)
+            model_path = models_path() + game_path(env) + model_name + '/'
+            loss, turn_mask = _state_loss(env, model_path)
+            losses[label]['later_turns'] = loss*turn_mask
+            losses[label]['early_turns'] = loss*(~turn_mask)
+            losses[label]['every_state'] = loss
+    with open('../plot_data/value_loss/late_turns/loss_curves_'+env+'.pkl', 'wb') as f: #change name of old!!
+        pickle.dump([loss_values,rank_values], f)
+
+
+def oware_value_loss(load_data=True, res=300):
     # using data from late_turn_loss.py, oware games had pruning=10
     print('~~~~~~~~~~~~~~~~~~~ Plotting oware value loss ~~~~~~~~~~~~~~~~~~~')
     
