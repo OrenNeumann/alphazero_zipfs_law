@@ -41,7 +41,7 @@ def plot_temperature_curves(load_data=True, res=300):
     log_t = np.log(temps)
     color_nums = (log_t - log_t.min()) / (log_t.max() - log_t.min()) 
     tf =12
-    fig, axs = plt.subplots(1, 2, figsize=(12, 4), gridspec_kw={'width_ratios': [1.2, 1]})
+    fig, axs = plt.subplots(1, 3, figsize=(12, 4), gridspec_kw={'width_ratios': [1.2, 1.2, 1]})
     par = np.load('src/config/parameter_counts/connect_four.npy')
     zipf_exponents = np.zeros(len(temps))
 
@@ -70,11 +70,10 @@ def plot_temperature_curves(load_data=True, res=300):
     axs[0].set_xlabel('State rank',fontsize=tf)
     axs[0].set_ylabel('Frequency',fontsize=tf)
     axs[0].tick_params(axis='both', which='major', labelsize=tf-2)
-    aligned_title(axs[0], r"$\bf{A.}$ Zipf's law and Elo scaling", tf+4)
+    aligned_title(axs[0], r"$\bf{A.}$ Inference Zipf's law with temperature", tf+4)
 
     ##############################################################
     print('Plotting size scaling at different temperatures')
-    axin0 = axs[0].inset_axes([0.6, 0.6, 0.4, 0.4])
     elo_exponents = np.zeros(len(temps))
     n=0
     for ind in sorted_t:
@@ -105,45 +104,57 @@ def plot_temperature_curves(load_data=True, res=300):
         elo_scores = np.array(elo_scores)
         # Set Elo score range
         elo_scores += 100 - elo_scores.min()
-        axin0.errorbar(par[:-2], elo_scores[:-2], yerr=[elo_stds[:-2], elo_stds[:-2]], fmt='-o', 
+        axs[1].errorbar(par[:-2], elo_scores[:-2], yerr=[elo_stds[:-2], elo_stds[:-2]], fmt='-o', 
                     color=cm.plasma(color_nums[ind]), linewidth=0.5, markersize=0.5)
         #fitting:
         [m, c] = np.polyfit(np.log10(all_params[:-2*copies]), all_scores[:-2*copies], 1)
         elo_exponents[ind] = m/400
-    axin0.set_xscale('log')
-    axin0.set_xlabel('Neural-net parameters',fontsize=tf-2)
-    axin0.set_ylabel('Elo',fontsize=tf-2)
-    axin0.tick_params(axis='both', which='major', labelsize=tf-4)
+    axs[1].set_xscale('log')
+    axs[1].set_xlabel('Neural-net parameters',fontsize=tf-2)
+    axs[1].set_ylabel('Elo',fontsize=tf-2)
+    axs[1].tick_params(axis='both', which='major', labelsize=tf-4)
+    aligned_title(axs[1], r"$\bf{B.}$ Size scaling law", tf+4)
     
     ##############################################################
     print('Plotting exponents relation')
 
     # plotting low-T data:
     indices = sorted_t[:9]
-    axs[1].plot(zipf_exponents[indices], elo_exponents[indices],  
+    axs[2].plot(zipf_exponents[indices], elo_exponents[indices],  
                     markersize=0, linestyle='--', color='gray')
-    axs[1].scatter(zipf_exponents[indices], elo_exponents[indices], c=cm.plasma(color_nums[indices]), s=60)
-    axs[1].set_xlabel('Zipf exponent (tail)',fontsize=tf)
-    axs[1].set_ylabel('Elo exponent',fontsize=tf)
-    axs[1].tick_params(axis='both', which='major', labelsize=tf-2)
-    aligned_title(axs[1], r"$\bf{B.}$ Exponent correlation", tf+4)
+    axs[2].scatter(zipf_exponents[indices], elo_exponents[indices], c=cm.plasma(color_nums[indices]), s=60)
+    axs[2].set_xlabel('Zipf exponent (tail)',fontsize=tf)
+    axs[2].set_ylabel('Elo exponent',fontsize=tf)
+    axs[2].tick_params(axis='both', which='major', labelsize=tf-2)
+    aligned_title(axs[2], r"$\bf{C.}$ Exponent correlation", tf+4)
 
-    # plotting all-T data:
-    axin1 = axs[1].inset_axes([0.5, 0.1, 0.5, 0.5])
-    axin1.scatter(zipf_exponents, elo_exponents, c=cm.plasma(color_nums), s=10)
-    axin1.axvline(x=1, color='black', linestyle='--')
-    axin1.tick_params(axis='both', which='major', labelsize=tf-4)
-    axin1.annotate(r'Infinite $T$'+' \nZipf exponent', xy=(1, 0.6), xytext=(2.2, 0.5), arrowprops=dict(arrowstyle='->'), fontsize=tf-2)
-    print(zipf_exponents)
-    print(elo_exponents)
-    
     # Colorbar:
     norm = matplotlib.colors.LogNorm(vmin=temps.min(), vmax=temps.max())
     sm = matplotlib.cm.ScalarMappable(cmap=plt.get_cmap('plasma'), norm=norm)
-    cbar = fig.colorbar(sm, ax=axs[1])
+    cbar = fig.colorbar(sm, ax=axs[2])
     cbar.ax.tick_params(labelsize=tf)
     cbar.ax.set_ylabel('Temperature', rotation=90, fontsize=tf)
 
     fig.tight_layout()
     print('Saving figure (can take a while)...')
     fig.savefig('./plots/temperature_curves.png', dpi=res)
+
+    ##############################################################
+    print('Plotting exponents relation (appendix)')
+    fig = plt.figure(figsize=(12, 6))
+
+    # plotting all-T data:
+    plt.scatter(zipf_exponents, elo_exponents, c=cm.plasma(color_nums), s=10)
+    plt.axvline(x=1, color='black', linestyle='--')
+    plt.tick_params(axis='both', which='major', labelsize=tf-4)
+    plt.annotate(r'Infinite $T$'+' \nZipf exponent', xy=(1, 0.6), xytext=(2.2, 0.5), arrowprops=dict(arrowstyle='->'), fontsize=tf-2)
+    print(zipf_exponents)
+    print(elo_exponents)
+    
+    # Colorbar:
+    cbar = fig.colorbar(sm)
+    cbar.ax.tick_params(labelsize=tf)
+    cbar.ax.set_ylabel('Temperature', rotation=90, fontsize=tf)
+
+    fig.tight_layout()
+    fig.savefig('./plots/exponent_correlation.png', dpi=res)
