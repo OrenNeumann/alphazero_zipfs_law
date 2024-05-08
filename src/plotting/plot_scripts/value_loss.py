@@ -137,7 +137,7 @@ def connect4_loss_plots(load_data=True, res=300):
 def _state_loss(env, path):
     state_counter = StateCounter(env, save_serial=True, save_value=True, save_turn_num=True, cut_extensive=False)#, cut_extensive=True)
     # max_file_num=50 is about the max iota can carry (checked on checkers)
-    state_counter.collect_data(path=path, max_file_num=78)#50
+    state_counter.collect_data(path=path, max_file_num=50)#78
     state_counter.normalize_counters()
     state_counter.prune_low_frequencies(threshold=10)#2
     turn_mask = state_counter.late_turn_mask(threshold=40)
