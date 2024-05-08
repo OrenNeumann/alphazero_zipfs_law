@@ -153,7 +153,9 @@ def _state_loss(env, path):
     return loss, turn_mask
 
 
-def _gereate_oware_loss_curves(data_labels, n_copies=1):
+def _gereate_oware_loss_curves(data_labels):
+    # currently only works for n_copies=1
+    n_copies=1
     print('Generating loss curves for Oware')
     env='oware'
     loss_types = ('later_turns','early_turns','every_state')
@@ -171,6 +173,21 @@ def _gereate_oware_loss_curves(data_labels, n_copies=1):
         pickle.dump(losses, f)
 
 
+def _oware_gaussian_smoothed_loss(labels, sigma):
+    print('Smoothing Oware loss curves')
+    with open('../plot_data/value_loss/late_turns/loss_curves_oware.pkl', "rb") as f:
+        loss_curves = pickle.load(f)
+    loss_types = ('later_turns','early_turns','every_state')
+    smooth_losses = {label: {k: None for k in loss_types} for label in labels}
+    ranks = {label: {k: None for k in loss_types} for label in labels}
+    for t in loss_types:
+        for label in tqdm(labels):
+            curve = np.array(loss_curves[label][t])
+            smooth_losses[t][label], ranks[t][label] = gaussian_average(curve, sigma=sigma, cut_tail=True)
+    with open('../plot_data/value_loss/late_turns/gaussian_loss_oware.pkl', 'wb') as f:
+        pickle.dump([smooth_losses, ranks], f)
+
+
 def oware_value_loss(load_data=True, res=300):
     # using data from late_turn_loss.py, oware games had pruning=10
     print('~~~~~~~~~~~~~~~~~~~ Plotting oware value loss ~~~~~~~~~~~~~~~~~~~')
@@ -179,26 +196,27 @@ def oware_value_loss(load_data=True, res=300):
     # Create figure and subplots
     fig, axes = plt.subplots(nrows=1, ncols=3, figsize=(12, 4))
 
+    sigma = 0.15
+    labels = [0, 1, 2, 3, 4, 5, 6]
     if not load_data:
-        _gereate_oware_loss_curves([0, 1, 2, 3, 4, 5, 6], n_copies=1)
+        #_gereate_oware_loss_curves(labels)
+        _oware_gaussian_smoothed_loss(labels, sigma)
 
-    with open('../plot_data/value_loss/late_turns/loss_curves_oware.pkl', "rb") as f:
-        loss_values, rank_values =  pickle.load(f)
+    with open('../plot_data/value_loss/late_turns/gaussian_loss_oware.pkl', "rb") as f:
+        losses, ranks =  pickle.load(f)
     par = np.load('src/config/parameter_counts/oware.npy')
     log_par = np.log(par)
     color_nums = (log_par - log_par.min()) / (log_par.max() - log_par.min())
 
     loss_types = ('every_state', 'early_turns', 'later_turns')
-    data_labels = [0, 1, 2, 3, 4, 5, 6] 
     titles = ['Oware value loss', 'Early-turn loss', 'Late-turn loss']
     ylim = None
     for i,ax in enumerate(axes.flat):
         t = loss_types[i]
         aligned_title(ax, title=titles[i],font=tf+4)
-        for label in data_labels:
-            x = rank_values[label][t]
-            y = loss_values[label][t]
-            y = smooth(y)
+        for label in labels:
+            x = ranks[t][label]
+            y = losses[t][label]
             ax.plot(x, y, color=matplotlib.cm.viridis(color_nums[label]))
         ax.set_xscale('log')
         ax.set_yscale('log')
@@ -207,7 +225,7 @@ def oware_value_loss(load_data=True, res=300):
         if i == 0:
             ax.set_ylabel('Loss',fontsize=tf)
             ylim = ax.get_ylim()
-            late_start = min(rank_values[label]['later_turns'][0] for label in data_labels)
+            late_start = min(ranks['later_turns'][label][0] for label in labels)
             ax.axvline(x=late_start, linestyle='--', color='black', label='First late-turn states')
         else:
             ax.set_ylim(ylim)
@@ -215,10 +233,9 @@ def oware_value_loss(load_data=True, res=300):
             ax.set_xlim(left=10**0)
             # Add zoom-in inset
             axin = ax.inset_axes([0.02, 0.02, 0.96, 0.48])
-            for label in data_labels:
-                x = rank_values[label][t]
-                y = loss_values[label][t]
-                y = smooth(y)
+            for label in labels:
+                x = ranks[t][label]
+                y = losses[t][label]
                 axin.plot(x, y, color=matplotlib.cm.viridis(color_nums[label]))
             axin.set_xscale('log')
             axin.set_yscale('log')

@@ -147,6 +147,8 @@ def gaussian_average(y, sigma=0.25, cut_tail=False, mask=None):
     for i,r in enumerate(x_ranks):
         kernel = np.exp(-0.5 * ((np.log10(ranks/r)) / sigma) ** 2)
         y_smooth[i] = np.sum(y * kernel) / np.sum(kernel)
+    if mask is not None:
+        return y_smooth, ranks
     return y_smooth
 
 
