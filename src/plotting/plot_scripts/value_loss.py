@@ -132,7 +132,7 @@ def connect4_loss_plots(load_data=True, res=300):
 
     fig.tight_layout()
     fig.savefig('./plots/connect4_value_loss.png', dpi=res)
-    fig.savefig('./plots/connect4_value_loss.png', dpi=300)
+    fig.savefig('./plots/connect4_value_loss2.png', dpi=300)
 
 
 def _state_loss(env, path):
