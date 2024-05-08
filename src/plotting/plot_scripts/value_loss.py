@@ -139,7 +139,7 @@ def _state_loss(env, path):
     # max_file_num=50 is about the max iota can carry (checked on checkers)
     state_counter.collect_data(path=path, max_file_num=78)#50
     state_counter.normalize_counters()
-    state_counter.prune_low_frequencies(threshold=2)#10
+    state_counter.prune_low_frequencies(threshold=10)#2
     turn_mask = state_counter.late_turn_mask(threshold=40)
     loss = value_loss(env, path, state_counter=state_counter, num_chunks=400)# 40 for pruning=10
     total_loss = 0
@@ -154,11 +154,10 @@ def _state_loss(env, path):
 
 
 def _gereate_oware_loss_curves(data_labels, n_copies=1):
+    print('Generating loss curves for Oware')
     env='oware'
     loss_types = ('later_turns','early_turns','every_state')
     losses = {label: {k: None for k in loss_types} for label in data_labels}
-    loss_values = {label: {k: None for k in loss_types} for label in data_labels}
-    rank_values = {label: {k: None for k in loss_types} for label in data_labels}
     for label in data_labels:
         for copy in range(n_copies):
             model_name = f'q_{label}_{copy}'
@@ -168,8 +167,8 @@ def _gereate_oware_loss_curves(data_labels, n_copies=1):
             losses[label]['later_turns'] = loss*turn_mask
             losses[label]['early_turns'] = loss*(~turn_mask)
             losses[label]['every_state'] = loss
-    with open('../plot_data/value_loss/late_turns/loss_curves_'+env+'.pkl', 'wb') as f: #change name of old!!
-        pickle.dump([loss_values,rank_values], f)
+    with open('../plot_data/value_loss/late_turns/loss_curves_'+env+'.pkl', 'wb') as f: 
+        pickle.dump(losses, f)
 
 
 def oware_value_loss(load_data=True, res=300):
@@ -179,6 +178,9 @@ def oware_value_loss(load_data=True, res=300):
     tf =12
     # Create figure and subplots
     fig, axes = plt.subplots(nrows=1, ncols=3, figsize=(12, 4))
+
+    if not load_data:
+        _gereate_oware_loss_curves([0, 1, 2, 3, 4, 5, 6], n_copies=1)
 
     with open('../plot_data/value_loss/late_turns/loss_curves_oware.pkl', "rb") as f:
         loss_values, rank_values =  pickle.load(f)

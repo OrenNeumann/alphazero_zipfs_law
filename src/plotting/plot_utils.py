@@ -131,9 +131,14 @@ def smooth(vec):
     new_vec[-1] = (vec[-1] + a * vec[-2]) / (1 + a)
     return new_vec
 
-def gaussian_average(y, sigma=0.25, cut_tail=False):
-    """ Smooth y by averaging it with a log-scale gaussian kernel."""
+def gaussian_average(y, sigma=0.25, cut_tail=False, mask=None):
+    """ Smooth y by averaging it with a log-scale gaussian kernel.
+        Giving a mask will ignore the values that are False in the mask.
+        If cut_tail is True, the tail of the distribution will be cut 
+         off by 2*sigma, to ignore tail-abberations."""
     ranks = np.arange(len(y))+1
+    if mask is not None:
+        ranks = ranks[mask]
     x_ranks = np.arange(len(y))+1
     y_smooth = np.zeros_like(y)
     if cut_tail:
