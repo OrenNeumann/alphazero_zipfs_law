@@ -135,13 +135,12 @@ def connect4_loss_plots(load_data=True, res=300):
 
 
 def _state_loss(env, path):
-    state_counter = StateCounter(env, save_serial=True, save_value=True, save_turn_num=True, cut_extensive=False)#, cut_extensive=True)
-    # max_file_num=50 is about the max iota can carry (checked on checkers)
-    state_counter.collect_data(path=path, max_file_num=50)#78
+    state_counter = StateCounter(env, save_serial=True, save_value=True, save_turn_num=True, cut_extensive=False)
+    state_counter.collect_data(path=path, max_file_num=50)
     state_counter.normalize_counters()
-    state_counter.prune_low_frequencies(threshold=10)#2
+    state_counter.prune_low_frequencies(threshold=10)
     turn_mask = state_counter.late_turn_mask(threshold=40)
-    loss = value_loss(env, path, state_counter=state_counter, num_chunks=400)# 40 for pruning=10
+    loss = value_loss(env, path, state_counter=state_counter, num_chunks=400)
     total_loss = 0
     counts = 0
     i=0
@@ -190,13 +189,10 @@ def _oware_gaussian_smoothed_loss(labels, sigma):
 
 
 def oware_value_loss(load_data=True, res=300):
-    # using data from late_turn_loss.py, oware games had pruning=10
     print('~~~~~~~~~~~~~~~~~~~ Plotting oware value loss ~~~~~~~~~~~~~~~~~~~')
-    
     tf =12
     # Create figure and subplots
-    fig, axes = plt.subplots(nrows=1, ncols=3, figsize=(12, 4))
-
+    fig, axes = plt.subplots(nrows=1, ncols=3, figsize=(12, 3.5))
     sigma = 0.15
     labels = [0, 1, 2, 3, 4, 5, 6]
     if not load_data:
@@ -225,6 +221,7 @@ def oware_value_loss(load_data=True, res=300):
         ax.set_xlabel('State rank',fontsize=tf)
         if i == 0:
             ax.set_ylabel('Loss',fontsize=tf)
+            ax.set_ylim(bottom=0.8*10**-3)
             ylim = ax.get_ylim()
             late_start = min(ranks[label]['later_turns'][0] for label in labels)
             ax.axvline(x=late_start, linestyle='--', color='black', label='First late-turn states')
@@ -240,8 +237,8 @@ def oware_value_loss(load_data=True, res=300):
                 axin.plot(x, y, color=matplotlib.cm.viridis(color_nums[label]))
             axin.set_xscale('log')
             axin.set_yscale('log')
-            axin.set_ylim(bottom=9*10**-2, top=2.8*10**-1)
-            axin.set_xlim(left=10**2, right=2*10**5)
+            axin.set_ylim(bottom=6*10**-2, top=2.8*10**-1)
+            axin.set_xlim(left=10**2, right=0.8*10**5)
             axin.tick_params(axis='both', which='both', labelsize=0)
             ax.indicate_inset_zoom(axin, edgecolor="black",linewidth=2)
 
