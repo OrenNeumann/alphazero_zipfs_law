@@ -183,7 +183,8 @@ def _oware_gaussian_smoothed_loss(labels, sigma):
     for t in loss_types:
         for label in tqdm(labels):
             curve = np.array(loss_curves[label][t])
-            smooth_losses[t][label], ranks[t][label] = gaussian_average(curve, sigma=sigma, cut_tail=True)
+            mask = curve > 0
+            smooth_losses[t][label], ranks[t][label] = gaussian_average(curve, sigma=sigma, cut_tail=True, mask=mask)
     with open('../plot_data/value_loss/late_turns/gaussian_loss_oware.pkl', 'wb') as f:
         pickle.dump([smooth_losses, ranks], f)
 
