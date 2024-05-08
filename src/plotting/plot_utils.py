@@ -139,6 +139,7 @@ def gaussian_average(y, sigma=0.25, cut_tail=False, mask=None):
     ranks = np.arange(len(y))+1
     if mask is not None:
         ranks = ranks[mask]
+        y = y[mask]
     x_ranks = np.arange(len(y))+1
     y_smooth = np.zeros_like(y)
     if cut_tail:
