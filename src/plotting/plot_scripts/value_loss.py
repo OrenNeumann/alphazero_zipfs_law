@@ -185,8 +185,6 @@ def _oware_gaussian_smoothed_loss(labels, sigma):
             curve = np.array(loss_curves[label][t])
             mask = curve > 0
             smooth_losses[label][t], ranks[label][t] = gaussian_average(curve, sigma=sigma, cut_tail=True, mask=mask)
-            print(len(ranks[label][t]))
-            print(len(smooth_losses[label][t]))
     with open('../plot_data/value_loss/late_turns/gaussian_loss_oware.pkl', 'wb') as f:
         pickle.dump([smooth_losses, ranks], f)
 
