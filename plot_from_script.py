@@ -43,7 +43,7 @@ res = 50
 #connect4_loss_plots(load_data, res=50)
 #plot_scaling_failure(load_data, res=50)
 #plot_game_turns(res=50)
-oware_value_loss(load_data, res=70)
+oware_value_loss(load_data, res=300)
 
 # Appendix:
 #plot_appendix_theory_zipf(res=300)
