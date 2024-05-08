@@ -60,7 +60,7 @@ def connect4_loss_plots(load_data=True, res=300):
     print('Plotting Connect Four value loss plots')
     tf =12
     # Create figure and subplots
-    fig, axs = plt.subplots(1, 3, figsize=(12, 4))
+    fig, axs = plt.subplots(1, 3, figsize=(12, 3.5))
 
     par = np.load('src/config/parameter_counts/connect_four.npy')
     log_par = np.log(par)
@@ -132,6 +132,7 @@ def connect4_loss_plots(load_data=True, res=300):
 
     fig.tight_layout()
     fig.savefig('./plots/connect4_value_loss.png', dpi=res)
+    fig.savefig('./plots/connect4_value_loss.png', dpi=300)
 
 
 def _state_loss(env, path):
