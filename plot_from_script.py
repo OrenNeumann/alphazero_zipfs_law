@@ -39,8 +39,8 @@ res = 50
 # Main paper:
 #plot_main_zipf_curves(res=300)
 #plot_zipf_law_theory(load_data, res=50)
-#plot_temperature_curves(load_data, res=100)
-connect4_loss_plots(load_data, res=50)
+plot_temperature_curves(load_data, res=100)
+#connect4_loss_plots(load_data, res=50)
 #plot_scaling_failure(load_data, res=50)
 #plot_game_turns(res=50)
 #oware_value_loss(load_data, res=300)

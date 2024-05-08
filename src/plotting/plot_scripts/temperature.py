@@ -145,7 +145,7 @@ def plot_temperature_curves(load_data=True, res=300):
     fig = plt.figure(figsize=(12, 6))
 
     # plotting all-T data:
-    plt.scatter(zipf_exponents, elo_exponents, c=cm.plasma(color_nums), s=10)
+    plt.scatter(zipf_exponents, elo_exponents, c=cm.plasma(color_nums), s=30)
     plt.axvline(x=1, color='black', linestyle='--')
     plt.xlabel('Zipf exponent (tail)',fontsize=tf+4)
     plt.ylabel('Elo exponent',fontsize=tf+4)
