@@ -144,12 +144,12 @@ def gaussian_average(y, sigma=0.25, cut_tail=False, mask=None):
     y_smooth = np.zeros_like(y)
     if cut_tail:
         y_smooth = np.zeros(int(len(y)/10**(2*sigma)))
-        x_ranks =  np.arange(int(len(y)/10**(2*sigma)))+1
+        x_ranks =  np.copy(ranks[:int(len(y)/10**(2*sigma))])
     for i,r in enumerate(x_ranks):
         kernel = np.exp(-0.5 * ((np.log10(ranks/r)) / sigma) ** 2)
         y_smooth[i] = np.sum(y * kernel) / np.sum(kernel)
     if mask is not None:
-        return y_smooth, ranks
+        return y_smooth, x_ranks
     return y_smooth
 
 
