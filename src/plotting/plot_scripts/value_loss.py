@@ -135,7 +135,7 @@ def connect4_loss_plots(load_data=True, res=300):
 
 
 def _state_loss(env, path):
-    state_counter = StateCounter(env, save_serial=True, save_value=True, save_turn_num=True, cut_extensive=True)
+    state_counter = StateCounter(env, save_serial=True, save_value=True, save_turn_num=True, cut_extensive=False)#, cut_extensive=True)
     # max_file_num=50 is about the max iota can carry (checked on checkers)
     state_counter.collect_data(path=path, max_file_num=78)#50
     state_counter.normalize_counters()
@@ -202,7 +202,7 @@ def oware_value_loss(load_data=True, res=300):
     sigma = 0.15
     labels = [0, 1, 2, 3, 4, 5, 6]
     if not load_data:
-        #_gereate_oware_loss_curves(labels)
+        _gereate_oware_loss_curves(labels)
         _oware_gaussian_smoothed_loss(labels, sigma)
 
     with open('../plot_data/value_loss/late_turns/gaussian_loss_oware.pkl', "rb") as f:
