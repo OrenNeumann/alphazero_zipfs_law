@@ -184,7 +184,7 @@ def _oware_gaussian_smoothed_loss(labels, sigma):
         for label in tqdm(labels):
             curve = np.array(loss_curves[label][t])
             mask = curve > 0
-            smooth_losses[t][label], ranks[t][label] = gaussian_average(curve, sigma=sigma, cut_tail=True, mask=mask)
+            smooth_losses[label][t], ranks[label][t] = gaussian_average(curve, sigma=sigma, cut_tail=True, mask=mask)
     with open('../plot_data/value_loss/late_turns/gaussian_loss_oware.pkl', 'wb') as f:
         pickle.dump([smooth_losses, ranks], f)
 
@@ -216,8 +216,8 @@ def oware_value_loss(load_data=True, res=300):
         t = loss_types[i]
         aligned_title(ax, title=titles[i],font=tf+4)
         for label in labels:
-            x = ranks[t][label]
-            y = losses[t][label]
+            x = ranks[label][t]
+            y = losses[label][t]
             ax.plot(x, y, color=matplotlib.cm.viridis(color_nums[label]))
         ax.set_xscale('log')
         ax.set_yscale('log')
@@ -226,7 +226,7 @@ def oware_value_loss(load_data=True, res=300):
         if i == 0:
             ax.set_ylabel('Loss',fontsize=tf)
             ylim = ax.get_ylim()
-            late_start = min(ranks['later_turns'][label][0] for label in labels)
+            late_start = min(ranks[label]['later_turns'][0] for label in labels)
             ax.axvline(x=late_start, linestyle='--', color='black', label='First late-turn states')
         else:
             ax.set_ylim(ylim)
@@ -235,8 +235,8 @@ def oware_value_loss(load_data=True, res=300):
             # Add zoom-in inset
             axin = ax.inset_axes([0.02, 0.02, 0.96, 0.48])
             for label in labels:
-                x = ranks[t][label]
-                y = losses[t][label]
+                x = ranks[label][t]
+                y = losses[label][t]
                 axin.plot(x, y, color=matplotlib.cm.viridis(color_nums[label]))
             axin.set_xscale('log')
             axin.set_yscale('log')
