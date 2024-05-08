@@ -35,17 +35,14 @@ def _generate_loss_curves(env, data_labels, n_copies):
 
 
 def _generate_gaussian_smoothed_loss(labels, loss_curves, sigma):
-    l_max = 0
     for label in tqdm(labels):
         curves = [np.array(loss_curves[f'q_{label}_{copy}']) for copy in range(6)]
         l = min([len(curve) for curve in curves])
-        l_max = max(l, l_max)
         curves = [curve[:l] for curve in curves]
         y = np.mean(curves, axis=0)
         y = gaussian_average(y, sigma=sigma, cut_tail=True)
         with open('../plot_data/value_loss/training_loss/gaussian_loss_connect_four_'+str(label)+'.pkl', 'wb') as f:
             pickle.dump(y, f)
-    return l_max
 
 
 def _generate_solver_gaussian_loss(losses, label, l_max, sigma):
@@ -71,6 +68,7 @@ def connect4_loss_plots(load_data=True, res=300):
               r'$\bf{C.}$ Time required, $\alpha$-$\beta$ pruning']
     sigma = 0.15
     labels = [0, 1, 2, 3, 4, 5, 6]
+    l_max = 0
     for i, ax in enumerate(axs):
         if i == 0:
             print('[1/3] Plotting training loss')
@@ -79,10 +77,11 @@ def connect4_loss_plots(load_data=True, res=300):
             with open('../plot_data/value_loss/training_loss/loss_curves_connect_four.pkl', 'rb') as f:
                 loss_curves = pickle.load(f)
             if not load_data:
-                l_max =_generate_gaussian_smoothed_loss(labels=labels, loss_curves=loss_curves, sigma=sigma)
+                _generate_gaussian_smoothed_loss(labels=labels, loss_curves=loss_curves, sigma=sigma)
             for label in tqdm([0, 1, 2, 3, 4, 5, 6]):
                 with open('../plot_data/value_loss/training_loss/gaussian_loss_connect_four_'+str(label)+'.pkl', 'rb') as f:
                     y = pickle.load(f)
+                l_max = max(l_max, len(y))
                 ax.plot(np.arange(len(y))+1, y, color=cm.viridis(color_nums[label]))
             ax.set_xscale('log')
             ax.set_yscale('log')
