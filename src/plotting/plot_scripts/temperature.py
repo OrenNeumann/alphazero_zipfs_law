@@ -146,17 +146,17 @@ def plot_temperature_curves(load_data=True, res=300):
     # plotting all-T data:
     plt.scatter(zipf_exponents, elo_exponents, c=cm.plasma(color_nums), s=70)
     plt.axvline(x=1, color='black', linestyle='--', linewidth=2)
-    plt.xlabel('Zipf exponent (tail)',fontsize=tf+4)
-    plt.ylabel('Elo exponent',fontsize=tf+4)
-    plt.tick_params(axis='both', which='major', labelsize=tf+2)
-    plt.annotate('Fig. 3B cutoff', xy=(1, 0.6), xytext=(2.2, 0.5), arrowprops=dict(arrowstyle='->'), fontsize=tf+4)
+    plt.xlabel('Zipf exponent (tail)',fontsize=tf+8)
+    plt.ylabel('Elo exponent',fontsize=tf+8)
+    plt.tick_params(axis='both', which='major', labelsize=tf+6)
+    plt.annotate('Fig. 3B cutoff', xy=(1, 0.6), xytext=(2.2, 0.5), arrowprops=dict(arrowstyle='->'), fontsize=tf+8)
     print(zipf_exponents)
     print(elo_exponents)
     
     # Colorbar:
     cbar = fig.colorbar(sm)
-    cbar.ax.tick_params(labelsize=tf+2)
-    cbar.ax.set_ylabel('Temperature', rotation=90, fontsize=tf+4)
+    cbar.ax.tick_params(labelsize=tf+6)
+    cbar.ax.set_ylabel('Temperature', rotation=90, fontsize=tf+8)
 
     fig.tight_layout()
     fig.savefig('./plots/exponent_correlation.png', dpi=res)
