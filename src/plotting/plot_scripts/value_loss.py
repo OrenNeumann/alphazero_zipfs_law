@@ -5,7 +5,7 @@ import pickle
 from tqdm import tqdm
 import numpy as np
 import scienceplots
-from src.plotting.plot_utils import aligned_title, smooth, gaussian_average
+from src.plotting.plot_utils import aligned_title, gaussian_average
 from src.data_analysis.state_value.alpha_beta_pruning_time import save_pruning_time
 from src.data_analysis.state_frequency.state_counter import StateCounter
 from src.data_analysis.state_value.value_loss import value_loss
@@ -184,6 +184,7 @@ def _oware_gaussian_smoothed_loss(labels, n_copies, sigma):
                     averaged_curves[label][t] = new_curve
                 else:
                     l = min(len(all_curves), len(new_curve))
+                    print(l)
                     averaged_curves[label][t] = all_curves[:l] * new_curve[:l]
     for label in labels:
             for t in loss_types:
