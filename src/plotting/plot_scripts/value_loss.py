@@ -151,16 +151,12 @@ def _state_loss(env, path):
     return loss, turn_mask
 
 
-def _gereate_oware_loss_curves(data_labels):
-    # currently only works for n_copies=1
-    n_copies=1
+def _gereate_oware_loss_curves(data_labels, n_copies):
     print('Generating loss curves for Oware')
     env='oware'
     loss_types = ('later_turns','early_turns','every_state')
     losses = {label: {k: None for k in loss_types} for label in data_labels}
     for copy in range(n_copies):
-        if copy != 3:
-            continue
         for label in data_labels:
             model_name = f'q_{label}_{copy}'#
             print(model_name)
@@ -188,18 +184,17 @@ def _oware_gaussian_smoothed_loss(labels, n_copies, sigma):
                     averaged_curves[label][t] = new_curve
                 else:
                     l = min(len(all_curves), len(new_curve))
-                    averaged_curves[label][t] = all_curves[:l] + new_curve[:l]
+                    averaged_curves[label][t] = all_curves[:l] * new_curve[:l]
     for label in labels:
             for t in loss_types:
-                averaged_curves[label][t] /= n_copies
-    #consider geometric mean
+                averaged_curves[label][t] = (averaged_curves[label][t])**(1/n_copies)
 
     loss_types = ('later_turns','early_turns','every_state')
     smooth_losses = {label: {k: None for k in loss_types} for label in labels}
     ranks = {label: {k: None for k in loss_types} for label in labels}
     for t in loss_types:
         for label in tqdm(labels):
-            curve = np.array(averaged_curves[label][t])#np.array(loss_curves[label][t])
+            curve = np.array(averaged_curves[label][t])
             mask = curve > 0
             smooth_losses[label][t], ranks[label][t] = gaussian_average(curve, sigma=sigma, cut_tail=True, mask=mask)
     with open(f'../plot_data/value_loss/late_turns/gaussian_loss_oware_total.pkl', 'wb') as f: #
@@ -213,9 +208,10 @@ def oware_value_loss(load_data=True, res=300):
     fig, axes = plt.subplots(nrows=1, ncols=3, figsize=(12, 3.5))
     sigma = 0.15
     labels = [0, 1, 2, 3, 4, 5, 6]
+    n_copies = 3
     if not load_data:
-        #_gereate_oware_loss_curves(labels)
-        _oware_gaussian_smoothed_loss(labels, n_copies=3, sigma=sigma)#
+        #_gereate_oware_loss_curves(labels, n_copies)
+        _oware_gaussian_smoothed_loss(labels, n_copies, sigma)#
 
     with open('../plot_data/value_loss/late_turns/gaussian_loss_oware_total.pkl', "rb") as f: #
         losses, ranks =  pickle.load(f)
