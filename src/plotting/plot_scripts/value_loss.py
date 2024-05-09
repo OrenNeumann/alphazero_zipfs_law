@@ -158,32 +158,52 @@ def _gereate_oware_loss_curves(data_labels):
     env='oware'
     loss_types = ('later_turns','early_turns','every_state')
     losses = {label: {k: None for k in loss_types} for label in data_labels}
-    for label in data_labels:
-        for copy in range(n_copies):
-            model_name = f'q_{label}_{copy+2}'#
+    for copy in range(n_copies):
+        if copy != 3:
+            continue
+        for label in data_labels:
+            model_name = f'q_{label}_{copy}'#
             print(model_name)
             model_path = models_path() + game_path(env) + model_name + '/'
             loss, turn_mask = _state_loss(env, model_path)
             losses[label]['later_turns'] = loss*turn_mask
             losses[label]['early_turns'] = loss*(~turn_mask)
             losses[label]['every_state'] = loss
-    with open('../plot_data/value_loss/late_turns/loss_curves_'+env+'_2.pkl', 'wb') as f: #
-        pickle.dump(losses, f)
+        with open(f'../plot_data/value_loss/late_turns/loss_curves_{env}_{copy}.pkl', 'wb') as f: #
+            pickle.dump(losses, f)
 
 
-def _oware_gaussian_smoothed_loss(labels, sigma):
+def _oware_gaussian_smoothed_loss(labels, n_copies, sigma):
     print('Smoothing Oware loss curves')
-    with open('../plot_data/value_loss/late_turns/loss_curves_oware_2.pkl', "rb") as f: #
-        loss_curves = pickle.load(f)
+    loss_types = ('later_turns','early_turns','every_state')
+    averaged_curves = {label: {k: None for k in ('later_turns','early_turns','every_state')} for label in labels}
+    for copy in range(n_copies):
+        print(f'Copy {copy}:')
+        with open(f'../plot_data/value_loss/late_turns/loss_curves_oware_{copy}.pkl', "rb") as f: #
+            loss_curves = pickle.load(f)
+        for label in labels:
+            for t in loss_types:
+                all_curves = averaged_curves[label][t]
+                new_curve = loss_curves[label][t]
+                if all_curves is None:
+                    averaged_curves[label][t] = new_curve
+                else:
+                    l = min(len(all_curves), len(new_curve))
+                    all_curves = all_curves[:l] + new_curve[:l]
+    for label in labels:
+            for t in loss_types:
+                averaged_curves[label][t] /= n_copies
+    #consider geometric mean
+
     loss_types = ('later_turns','early_turns','every_state')
     smooth_losses = {label: {k: None for k in loss_types} for label in labels}
     ranks = {label: {k: None for k in loss_types} for label in labels}
     for t in loss_types:
         for label in tqdm(labels):
-            curve = np.array(loss_curves[label][t])
+            curve = np.array(averaged_curves[label][t])#np.array(loss_curves[label][t])
             mask = curve > 0
             smooth_losses[label][t], ranks[label][t] = gaussian_average(curve, sigma=sigma, cut_tail=True, mask=mask)
-    with open('../plot_data/value_loss/late_turns/gaussian_loss_oware_2.pkl', 'wb') as f: #
+    with open(f'../plot_data/value_loss/late_turns/gaussian_loss_oware_total.pkl', 'wb') as f: #
         pickle.dump([smooth_losses, ranks], f)
 
 
@@ -195,10 +215,10 @@ def oware_value_loss(load_data=True, res=300):
     sigma = 0.15
     labels = [0, 1, 2, 3, 4, 5, 6]
     if not load_data:
-        _gereate_oware_loss_curves(labels)
-        _oware_gaussian_smoothed_loss(labels, sigma)
+        #_gereate_oware_loss_curves(labels)
+        _oware_gaussian_smoothed_loss(labels, n_copies=3, sigma=sigma)#
 
-    with open('../plot_data/value_loss/late_turns/gaussian_loss_oware_2.pkl', "rb") as f: #
+    with open('../plot_data/value_loss/late_turns/gaussian_loss_oware_total.pkl', "rb") as f: #
         losses, ranks =  pickle.load(f)
     par = np.load('src/config/parameter_counts/oware.npy')
     log_par = np.log(par)
