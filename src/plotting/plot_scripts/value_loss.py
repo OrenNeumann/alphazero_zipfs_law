@@ -178,7 +178,6 @@ def _oware_gaussian_smoothed_loss(labels, n_copies, sigma):
     loss_types = ('later_turns','early_turns','every_state')
     averaged_curves = {label: {k: None for k in ('later_turns','early_turns','every_state')} for label in labels}
     for copy in range(n_copies):
-        print(f'Copy {copy}:')
         with open(f'../plot_data/value_loss/late_turns/loss_curves_oware_{copy}.pkl', "rb") as f: #
             loss_curves = pickle.load(f)
         for label in labels:
@@ -189,7 +188,7 @@ def _oware_gaussian_smoothed_loss(labels, n_copies, sigma):
                     averaged_curves[label][t] = new_curve
                 else:
                     l = min(len(all_curves), len(new_curve))
-                    all_curves = all_curves[:l] + new_curve[:l]
+                    averaged_curves[label][t] = all_curves[:l] + new_curve[:l]
     for label in labels:
             for t in loss_types:
                 averaged_curves[label][t] /= n_copies
