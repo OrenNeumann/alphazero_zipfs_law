@@ -137,8 +137,7 @@ def plot_temperature_curves(load_data=True, res=300):
 
     fig.tight_layout()
     print('Saving figure (can take a while)...')
-    fig.savefig('./plots/temperature_curves.png', dpi=res)
-    #fig.savefig('./plots/temperature_curves2.png', dpi=300)
+    #fig.savefig('./plots/temperature_curves.png', dpi=res)
 
     ##############################################################
     print('Plotting exponents relation (appendix)')
@@ -161,4 +160,4 @@ def plot_temperature_curves(load_data=True, res=300):
 
     fig.tight_layout()
     fig.savefig('./plots/exponent_correlation.png', dpi=res)
-    #fig.savefig('./plots/exponent_correlation2.png', dpi=300)
+    fig.savefig('./plots/exponent_correlation2.png', dpi=300)
