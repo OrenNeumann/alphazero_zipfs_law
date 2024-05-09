@@ -144,7 +144,7 @@ def plot_temperature_curves(load_data=True, res=300):
     fig = plt.figure(figsize=(12, 6))
 
     # plotting all-T data:
-    plt.scatter(zipf_exponents, elo_exponents, c=cm.plasma(color_nums), s=50)
+    plt.scatter(zipf_exponents, elo_exponents, c=cm.plasma(color_nums), s=70)
     plt.axvline(x=1, color='black', linestyle='--', linewidth=2)
     plt.xlabel('Zipf exponent (tail)',fontsize=tf+4)
     plt.ylabel('Elo exponent',fontsize=tf+4)
@@ -155,8 +155,8 @@ def plot_temperature_curves(load_data=True, res=300):
     
     # Colorbar:
     cbar = fig.colorbar(sm)
-    cbar.ax.tick_params(labelsize=tf)
-    cbar.ax.set_ylabel('Temperature', rotation=90, fontsize=tf)
+    cbar.ax.tick_params(labelsize=tf+2)
+    cbar.ax.set_ylabel('Temperature', rotation=90, fontsize=tf+4)
 
     fig.tight_layout()
     fig.savefig('./plots/exponent_correlation.png', dpi=res)
