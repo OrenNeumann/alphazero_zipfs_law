@@ -160,20 +160,20 @@ def _gereate_oware_loss_curves(data_labels):
     losses = {label: {k: None for k in loss_types} for label in data_labels}
     for label in data_labels:
         for copy in range(n_copies):
-            model_name = f'q_{label}_{copy+1}'#
+            model_name = f'q_{label}_{copy+2}'#
             print(model_name)
             model_path = models_path() + game_path(env) + model_name + '/'
             loss, turn_mask = _state_loss(env, model_path)
             losses[label]['later_turns'] = loss*turn_mask
             losses[label]['early_turns'] = loss*(~turn_mask)
             losses[label]['every_state'] = loss
-    with open('../plot_data/value_loss/late_turns/loss_curves_'+env+'_1.pkl', 'wb') as f: #
+    with open('../plot_data/value_loss/late_turns/loss_curves_'+env+'_2.pkl', 'wb') as f: #
         pickle.dump(losses, f)
 
 
 def _oware_gaussian_smoothed_loss(labels, sigma):
     print('Smoothing Oware loss curves')
-    with open('../plot_data/value_loss/late_turns/loss_curves_oware_1.pkl', "rb") as f: #
+    with open('../plot_data/value_loss/late_turns/loss_curves_oware_2.pkl', "rb") as f: #
         loss_curves = pickle.load(f)
     loss_types = ('later_turns','early_turns','every_state')
     smooth_losses = {label: {k: None for k in loss_types} for label in labels}
@@ -183,7 +183,7 @@ def _oware_gaussian_smoothed_loss(labels, sigma):
             curve = np.array(loss_curves[label][t])
             mask = curve > 0
             smooth_losses[label][t], ranks[label][t] = gaussian_average(curve, sigma=sigma, cut_tail=True, mask=mask)
-    with open('../plot_data/value_loss/late_turns/gaussian_loss_oware_1.pkl', 'wb') as f: #
+    with open('../plot_data/value_loss/late_turns/gaussian_loss_oware_2.pkl', 'wb') as f: #
         pickle.dump([smooth_losses, ranks], f)
 
 
@@ -198,7 +198,7 @@ def oware_value_loss(load_data=True, res=300):
         _gereate_oware_loss_curves(labels)
         _oware_gaussian_smoothed_loss(labels, sigma)
 
-    with open('../plot_data/value_loss/late_turns/gaussian_loss_oware_1.pkl', "rb") as f: #
+    with open('../plot_data/value_loss/late_turns/gaussian_loss_oware_2.pkl', "rb") as f: #
         losses, ranks =  pickle.load(f)
     par = np.load('src/config/parameter_counts/oware.npy')
     log_par = np.log(par)
