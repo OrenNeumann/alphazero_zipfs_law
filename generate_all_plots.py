@@ -8,31 +8,15 @@ from src.plotting.plot_scripts.temperature import plot_temperature_curves
 from src.plotting.plot_scripts.appendix.policy_degradation import plot_policy_degradation
 from src.plotting.plot_scripts.appendix.capture_difference import plot_capture_differences
 
-############################################
-# write how much time on what kind of hardware is needed for all experiments.
-# CPU cores, RAM
-############################################
 
 """
 Re-create all plots from the paper.
 If 'load_data' is False, generates all plot data from scratch. This will take a while.
-
-Note regarding generating data from scratch:
-Some experiments require importing or installing 3rd party data and software manually:
-- Almost all experiments require agent training/inference data, and the trained agents. 
-    These can be generated with OpenSpiel by the code available here:
-    https://github.com/OrenNeumann/AlphaZero-scaling-laws
-- Experiments using the Connect Four solver ('connect4_loss_plots', 'plot_policy_degradation') require installing the solver available here:
-    https://github.com/PascalPons/connect4
-    The opening book, available as a release in the github repo, should be saved in the running directory.
-- The alpha-beta pruning experiment in 'connect4_loss_plots' requires that the solver opening book is NOT present in the 
-    parent dir (forcing the solver to perform a full search without prior data).
-- 'plot_appendix_zipf_curves' should run before 'plot_main_zipf_curves'.
-
 """
 load_data = True
 
-plot_appendix_zipf_curves(load_data) # Generates data for plot_main_zipf_curves
+# 'plot_appendix_zipf_curves' should run before 'plot_main_zipf_curves'
+plot_appendix_zipf_curves(load_data)
 
 # Main paper:
 plot_main_zipf_curves()
