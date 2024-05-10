@@ -6,7 +6,7 @@ def incremental_bin(bin_max):
     Creates bin limits that expand exponentially.
     Bin n has a width of:
     n^(1+0.02*n)
-    I found that's a good compromise between high detail and low noise.
+    It's a good compromise between high detail and low noise.
     """
     bins = [1]
     alpha = 1
