@@ -14,7 +14,7 @@ plt.style.use(['science','nature','grid'])
 def _oware_size_scaling():
     """ Load match matrices and calculate Elo ratings. """
     checkpoints = [20, 30, 50, 70, 100, 150, 230, 340, 510, 770, 1150, 1730, 2590, 3880, 5820, 8730, 10000]
-    dir_name = './matches/oware_base/'
+    dir_name = '../matches/oware_base/'
     r = BayesElo()
     agents = PlayerNums()
 
