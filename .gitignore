@@ -6,7 +6,6 @@ pyvenv.cfg
 **/__pycache__/
 src/alphazero_scaling/connect4-master/*
 src/alphazero_scaling/elo/Bayesian_Elo/
-plots/
 7x6.book
 src/config/paths.yaml
 .vscode/
