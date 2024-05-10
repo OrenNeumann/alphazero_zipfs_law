@@ -210,7 +210,7 @@ def oware_value_loss(load_data=True, res=300):
     labels = [0, 1, 2, 3, 4, 5, 6]
     n_copies = 1
     if not load_data:
-        #_gereate_oware_loss_curves(labels, n_copies)
+        _gereate_oware_loss_curves(labels, n_copies)
         _oware_gaussian_smoothed_loss(labels, n_copies, sigma)
 
     with open('../plot_data/value_loss/late_turns/gaussian_loss_oware_total.pkl', "rb") as f:

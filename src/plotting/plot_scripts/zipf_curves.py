@@ -31,8 +31,8 @@ def _fit_power_law(freq, ylabel, env):
         low = 10**2
         up = 2*10**6
     else:
-        low = np.argmax(freq < 10**2)#10**2
-        up = np.argmax(freq < 10**1)#int(len(freq)/10**2)
+        low = np.argmax(freq < 10**2)
+        up = np.argmax(freq < 10**1)
     x_nums = np.arange(up)[low:]
     [m, c] = np.polyfit(np.log10(np.arange(up)[low:] + 1), np.log10(freq[low:up]), deg=1, w=2 / np.sqrt(x_nums))
     exp = str(round(-m, 2))
@@ -85,7 +85,6 @@ def plot_main_zipf_curves(res=300):
     plt.annotate('Pentago: ' + labels[1], xy=[10**3, 4*10**2], xytext=[0.5*10**2, 4*10**1], arrowprops=dict(arrowstyle='->'), fontsize=tf)
     plt.xlabel('State rank',fontsize=tf)
     plt.ylabel('Frequency',fontsize=tf)
-    #plt.legend(fontsize=tf-2, loc='upper right')
     fig.tight_layout()
     print('Saving figure (can take a while)...')
     fig.savefig('plots/main_zipf_curves.png', dpi=res)

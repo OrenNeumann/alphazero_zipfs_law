@@ -64,9 +64,8 @@ def plot_checkers(res=300):
     print('Loading data')
     with open('../plot_data/board_positions/checkers_counter.pkl', 'rb') as f:
         state_counter = pickle.load(f)
-    #turn_mask = state_counter.late_turn_mask(threshold=40)
     keys = [i for i,_ in state_counter.frequencies.most_common()]
-    early_turns = [0,9,99,999]#[0,10,100,1000]
+    early_turns = [0,9,99,999]
     late_turns = [39, 140, 556, 3345]
     for index in early_turns + late_turns:
         plot_checkers_state(keys[index], str(index))

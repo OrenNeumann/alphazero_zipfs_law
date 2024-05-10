@@ -26,7 +26,6 @@ def plot_game_turns(res=600):
 
     # Plots 1-4
     square_plots = [ax1, ax2, ax3, ax4]
-    #colors = ['blue', 'purple', 'green', 'olive']
     colors = ['#377eb8', '#984ea3', '#2ca02c', '#bcbd22']
     envs = ['connect_four', 'pentago', 'oware', 'checkers']
     env_names =['Connect Four', 'Pentago', 'Oware', 'Checkers']
@@ -38,7 +37,7 @@ def plot_game_turns(res=600):
         ax.set_xscale('log')
         ax.set_yscale('log')
         if i >1:
-            ax.axhline(y=40, linestyle='--', color='black')###
+            ax.axhline(y=40, linestyle='--', color='black')
         # Specific legend positions
         if i<2:
             ax.legend(loc='upper left', fontsize=tf)

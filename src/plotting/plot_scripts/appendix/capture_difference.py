@@ -84,6 +84,5 @@ def _capture_diff(state_str, env):
 
 def _generate_states(env):
     state_counter = gather_data(env, labels=[0, 1, 2, 3, 4, 5, 6], max_file_num=10)
-    #state_counter.prune_low_frequencies(10)
     with open(f'../plot_data/capture_diff/{env}_counter.pkl', 'wb') as f:
         pickle.dump(state_counter, f)
