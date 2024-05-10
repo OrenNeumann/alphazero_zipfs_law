@@ -4,6 +4,7 @@ from subprocess import PIPE
 import time
 import pickle
 from src.data_analysis.gather_agent_data import gather_data
+from src.plotting.plot_utils import incremental_bin
 from scipy.stats import gmean, gstd
 import pyspiel
 import os

@@ -9,7 +9,7 @@ def gather_data(env: str, labels: list[int], cutoff=None, max_file_num: int = 1,
         Counts and averages are taken over all agents in 'labels'.
         Currently just uses agent copy num. 0."""
     print('Collecting ' + env + ' games:')
-    path = models_path() + game_path(env) + 'q_'#'/oware/c_'
+    path = models_path() + game_path(env) + 'q_'
     if cutoff is None:
         state_counter = StateCounter(env=env, save_serial=save_serial, save_turn_num=save_turn_num,
                                      save_value=save_value, cut_early_games=False)

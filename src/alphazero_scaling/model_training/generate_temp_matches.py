@@ -8,31 +8,31 @@ from src.alphazero_scaling import AZ_helper_lib as AZh
 
 
 """
-Run games at the specified temeprature.
-This code just generates a big bulk of games for calculating board state distribution later.
+Run games at the specified temepratures.
+Generates a big bulk of games for calculating board state distribution later.
 """
 
 # Name of the directory where the models are saved. Don't forget to change 'game' in config.
 dir_name = 'connect_four'
 
 checkpoint_number = 10000
-temps = [0.07, 0.1, 0.14, 0.2, 0.25, 0.32, 0.45, 0.6, 0.8, 1, 1.4, 2, 3, 5]
+temps = [0.07, 0.1, 0.14, 0.2, 0.25, 0.32, 0.45, 0.6, 0.8, 1, 1.4, 2, 3, 5, 0.04, 0.02, 0.01]
 i = int(sys.argv[1])
 temperature = temps[i]
 # Save all logs to:
-path_logs = '/scratch/compmatsc/neumann/matches/zipf_law/temperature_matches/'+str(dir_name)+'/temp_num_' +str(i) + '/'
+path_logs = './models/matches/temperature_matches/'+str(dir_name)+'/temp_num_' +str(i) + '/'
 if not os.path.exists(path_logs):
     os.makedirs(path_logs)
 
 
 def set_config(model_1, model_2, n_games, output_dir):
-    path_model_1 = '/scratch/compmatsc/neumann/models/' + dir_name + '/' + model_1 + '/'
-    path_model_2 = '/scratch/compmatsc/neumann/models/' + dir_name + '/' + model_2 + '/'
+    path_model_1 = './models/' + dir_name + '/' + model_1 + '/'
+    path_model_2 = './models/' + dir_name + '/' + model_2 + '/'
     # Create the directory, then copy the config.json file into it: (otherwise crashes)
     output_path = path_logs + output_dir + '/'
     if not os.path.exists(output_path):
         os.makedirs(output_path)
-        copyfile('/scratch/compmatsc/neumann/matches/config.json', output_path + '/config.json')
+        copyfile('./matches/config.json', output_path + '/config.json')
     config = AZh.Config(
         game="connect_four",  # <======   change game here
         MC_matches=False,
