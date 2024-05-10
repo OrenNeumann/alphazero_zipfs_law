@@ -28,7 +28,7 @@ class BayesElo(object):
 
     def add_match(self, n, m, p):
         for k in range(800):
-            # just say we had 1600 games and none of them tied:
+            # 1600 games, no ties:
             self.rating.append(n, m, int(k < p * 800) * 2)
             self.rating.append(m, n, int(k > p * 800) * 2)
             

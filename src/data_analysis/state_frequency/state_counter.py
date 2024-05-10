@@ -8,9 +8,6 @@ from src.general.general_utils import training_length
 """
 Tools for retrieving information from recorded AlphaZero games.
 StateCounter is used for extracting game states and frequencies.
-
-Note: This code assumes the logfiles only contain legal moves, 
-    be careful using it on another dataset.
 """
 
 ACTION_STRINGS = {
@@ -134,8 +131,6 @@ class StateCounter(object):
                 self.serials[key] = board.serialize()
         # Apply final action (not counted, it's not trained on and it messes up value loss)
         board.apply_action(board.string_to_action(actions[-1]))
-        #if not board.is_terminal():
-        #    raise Exception('Game ended prematurely. Maybe a corrupted file?')
         return board, keys
 
     def _update_frequencies(self, keys):
@@ -193,7 +188,6 @@ class StateCounter(object):
         print("Drawn {} out of {} games, ratio: {:.3f}".format(self.draws, self.games, self.draws / self.games))
 
 
-# check for bugs
 class RandomGamesCounter(StateCounter):
     """ A StateCounter that collects data from random games, generated on the fly.
         A way to check scaling at T = infinity.

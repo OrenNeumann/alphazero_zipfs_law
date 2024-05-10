@@ -3,11 +3,10 @@ import subprocess
 from subprocess import PIPE
 import time
 import pickle
-from src.plotting.plot_utils import Figure, incremental_bin
 from src.data_analysis.gather_agent_data import gather_data
 from scipy.stats import gmean, gstd
-import matplotlib.pyplot as plt
 import pyspiel
+import os
 
 """
 Time how long it takes for alpha beta pruning to analyze connect4 states.
@@ -37,11 +36,12 @@ def time_alpha_beta_pruning(states, max_time=2*60):
     return np.mean(times), np.std(times), gmean(times), gstd(times)
     
 
-def save_pruning_time(generate_counter=False, plot=False):
+def save_pruning_time(generate_counter=False):
     print("""Generating alpha-beta pruning data.
           NOTICE: Generating this data from scratch takes a prohibitively long amount of time,
           since it measures the wall-time of exponentially-longer ab-pruning runs.""")
-    print("""IMPORTANT: This code requires that the connect four opening book ("7x6.book") is NOT present in the parent directory.""")
+    if os.path.isfile('./7x6.book'):
+        raise ValueError("The connect four opening book ('7x6.book') should not be present in the parent directory.")
     # Gather states
     if generate_counter:
         generate_states()
@@ -98,24 +98,6 @@ def save_pruning_time(generate_counter=False, plot=False):
                      'g_mean': g_mean_times,
                      'std': standard_devs,
                      'gstd': gstds}, f)
-    
-    if plot:
-        fig = Figure(text_font=16,
-                    number_font=14,
-                    fig_num=3)
-        fig.preamble()
-        # Plot with geometric standard deviation error bars
-        err = [np.array(g_mean_times)*np.array(gstds), np.array(g_mean_times)/np.array(gstds)]
-        plt.errorbar(bin_x[indices], g_mean_times, yerr=err, fmt='-o')
-        err = [np.array(times)*np.array(gstds), np.array(times)/np.array(gstds)]
-        plt.errorbar(bin_x[indices], times, yerr=err, fmt='-o')
-        plt.xscale('log')
-        plt.yscale('log')
-        fig.y_label = 'CPU time (s)'
-        fig.x_label = 'State rank'
-        fig.title = 'Alpha-beta pruning resources'
-        fig.epilogue()
-        fig.save('search_time')
     
 
 def generate_states():

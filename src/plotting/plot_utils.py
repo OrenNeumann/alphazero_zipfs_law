@@ -2,7 +2,6 @@ import matplotlib
 import matplotlib.pyplot as plt
 import scienceplots
 import numpy as np
-from tqdm import tqdm
 
 
 class Figure(object):
@@ -122,14 +121,6 @@ def aligned_title(ax, title,font):
     x,_ = ax.transAxes.inverted().transform([bbox.x0, bbox.y0])
     ax.set_title(title, ha='left',x=x,fontsize=font)
 
-def smooth(vec):
-    """return a smoothed vec with values averaged with their neighbors."""
-    a = 0.5
-    filter = np.array([a, 1, a]) / (1 + 2 * a)
-    new_vec = np.convolve(vec, filter, mode='same')
-    new_vec[0] = (vec[0] + a * vec[1]) / (1 + a)
-    new_vec[-1] = (vec[-1] + a * vec[-2]) / (1 + a)
-    return new_vec
 
 def gaussian_average(y, sigma=0.25, cut_tail=False, mask=None):
     """ Smooth y by averaging it with a log-scale gaussian kernel.
@@ -150,22 +141,4 @@ def gaussian_average(y, sigma=0.25, cut_tail=False, mask=None):
         y_smooth[i] = np.sum(y * kernel) / np.sum(kernel)
     if mask is not None:
         return y_smooth, x_ranks
-    return y_smooth
-
-
-def gaussian_average3(y, sigma=0.25, chunk_size=10, cut_tail=False):
-    """Smooth y by averaging it with a log-scale gaussian kernel."""
-    y_smooth = np.zeros_like(y)
-    ranks = np.arange(len(y)) + 1
-    x_ranks = np.arange(len(y)) + 1
-    if cut_tail:
-        y_smooth = np.zeros(int(len(y)/10**(2*sigma)))
-        x_ranks =  np.arange(int(len(y)/10**(2*sigma)))+1
-    n = len(y_smooth)
-    for i in range(0, n, chunk_size):
-        j = min(i + chunk_size, n)  # end of the current chunk
-        chunk_ranks = x_ranks[i:j]
-        kernel = np.exp(-0.5 * ((np.log10(ranks[None, :] / chunk_ranks[:, None])) / sigma) ** 2)
-        y_smooth[i:j] = np.dot(kernel, y) / np.sum(kernel, axis=1)
-
     return y_smooth
