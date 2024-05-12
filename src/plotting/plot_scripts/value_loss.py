@@ -112,9 +112,10 @@ def connect4_loss_plots(load_data=True, res=300):
             x = ab_data['x']
             #y = np.array(ab_data['g_mean'])
             #gstd = np.array(ab_data['gstd'])
-            y = np.array(ab_data['times'])#
+            y = np.array(ab_data['times'])
             gstd = np.array(ab_data['std'])
-            err = np.array([y*(1-1/gstd), y*(gstd-1)])
+            #err = np.array([y*(1-1/gstd), y*(gstd-1)])
+            err = np.array([gstd, gstd])
             c = -15 # Cut off hardware-limit plateau
             ax.errorbar(x[:c], y[:c], yerr=err[:,:c], fmt='-o')
             ax.set_xscale('log')
