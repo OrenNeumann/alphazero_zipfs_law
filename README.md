@@ -12,7 +12,7 @@ To run all experiments from scratch, change the flag `load_data` to `False`. Doi
 
 ## Hardware requirements
 
-All experiments ran on 64 CPU cores with 125Gi RAM.
+All experiments ran a single node with 64 CPU cores and 125Gi RAM.
 
 ## Generating all results from scratch
 
