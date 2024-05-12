@@ -110,8 +110,10 @@ def connect4_loss_plots(load_data=True, res=300):
             with open('../plot_data/ab_pruning/data.pkl', 'rb') as f:
                 ab_data = pickle.load(f)
             x = ab_data['x']
-            y = np.array(ab_data['g_mean'])#
-            gstd = np.array(ab_data['gstd'])
+            #y = np.array(ab_data['g_mean'])
+            #gstd = np.array(ab_data['gstd'])
+            y = np.array(ab_data['times'])#
+            gstd = np.array(ab_data['std'])
             err = np.array([y*(1-1/gstd), y*(gstd-1)])
             c = -15 # Cut off hardware-limit plateau
             ax.errorbar(x[:c], y[:c], yerr=err[:,:c], fmt='-o')
