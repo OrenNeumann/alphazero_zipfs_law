@@ -1,7 +1,7 @@
 # Paper code
 
-NOTE: This anonymized repo does not contain model weights or training data, due to lack of space. Plots cannot be generated because the data they require is also too heavy for this submission.
-Weights and data will be made public in the final version.
+_NOTE: The anonymized supplementary material does not contain model weights or training data, due to lack of space. We provide all the code used to run the experiments included in the paper and appendix.
+Weights and data will be made public in a URL for the final version, allowing reproduction of all results together with the code available here._
 
 Install all dependencies and run:
 ```
