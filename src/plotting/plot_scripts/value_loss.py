@@ -220,7 +220,7 @@ def oware_value_loss(load_data=True, res=300):
     color_nums = (log_par - log_par.min()) / (log_par.max() - log_par.min())
 
     loss_types = ('every_state', 'early_turns', 'later_turns')
-    titles = ['Oware value loss', 'Early-turn loss', 'Late-turn loss']
+    titles = [r'$\bf{A.}$ Oware value loss', r'$\bf{B.}$ Early-turn loss', r'$\bf{C.}$ Late-turn loss']
     ylim = None
     for i,ax in enumerate(axes.flat):
         t = loss_types[i]
