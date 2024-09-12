@@ -10,10 +10,11 @@ import scienceplots
 
 plt.style.use(['science','nature','grid'])
 
+CHECKPOINTS = [20, 30, 50, 70, 100, 150, 230, 340, 510, 770, 1150, 1730, 2590, 3880, 5820, 8730, 10000]
 
-def _oware_size_scaling():
+
+def _oware_size_scaling() -> tuple[list[int], list[float], list[float], list[int], list[float], list[float]]:
     """ Load match matrices and calculate Elo ratings. """
-    checkpoints = [20, 30, 50, 70, 100, 150, 230, 340, 510, 770, 1150, 1730, 2590, 3880, 5820, 8730, 10000]
     dir_name = '../matches/oware_base/'
     r = BayesElo()
     agents = PlayerNums()
@@ -27,17 +28,17 @@ def _oware_size_scaling():
     
     for model in tqdm(fixed_size_models, desc='Loading fixed-size matches'):
         matches = np.load(dir_name + 'fixed_size/' + str(model) + '/matrix.npy')
-        for cp in checkpoints:
+        for cp in CHECKPOINTS:
             agents.add(model, cp)
-        if len(matches) != len(checkpoints):
+        if len(matches) != len(CHECKPOINTS):
             raise ValueError('Matrix size does not match number of checkpoints.')
         for i, j in combinations(range(len(matches)), 2):
-            num_i = agents.num(model, checkpoints[i])
-            num_j = agents.num(model, checkpoints[j])
+            num_i = agents.num(model, CHECKPOINTS[i])
+            num_j = agents.num(model, CHECKPOINTS[j])
             r.add_match(num_i, num_j, p=matches[i, j])
 
     ######## load fixed-checkpoint models ########
-    def fc_model_ordering():
+    def fc_model_ordering() -> list[str]:
         # this misses q_6_3 and f_*_3 sadly
         max_q = 6
         min_f = 0
@@ -51,9 +52,10 @@ def _oware_size_scaling():
                 for j in range(n_copies):
                     nets.append('f_' + str(i) + '_' + str(j))
         return nets
+    
     fixed_checkpoint_models = fc_model_ordering()
 
-    for cp in tqdm(checkpoints, desc='Loading fixed-checkpoint matches'):
+    for cp in tqdm(CHECKPOINTS, desc='Loading fixed-checkpoint matches'):
         matches = np.load(dir_name + 'fixed_checkpoint/checkpoint_' + str(cp) + '/matrix.npy')
         for model in fixed_checkpoint_models:
             agents.add(model, cp)

@@ -11,7 +11,7 @@ from src.plotting.plot_scripts.appendix.capture_difference import plot_capture_d
 
 """
 Re-create all plots from the paper.
-If 'load_data' is False, generates all plot data from scratch. This will take a while.
+If 'load_data' is False, generates all plot data from scratch (takes a while).
 """
 load_data = True
 

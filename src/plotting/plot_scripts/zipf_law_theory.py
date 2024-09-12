@@ -28,7 +28,7 @@ def _calculate_theory_distribution():
         pickle.dump(freq, f)
 
 
-def _generate_random_games(env):
+def _generate_random_games(env: str):
     print('Generating ' + env + ' random games')
     counter = RandomGamesCounter(env)
     counter.collect_data()
@@ -149,7 +149,7 @@ def _policy_theory_curve(ax, tf, branch_prob, max_game_length):
     ax.legend(fontsize=tf)
 
 
-def plot_appendix_theory_zipf(res=300):  
+def plot_appendix_theory_zipf(res: int = 300):  
     """ Plot frequency curves for an exponentially branching tree, with different policies."""
     print('~~~~~~~~~~~~~~~~~~~ Plotting Zipf law theory (appendix) ~~~~~~~~~~~~~~~~~~~')
 
@@ -158,7 +158,7 @@ def plot_appendix_theory_zipf(res=300):
     fig, axes = plt.subplots(nrows=1, ncols=2, figsize=(12, 4))
     max_game_length = 24
     norm = matplotlib.colors.Normalize(vmin=max_game_length- 4*5, vmax=max_game_length)
-    sm = matplotlib.cm.ScalarMappable(cmap=plt.get_cmap('cividis'), norm=norm)
+    sm = cm.ScalarMappable(cmap=plt.get_cmap('cividis'), norm=norm)
     cbar = fig.colorbar(sm, ax=axes[1])
     cbar.ax.tick_params(labelsize=tf)
     cbar.ax.set_ylabel('Game length', rotation=90, fontsize=tf)

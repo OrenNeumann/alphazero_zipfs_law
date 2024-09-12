@@ -34,7 +34,7 @@ def _generate_loss_curves(env, data_labels, n_copies):
         pickle.dump(loss_curves, f)
 
 
-def _generate_gaussian_smoothed_loss(labels, loss_curves, sigma):
+def _generate_gaussian_smoothed_loss(labels: str, loss_curves, sigma: float):
     for label in tqdm(labels):
         curves = [np.array(loss_curves[f'q_{label}_{copy}']) for copy in range(6)]
         l = min([len(curve) for curve in curves])
@@ -45,7 +45,7 @@ def _generate_gaussian_smoothed_loss(labels, loss_curves, sigma):
             pickle.dump(y, f)
 
 
-def _generate_solver_gaussian_loss(losses, label, l_max, sigma):
+def _generate_solver_gaussian_loss(losses, label: int, l_max, sigma: float):
     y = losses[label]
     y = y[:l_max]
     y = gaussian_average(y, sigma=sigma, cut_tail=True)

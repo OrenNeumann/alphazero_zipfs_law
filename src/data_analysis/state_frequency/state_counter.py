@@ -46,11 +46,11 @@ class StateCounter(object):
 
     def __init__(self,
                  env: str,
-                 save_serial=False,
-                 save_turn_num=False,
-                 save_value=False,
-                 cut_early_games=True,
-                 cut_extensive=False):
+                 save_serial: bool = False,
+                 save_turn_num: bool = False,
+                 save_value: bool = False,
+                 cut_early_games: bool = True,
+                 cut_extensive: bool = False):
         self.env = env
         self.save_serial = save_serial
         self.save_turn_num = save_turn_num
@@ -79,7 +79,7 @@ class StateCounter(object):
         self.draws = 0
         self.games = 0
 
-    def _extract_games(self, file_path):
+    def _extract_games(self, file_path: str):
         """ Get the move-list (str) of all games in the file.
             If cut_early_games is True, only include the last 70% of games,
             accounting for short actor files (due to training run crashes).
@@ -97,7 +97,7 @@ class StateCounter(object):
                 games = games[-include:]
         return games
 
-    def collect_data(self, path, max_file_num, quiet=False, matches=False):
+    def collect_data(self, path: str, max_file_num: int, quiet=False, matches=False):
         if self.normalized:
             raise Exception('Data already normalized, reset counters to collect new data.')
         # Collect all games from all files
@@ -114,7 +114,7 @@ class StateCounter(object):
                 self._update_frequencies(keys)
                 self._update_info_counters(board, keys)
 
-    def _process_game(self, game_record):
+    def _process_game(self, game_record) -> tuple[pyspiel.State, list[str]]:
         """ Process a single game.
             Update the board counter and return the final board + keys of board positions played.
         """
@@ -133,10 +133,10 @@ class StateCounter(object):
         board.apply_action(board.string_to_action(actions[-1]))
         return board, keys
 
-    def _update_frequencies(self, keys):
+    def _update_frequencies(self, keys: list[str]):
         self.frequencies.update(keys)
 
-    def _update_info_counters(self, board, keys):
+    def _update_info_counters(self, board, keys: list[str]):
         """ Update the turn and value counters.
             These counters sum data, divide by count to get average."""
         if self.save_turn_num:
@@ -167,7 +167,7 @@ class StateCounter(object):
                 counter[key] /= count
         self.normalized = True
 
-    def prune_low_frequencies(self, threshold):
+    def prune_low_frequencies(self, threshold: int) -> None:
         """ Remove all states with a frequency below the threshold.
             Pruning states below threshold=2 roughly reduces the data by an OOM. Pruning
             states below threshold=4 will reduce it by another OOM."""
@@ -176,13 +176,13 @@ class StateCounter(object):
         for counter in counters:
             counter = {k: v for k, v in counter.items() if k in self.frequencies.keys()}
 
-    def late_turn_mask(self, threshold):
+    def late_turn_mask(self, threshold: int) -> np.ndarray:
         """ Create mask for late game states when sorting by frequency."""
         if not self.normalized:
             raise Exception('Normalize first.')
         return np.array([self.turns_played[k] >= threshold for k, _ in self.frequencies.most_common()])
     
-    def print_draws(self):
+    def print_draws(self) -> None:
         if not self.save_value:
             raise Exception('No draw data saved.')
         print("Drawn {} out of {} games, ratio: {:.3f}".format(self.draws, self.games, self.draws / self.games))
@@ -203,7 +203,7 @@ class RandomGamesCounter(StateCounter):
                          save_turn_num=save_turn_num,
                          save_value=save_value)
 
-    def collect_data(self, n=25_000 * 80, *args, **kwargs):
+    def collect_data(self, n: int = 25_000 * 80, *args, **kwargs):
         if self.normalized:
             raise Exception('Data already normalized, reset counters to collect new data.')
         for episode in tqdm(range(n), desc='Generating games'):

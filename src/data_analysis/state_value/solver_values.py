@@ -5,10 +5,10 @@ import pyspiel
 
 GAME = pyspiel.load_game('connect_four')
 
-def connect_four_solver(states: list):
+def connect_four_solver(states: list) -> tuple[list[np.ndarray], list[np.ndarray]]:
     """ Produces an optimal-scores vector for a game state.
         Takes a list of states and returns for each a mask of legal moves, plus a vector
-        of scores for eahc move. The scores are integers indicating how early the game will end, with 
+        of scores for each move. The scores are integers indicating how early the game will end, with 
         a +/- sign for win/loss. Higher score = better move.
 
         This code uses the open source solver available in:
@@ -39,7 +39,7 @@ def connect_four_solver(states: list):
     return masks, scores
 
 
-def _get_values(states):
+def _get_values(states: list):
     masks, scores = connect_four_solver(states)
     values = []
     for i, score_vec in enumerate(scores):
@@ -50,13 +50,13 @@ def _get_values(states):
     return values
 
 
-def _get_optimal_moves(states):
+def _get_optimal_moves(states: list):
     _, scores = connect_four_solver(states)
     optimal_moves = [np.sign(score_vec) == max(np.sign(score_vec)) for score_vec in scores]
     return optimal_moves
 
 
-def _get_optimal_policy(states):
+def _get_optimal_policy(states: list):
     masks, scores = connect_four_solver(states)
     values = []
     probs = []
@@ -86,7 +86,7 @@ def solver_values(serial_states: list[str]) -> list[float]:
     return player_0_values
 
 
-def solver_optimal_moves(serial_state: list[str]) -> list[np.array]:
+def solver_optimal_moves(serial_state: list[str]) -> list[np.ndarray]:
     """
     Returns a mask of optimal moves (all moves that lead to the best possible game outcome).
     If no win/draw is possible, returns True for all moves (including illegal moves!)

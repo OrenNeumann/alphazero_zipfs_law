@@ -11,7 +11,7 @@ from src.general.general_utils import models_path, game_path
 
 plt.style.use(['science','nature','grid'])
 
-def _generate_zipf_curves(env, models):
+def _generate_zipf_curves(env: str, models: list[str]) -> None:
     print('Generating Zipf curves for ' + env)
     counter = StateCounter(env=env)
     freqs = dict()
@@ -26,8 +26,8 @@ def _generate_zipf_curves(env, models):
     with open(f'../plot_data/zipf_curves/zipf_curves_{env}.pkl', 'wb') as f:
         pickle.dump(freqs, f)
 
-def _fit_power_law(freq, ylabel, env):
-    if env == 'connect_four' or env == 'pentago':
+def _fit_power_law(freq, ylabel: bool, env: str) -> tuple[list, list, str]:
+    if env in ['connect_four', 'pentago']:
         low = 10**2
         up = 2*10**6
     else:
@@ -62,7 +62,7 @@ def _plot_curve(ax, y, env, xlabel=False, ylabel=False, tf=12):
     ax.legend(fontsize=tf-2, loc='upper right')
 
 
-def plot_main_zipf_curves(res=300):
+def plot_main_zipf_curves(res: int = 300) -> None:
     print('~~~~~~~~~~~~~~~~~~~ Plotting Zipf curves (main paper) ~~~~~~~~~~~~~~~~~~~')
     envs = ['connect_four', 'pentago']
     colors = ['#377eb8', '#984ea3']
@@ -81,8 +81,8 @@ def plot_main_zipf_curves(res=300):
         plt.xscale('log')
         plt.yscale('log')
         plt.tick_params(axis='both', which='major', labelsize=tf-2)
-    plt.annotate('Connect Four: ' + labels[0], xy=[10**4, 4*10**2], xytext=[3*10**4, 8*10**3], arrowprops=dict(arrowstyle='->'), fontsize=tf)
-    plt.annotate('Pentago: ' + labels[1], xy=[10**3, 4*10**2], xytext=[0.5*10**2, 4*10**1], arrowprops=dict(arrowstyle='->'), fontsize=tf)
+    plt.annotate('Connect Four: ' + labels[0], xy=(10**4, 4*10**2), xytext=(3*10**4, 8*10**3), arrowprops=dict(arrowstyle='->'), fontsize=tf)
+    plt.annotate('Pentago: ' + labels[1], xy=(10**3, 4*10**2), xytext=(0.5*10**2, 4*10**1), arrowprops=dict(arrowstyle='->'), fontsize=tf)
     plt.xlabel('State rank',fontsize=tf)
     plt.ylabel('Frequency',fontsize=tf)
     fig.tight_layout()
@@ -90,7 +90,7 @@ def plot_main_zipf_curves(res=300):
     fig.savefig('plots/main_zipf_curves.png', dpi=res)
 
 
-def plot_appendix_zipf_curves(load_data=True, res=300):
+def plot_appendix_zipf_curves(load_data: bool = True, res: int = 300) -> None:
     print('~~~~~~~~~~~~~~~~~~~ Plotting Zipf curves (appendix) ~~~~~~~~~~~~~~~~~~~')
     models = ['q_0_0', 'q_2_0', 'q_4_0', 'q_6_0']
     envs = ['connect_four', 'pentago', 'oware', 'checkers']

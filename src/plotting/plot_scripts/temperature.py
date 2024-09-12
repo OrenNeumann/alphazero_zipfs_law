@@ -13,9 +13,9 @@ from src.alphazero_scaling.elo.utils import PlayerNums, BayesElo
 
 plt.style.use(['science','nature','grid'])
 
+TEMPERATURES = np.array([0.07, 0.1, 0.14, 0.2, 0.25, 0.32, 0.45, 0.6, 0.8, 1, 1.4, 2, 3, 5, 0.04, 0.02, 0.01])
 
-def _generate_temperature_zipf_curves(k):
-    temps = np.array([0.07, 0.1, 0.14, 0.2, 0.25, 0.32, 0.45, 0.6, 0.8, 1, 1.4, 2, 3, 5, 0.04, 0.02, 0.01])  
+def _generate_temperature_zipf_curves(k: int): 
     max_q = 6
     n_copies = 3
     nets = []
@@ -26,7 +26,7 @@ def _generate_temperature_zipf_curves(k):
     counter = StateCounter(env='connect_four')
     freqs = dict()
     path_dir = f'../plot_data/temperature/game_data/temp_num_{k}'
-    for pair in tqdm(list(combinations(range(n), 2)), desc=f'Collecting T={temps[k]} matches'): 
+    for pair in tqdm(list(combinations(range(n), 2)), desc=f'Collecting T={TEMPERATURES[k]} matches'): 
         path = path_dir + '/' + nets[pair[0]] + '_vs_' + nets[pair[1]] + '/'
         counter.collect_data(path=path, max_file_num=80, quiet=True, matches=True)
     freqs= np.array([item[1] for item in counter.frequencies.most_common()])
@@ -36,14 +36,13 @@ def _generate_temperature_zipf_curves(k):
 
 def plot_temperature_curves(load_data=True, res=300):
     print('~~~~~~~~~~~~~~~~~~~ Plotting temperature curves ~~~~~~~~~~~~~~~~~~~')
-    temps = np.array([0.07, 0.1, 0.14, 0.2, 0.25, 0.32, 0.45, 0.6, 0.8, 1, 1.4, 2, 3, 5, 0.04, 0.02, 0.01])
-    sorted_t = np.argsort(temps)
-    log_t = np.log(temps)
+    sorted_t = np.argsort(TEMPERATURES)
+    log_t = np.log(TEMPERATURES)
     color_nums = (log_t - log_t.min()) / (log_t.max() - log_t.min()) 
     tf =12
     fig, axs = plt.subplots(1, 3, figsize=(12, 4), gridspec_kw={'width_ratios': [1.2, 1, 1]})
     par = np.load('src/config/parameter_counts/connect_four.npy')
-    zipf_exponents = np.zeros(len(temps))
+    zipf_exponents = np.zeros(len(TEMPERATURES))
 
     print('Plotting Connect Four Zipf curves at different temperatures.')
     if not load_data:
@@ -74,11 +73,11 @@ def plot_temperature_curves(load_data=True, res=300):
 
     ##############################################################
     print('Plotting size scaling at different temperatures')
-    elo_exponents = np.zeros(len(temps))
+    elo_exponents = np.zeros(len(TEMPERATURES))
     n=0
     for ind in sorted_t:
         n+=1
-        print(f'({n}/{len(temps)}) Temperature: {temps[ind]}')
+        print(f'({n}/{len(TEMPERATURES)}) Temperature: {TEMPERATURES[ind]}')
         r = BayesElo()
         agents = PlayerNums()
         matches = np.load(f'../matches/temperature_scaling/connect_four_temp_num_{ind}/matrix.npy')
@@ -129,7 +128,7 @@ def plot_temperature_curves(load_data=True, res=300):
     aligned_title(axs[2], r"$\bf{C.}$ Exponent correlation", tf+4)
 
     # Colorbar:
-    norm = matplotlib.colors.LogNorm(vmin=temps.min(), vmax=temps.max())
+    norm = matplotlib.colors.LogNorm(vmin=TEMPERATURES.min(), vmax=TEMPERATURES.max())
     sm = matplotlib.cm.ScalarMappable(cmap=plt.get_cmap('plasma'), norm=norm)
     cbar = fig.colorbar(sm, ax=axs[2])
     cbar.ax.tick_params(labelsize=tf)

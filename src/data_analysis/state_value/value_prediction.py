@@ -1,3 +1,7 @@
+"""
+Tools for getting an estimate of a state's value. Either from a trained agent, or a solver.
+"""
+
 from src.alphazero_scaling.solver_bot import connect_four_solver
 from src.alphazero_scaling.loading import load_model_from_checkpoint, load_config
 from open_spiel.python.algorithms.alpha_zero import evaluator as evaluator_lib
@@ -7,10 +11,6 @@ import numpy.typing as npt
 import pyspiel
 from tqdm import tqdm
 import pickle
-
-"""
-Tools for getting an estimate of a state's value. Either from a trained agent, or a solver.
-"""
 
 
 def get_model_value_estimator(env: str, config_path: str):
@@ -111,7 +111,7 @@ def get_solver_value_estimator(env: str):
     return solver_value
 
 
-def calculate_solver_values(env: str, serial_states):
+def calculate_solver_values(env: str, serial_states: dict[str, str]):
     """ Calculate and save a database of solver value estimations of serial_states. """
     solver_value = get_solver_value_estimator(env)
     solver_values = {}

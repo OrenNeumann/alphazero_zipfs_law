@@ -16,7 +16,7 @@ This code requires that the connect four opening book ("7x6.book") is NOT presen
 
 game = pyspiel.load_game('connect_four')
 
-def time_alpha_beta_pruning(states, max_time=2*60):
+def time_alpha_beta_pruning(states, max_time: int = 2*60) -> tuple[float, float, float, float]:
     """ Time the solver on states until max_time seconds have passed."""
     times = []
     beginning = time.time()
@@ -37,7 +37,7 @@ def time_alpha_beta_pruning(states, max_time=2*60):
     return np.mean(times), np.std(times), gmean(times), gstd(times)
     
 
-def save_pruning_time(generate_counter=False):
+def save_pruning_time(generate_counter=False) -> None:
     print("""Generating alpha-beta pruning data.
           NOTICE: Generating this data from scratch takes a prohibitively long amount of time,
           since it measures the wall-time of exponentially-longer ab-pruning runs.""")
@@ -101,7 +101,7 @@ def save_pruning_time(generate_counter=False):
                      'gstd': gstds}, f)
     
 
-def generate_states():
+def generate_states() -> None:
     state_counter = gather_data(env='connect_four', labels=[0, 1, 2, 3, 4, 5, 6], max_file_num=10, save_serial=True)
     state_counter.prune_low_frequencies(10)
     with open('../plot_data/ab_pruning/counter.pkl', 'wb') as f:

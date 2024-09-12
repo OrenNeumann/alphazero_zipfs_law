@@ -1,7 +1,7 @@
 import numpy as np
+from typing import Optional
 
-
-def incremental_bin(bin_max):
+def incremental_bin(bin_max: int) -> np.ndarray:
     """
     Creates bin limits that expand exponentially.
     Bin n has a width of:
@@ -20,14 +20,14 @@ def incremental_bin(bin_max):
     return np.array(bins)
 
 
-def aligned_title(ax, title,font):
+def aligned_title(ax, title: str, font: int):
     """ Align the title to the left."""
     bbox = ax.get_yticklabels()[-1].get_window_extent()
     x,_ = ax.transAxes.inverted().transform([bbox.x0, bbox.y0])
     ax.set_title(title, ha='left',x=x,fontsize=font)
 
 
-def gaussian_average(y, sigma=0.25, cut_tail=False, mask=None):
+def gaussian_average(y, sigma: float = 0.25, cut_tail: bool = False, mask: Optional[np.ndarray] = None):
     """ Smooth y by averaging it with a log-scale gaussian kernel.
         Giving a mask will ignore the values that are False in the mask.
         If cut_tail is True, the tail of the distribution will be cut 

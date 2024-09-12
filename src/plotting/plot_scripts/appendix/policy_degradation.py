@@ -22,7 +22,7 @@ ESTIMATORS = [0, 1, 2, 3, 4, 5, 6]
 N_SAMPLES = 200
 
 
-def save_optimal_moves():
+def save_optimal_moves() -> None:
     print('Calculating optimal policies.')
     with open('../plot_data/solver/state_counter.pkl', 'rb') as f:
         state_counter = pickle.load(f)
@@ -38,7 +38,7 @@ def save_optimal_moves():
         pickle.dump(optimal_moves, f)
 
 
-def _get_optimal_policies(path_model, serials, temperature):
+def _get_optimal_policies(path_model: str, serials: list[str], temperature: float) -> list:
     model_policies = get_model_policy_estimator('connect_four', path_model)
     return model_policies(serials, temperature=temperature)
 
@@ -73,7 +73,7 @@ def save_agent_probs():
         pickle.dump(prob_of_optimal_move, f)
 
 
-def plot_policy_degradation(load_data=True, res=300):
+def plot_policy_degradation(load_data: bool = True, res: int = 300):
     print('~~~~~~~~~~~~~~~~~~~ Plotting policy degradation with temperature (appendix) ~~~~~~~~~~~~~~~~~~~')
     if not load_data:
         save_optimal_moves()
@@ -84,7 +84,7 @@ def plot_policy_degradation(load_data=True, res=300):
     tf =16
     fig = plt.figure(figsize=(12, 6))
 
-    par = np.load('src/config/parameter_counts/connect_four.npy')
+    par: np.ndarray = np.load('src/config/parameter_counts/connect_four.npy')
     log_par = np.log(par)
     color_nums = (log_par - log_par.min()) / (log_par.max() - log_par.min())
     norm = matplotlib.colors.LogNorm(vmin=par.min(), vmax=par.max())

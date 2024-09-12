@@ -1,6 +1,7 @@
 import re
 import random
 from src.data_analysis.state_frequency.state_counter import StateCounter
+from typing import Any
 
 
 class CutoffCounter(StateCounter):
@@ -10,13 +11,13 @@ class CutoffCounter(StateCounter):
     end_cutoff cuts-off short games by restricting the distance to the final turn.
     end_cutoff=1 is what the base AlphaZero training algo uses.
     """
-    def __init__(self, cutoff=50, disable_rate=0.0,**kwargs):
+    def __init__(self, cutoff: int = 50, disable_rate: float = 0.0, **kwargs):
         super().__init__(**kwargs)
         self.cutoff = cutoff
         self.end_cutoff = 1
         self.disable_rate = disable_rate
 
-    def _process_game(self, game_record):
+    def _process_game(self, game_record) -> tuple[Any, list[str]]:
         """ Process a single game, counting states only until the cutoff point.
         """
         board = self.game.new_initial_state()

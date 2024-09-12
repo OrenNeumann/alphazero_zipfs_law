@@ -1,11 +1,15 @@
+import matplotlib
+import matplotlib.figure
 from cairosvg import svg2png
 import chess.svg
 from src.data_analysis.gather_agent_data import gather_data
 import pickle
 import matplotlib.pyplot as plt
+import matplotlib.patches as patches
 import numpy as np
 import os
 import scienceplots
+from src.data_analysis.state_frequency.state_counter import StateCounter
 
 plt.style.use(['science','nature'])
 
@@ -63,7 +67,7 @@ def plot_checkers(res=300):
             pickle.dump(state_counter, f)
     print('Loading data')
     with open('../plot_data/board_positions/checkers_counter.pkl', 'rb') as f:
-        state_counter = pickle.load(f)
+        state_counter: StateCounter = pickle.load(f)
     keys = [i for i,_ in state_counter.frequencies.most_common()]
     early_turns = [0,9,99,999]
     late_turns = [39, 140, 556, 3345]
@@ -77,7 +81,7 @@ def plot_checkers(res=300):
     names = early_turns + late_turns
     row_titles = ['Checkers Board states', 'Late-game board states']
     # create 3x1 subfigs
-    subfigs = fig.subfigures(nrows=2, ncols=1)
+    subfigs: list[matplotlib.figure.FigureBase] = fig.subfigures(nrows=2, ncols=1)
     png_dir = 'plots/board_positions/'
     # Iterate over each name
     for row, subfig in enumerate(subfigs):
@@ -95,7 +99,7 @@ def plot_checkers(res=300):
     fig.savefig('./plots/checkers_positions.png', dpi=res)
 
 
-def parse_oware_state(state_str):
+def parse_oware_state(state_str: str):
     lines = state_str.split('\n')
     # Extract the player scores
     player_1_score = int(lines[0].split('=')[1][:3].strip())
@@ -110,7 +114,7 @@ def parse_oware_state(state_str):
     return board_state, bank_state
 
 
-def plot_oware_state(state, name):
+def plot_oware_state(state, name: str):
     # define board dimensions
     board_width = 6
     board_height = 2
@@ -134,12 +138,12 @@ def plot_oware_state(state, name):
         for col in range(board_width):
             x = col + 0.5
             y = row + 0.5 + bank_height
-            circle = plt.Circle((x, y), hole_radius, fill=True, facecolor=hole_color,linewidth=2, edgecolor='black')
+            circle = patches.Circle((x, y), hole_radius, fill=True, facecolor=hole_color,linewidth=2, edgecolor='black')
             ax.add_artist(circle)
             piece_count = board_state[row][col]
             ax.text(x, y, str(piece_count), ha='center', va='center', fontsize=font_size, color=piece_color)
     # draw the bank holes and display the captured piece counts
-    def bank(side):
+    def bank(side: str):
         # create bank holes using Matplotlib patches
         if side == 'top':
             rec_pos = (0, board_height + bank_height)
@@ -147,7 +151,9 @@ def plot_oware_state(state, name):
         elif side == 'bottom':
             rec_pos = (0, 0)
             state = 1
-        bank = plt.Rectangle(rec_pos, board_width, bank_height, fill=True, facecolor=board_color, linewidth=4, edgecolor='black')
+        else:
+            raise ValueError('side must be either "top" or "bottom", got ' + side)
+        bank = patches.Rectangle(rec_pos, board_width, bank_height, fill=True, facecolor=board_color, linewidth=4, edgecolor='black')
         bank.set_capstyle('round')
         ax.add_artist(bank)
         x, y = np.array(rec_pos) + np.array([board_width / 2, bank_height / 2])
@@ -168,7 +174,7 @@ def plot_oware(res=300):
             pickle.dump(state_counter, f)
     print('Loading data')
     with open('../plot_data/board_positions/oware_counter.pkl', 'rb') as f:
-        state_counter = pickle.load(f)
+        state_counter: StateCounter = pickle.load(f)
     keys = [i for i,_ in state_counter.frequencies.most_common()]
     early_turns = [0,9,99,1004]
     late_turns = [163, 334, 1419, 11648]
@@ -182,7 +188,7 @@ def plot_oware(res=300):
     names = early_turns + late_turns
     row_titles = ['Oware Board states', 'Late-game board states']
     # create 3x1 subfigs
-    subfigs = fig.subfigures(nrows=2, ncols=1)
+    subfigs: list[matplotlib.figure.FigureBase] = fig.subfigures(nrows=2, ncols=1)
     png_dir = 'plots/board_positions/'
     # Iterate over each name
     for row, subfig in enumerate(subfigs):

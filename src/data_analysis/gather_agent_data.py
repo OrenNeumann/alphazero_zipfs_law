@@ -3,8 +3,13 @@ from src.data_analysis.state_frequency.counting_mods.cutoff_counter import Cutof
 from src.general.general_utils import models_path, game_path
 
 
-def gather_data(env: str, labels: list[int], cutoff=None, max_file_num: int = 1, save_serial: bool = False,
-                save_turn_num: bool = False, save_value: bool = False) -> StateCounter:
+def gather_data(env: str,
+                labels: list[int],
+                cutoff=None,
+                max_file_num: int = 1,
+                save_serial: bool = False,
+                save_turn_num: bool = False,
+                save_value: bool = False) -> StateCounter:
     """ Gather data from multiple agents, aggregated together.
         Counts and averages are taken over all agents in 'labels'.
         Currently just uses agent copy num. 0."""

@@ -26,13 +26,13 @@ class BayesElo(object):
     def __init__(self):
         self.rating = bayeselo.ResultSet()
 
-    def add_match(self, n, m, p):
+    def add_match(self, n: int, m: int, p: float):
         for k in range(800):
             # 1600 games, no ties:
             self.rating.append(n, m, int(k < p * 800) * 2)
             self.rating.append(m, n, int(k > p * 800) * 2)
             
-    def extract_elo(self, agents):
+    def extract_elo(self, agents: PlayerNums):
         e = bayeselo.EloRating(self.rating, agents.names())
         e.offset(1000)
         e.mm()
