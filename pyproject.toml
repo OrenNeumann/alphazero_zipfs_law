@@ -1,0 +1,21 @@
+[tool.poetry]
+name = "alphazero-zipfs-law"
+version = "0.1.0"
+description = "Supplementary code for the paper \"AlphaZero Neural Scaling and Zipf's Law: a Tale of Board Games and Power Laws\""
+authors = ["anonymized"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.10"
+open-spiel = "^1.5"
+matplotlib = "^3.9.2"
+numpy = "^2.1.1"
+scienceplots = "^2.1.1"
+cairosvg = "^2.7.1"
+chess = "^1.10.0"
+tqdm = "^4.66.5"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
