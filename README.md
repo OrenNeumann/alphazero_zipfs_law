@@ -1,14 +1,15 @@
 # Paper code
 
-_NOTE: The anonymized supplementary material does not contain model weights or training data, due to lack of space. We provide all the code used to run the experiments included in the paper and appendix, as well as instructions on how to reproduce our data from scratch.
-Weights and data will be made public in a URL for the final version, allowing reproduction of all results together with the code available here._
-
-Install all dependencies and run:
+To set up and run all experiments, go to the project folder and run:
 ```
-python generate_all_plots.py
+poetry install
+poetry shell
+python src/generate_all_plots.py
 ```
-to get all plots in the paper saved to `plots`. This will use saved data to generate all results.
+This will save all plots in the paper saved to `plots`. The default is using saved data to generate all results.
 To run all experiments from scratch, change the flag `load_data` to `False`. Doing so can take several hours to generate all plots.
+
+Note: running all experiments can take several hours, it is recommended that you run them individually by calling their respective function from `generate_all_plots.py`.
 
 ## Hardware requirements
 
