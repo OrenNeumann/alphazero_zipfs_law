@@ -305,8 +305,7 @@ def oware_checkpoint_value_loss(load_data=True, res=300):
 
     with open('../plot_data/value_loss/late_turns/gaussian_checkpoint_loss_oware_total.pkl', "rb") as f:
         losses, ranks =  pickle.load(f)
-    par = np.load('src/config/parameter_counts/oware.npy')
-    log_par = np.log(par)
+    log_par = np.log(checkpoints)
     color_nums = (log_par - log_par.min()) / (log_par.max() - log_par.min())
 
     loss_types = ('every_state', 'early_turns', 'later_turns')
@@ -351,7 +350,7 @@ def oware_checkpoint_value_loss(load_data=True, res=300):
     sm = matplotlib.cm.ScalarMappable(cmap=plt.get_cmap('viridis'), norm=norm)
     cbar = fig.colorbar(sm, ax=axes[2]) # attach to plot 2, rather than to inset
     cbar.ax.tick_params(labelsize=tf)
-    cbar.ax.set_ylabel('Checkpoint num', rotation=90, fontsize=tf)
+    cbar.ax.set_ylabel('Training FLOPs (normalized)', rotation=90, fontsize=tf)
 
     fig.tight_layout()
     fig.savefig('./plots/oware_value_loss_checkpoints.png', dpi=res)
