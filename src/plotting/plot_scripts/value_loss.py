@@ -314,10 +314,10 @@ def oware_checkpoint_value_loss(load_data=True, res=300):
     for i,ax in enumerate(axes.flat):
         t = loss_types[i]
         aligned_title(ax, title=titles[i],font=tf+4)
-        for label in checkpoints:
+        for i, label in enumerate(checkpoints):
             x = ranks[label][t]
             y = losses[label][t]
-            ax.plot(x, y, color=matplotlib.cm.viridis(color_nums[label]))
+            ax.plot(x, y, color=matplotlib.cm.viridis(color_nums[i]))
         ax.set_xscale('log')
         ax.set_yscale('log')
         ax.tick_params(axis='both', which='major', labelsize=tf-2)
