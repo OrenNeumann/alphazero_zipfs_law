@@ -345,7 +345,7 @@ def oware_checkpoint_value_loss(load_data=True, res=300):
             axin.tick_params(axis='both', which='both', labelsize=0)
             ax.indicate_inset_zoom(axin, edgecolor="black",linewidth=2)
 
-    norm = matplotlib.colors.LogNorm(vmin=checkpoints.min(), vmax=checkpoints.max())
+    norm = matplotlib.colors.LogNorm(vmin=min(checkpoints), vmax=max(checkpoints))
     # create a scalarmappable from the colormap
     sm = matplotlib.cm.ScalarMappable(cmap=plt.get_cmap('viridis'), norm=norm)
     cbar = fig.colorbar(sm, ax=axes[2]) # attach to plot 2, rather than to inset
