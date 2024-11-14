@@ -298,6 +298,7 @@ def oware_checkpoint_value_loss(load_data=True, res=300):
     sigma = 0.15
     label = 6
     checkpoints = [20, 30, 50, 70, 100, 150, 230, 340, 510, 770, 1150, 1730, 2590, 3880, 5820, 8730, 10000]
+    used_checkpoints = [50,  150,  510, 1150,  2590,  5820, 10000]
     n_copies = 1
     if not load_data:
         _gereate_oware_checkpoint_loss_curves(label, n_copies, checkpoints)
@@ -315,6 +316,8 @@ def oware_checkpoint_value_loss(load_data=True, res=300):
         t = loss_types[i]
         aligned_title(ax, title=titles[i],font=tf+4)
         for i, label in enumerate(checkpoints):
+            if label not in used_checkpoints:
+                continue
             x = ranks[label][t]
             y = losses[label][t]
             ax.plot(x, y, color=matplotlib.cm.viridis(color_nums[i]))
