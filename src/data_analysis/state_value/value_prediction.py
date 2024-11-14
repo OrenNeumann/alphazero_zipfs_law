@@ -13,7 +13,7 @@ from tqdm import tqdm
 import pickle
 
 
-def get_model_value_estimator(env: str, config_path: str):
+def get_model_value_estimator(env: str, config_path: str, checkpoint_number: int = 10_000):
     """ Creates an estimator function that uses a trained model to calculate state values.
 
         :param env: Game environment.
@@ -21,7 +21,7 @@ def get_model_value_estimator(env: str, config_path: str):
     """
     game = pyspiel.load_game(env)
     config = load_config(config_path)
-    model = load_model_from_checkpoint(config=config, path=config_path, checkpoint_number=10_000)
+    model = load_model_from_checkpoint(config=config, path=config_path, checkpoint_number=checkpoint_number)
 
     def model_value(serial_states: list[str]) -> npt.NDArray[np.float64]:
         """

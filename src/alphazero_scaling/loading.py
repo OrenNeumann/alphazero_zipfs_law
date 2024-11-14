@@ -104,7 +104,7 @@ def load_model_from_checkpoint(config, checkpoint_number=None, path=None):
                 variables[name] = value
         checkpoint_name = variables['model_checkpoint_path'][1:-2]
     else:
-        # Get the specified model number (on the cluster:
+        # Get the specified model number:
         checkpoint_name = path + 'checkpoint-' + str(checkpoint_number)
 
     checkpoint_path = checkpoint_name

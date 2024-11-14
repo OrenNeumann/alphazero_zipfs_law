@@ -133,13 +133,13 @@ def connect4_loss_plots(load_data=True, res=300):
     fig.savefig('./plots/connect4_value_loss.png', dpi=res)
 
 
-def _state_loss(env, path):
+def _state_loss(env, path, checkpoint_number=10_000):
     state_counter = StateCounter(env, save_serial=True, save_value=True, save_turn_num=True, cut_extensive=False)
     state_counter.collect_data(path=path, max_file_num=50)
     state_counter.normalize_counters()
     state_counter.prune_low_frequencies(threshold=10)
     turn_mask = state_counter.late_turn_mask(threshold=40)
-    loss = value_loss(env, path, state_counter=state_counter, num_chunks=400)
+    loss = value_loss(env, path, state_counter=state_counter, checkpoint_number=checkpoint_number, num_chunks=400)
     total_loss = 0
     counts = 0
     i=0
@@ -151,7 +151,7 @@ def _state_loss(env, path):
     return loss, turn_mask
 
 
-def _gereate_oware_loss_curves(data_labels, n_copies):
+def _gereate_oware_loss_curves(data_labels: list[int], n_copies: int):
     print('Generating loss curves for Oware')
     env='oware'
     loss_types = ('later_turns','early_turns','every_state')
@@ -169,13 +169,35 @@ def _gereate_oware_loss_curves(data_labels, n_copies):
             pickle.dump(losses, f)
 
 
-def _oware_gaussian_smoothed_loss(labels, n_copies, sigma):
+def _gereate_oware_checkpoint_loss_curves(label: int, n_copies: int, checkpoints: list[int]):
+    print('Generating loss curves for Oware checkpoints')
+    env='oware'
+    loss_types = ('later_turns','early_turns','every_state')
+    losses = {checkpoint: {k: None for k in loss_types} for checkpoint in checkpoints}
+    for copy in range(n_copies):
+        for checkpoint in checkpoints:
+            model_name = f'q_{label}_{copy}'#
+            print(model_name)
+            model_path = models_path() + game_path(env) + model_name + '/'
+            loss, turn_mask = _state_loss(env, model_path, checkpoint_number=checkpoint)
+            losses[checkpoint]['later_turns'] = loss*turn_mask
+            losses[checkpoint]['early_turns'] = loss*(~turn_mask)
+            losses[checkpoint]['every_state'] = loss
+        with open(f'../plot_data/value_loss/late_turns/checkpoint_loss_curves_{env}_{copy}.pkl', 'wb') as f:
+            pickle.dump(losses, f)
+
+
+def _oware_gaussian_smoothed_loss(labels: list[int], n_copies: int, sigma: float, use_checkpoints: bool = False):
     print('Smoothing Oware loss curves')
     loss_types = ('later_turns','early_turns','every_state')
     averaged_curves = {label: {k: None for k in ('later_turns','early_turns','every_state')} for label in labels}
     for copy in range(n_copies):
-        with open(f'../plot_data/value_loss/late_turns/loss_curves_oware_{copy}.pkl', "rb") as f:
-            loss_curves = pickle.load(f)
+        if use_checkpoints:
+            with open(f'../plot_data/value_loss/late_turns/checkpoint_loss_curves_oware_{copy}.pkl', "rb") as f:
+                loss_curves = pickle.load(f)
+        else:
+            with open(f'../plot_data/value_loss/late_turns/loss_curves_oware_{copy}.pkl', "rb") as f:
+                loss_curves = pickle.load(f)
         for label in labels:
             for t in loss_types:
                 all_curves = averaged_curves[label][t]
@@ -197,7 +219,8 @@ def _oware_gaussian_smoothed_loss(labels, n_copies, sigma):
             curve = np.array(averaged_curves[label][t])
             mask = curve > 0
             smooth_losses[label][t], ranks[label][t] = gaussian_average(curve, sigma=sigma, cut_tail=True, mask=mask)
-    with open(f'../plot_data/value_loss/late_turns/gaussian_loss_oware_total.pkl', 'wb') as f:
+    filename = 'checkpoint_loss_oware_total.pkl' if use_checkpoints else 'loss_oware_total.pkl'
+    with open(f'../plot_data/value_loss/late_turns/gaussian_'+filename, 'wb') as f:
         pickle.dump([smooth_losses, ranks], f)
 
 
@@ -267,3 +290,68 @@ def oware_value_loss(load_data=True, res=300):
     fig.savefig('./plots/oware_value_loss.png', dpi=res)
 
 
+def oware_checkpoint_value_loss(load_data=True, res=300):
+    print('~~~~~~~~~~~~~~~~~~~ Plotting oware value loss (over checkpoints) ~~~~~~~~~~~~~~~~~~~')
+    tf =12
+    # Create figure and subplots
+    fig, axes = plt.subplots(nrows=1, ncols=3, figsize=(12, 3.5))
+    sigma = 0.15
+    label = 6
+    checkpoints = [20, 30, 50, 70, 100, 150, 230, 340, 510, 770, 1150, 1730, 2590, 3880, 5820, 8730, 10000]
+    n_copies = 1
+    if not load_data:
+        _gereate_oware_checkpoint_loss_curves(label, n_copies, checkpoints)
+        _oware_gaussian_smoothed_loss(checkpoints, n_copies, sigma, use_checkpoints=True)
+
+    with open('../plot_data/value_loss/late_turns/gaussian_checkpoint_loss_oware_total.pkl', "rb") as f:
+        losses, ranks =  pickle.load(f)
+    par = np.load('src/config/parameter_counts/oware.npy')
+    log_par = np.log(par)
+    color_nums = (log_par - log_par.min()) / (log_par.max() - log_par.min())
+
+    loss_types = ('every_state', 'early_turns', 'later_turns')
+    titles = [r'$\bf{A.}$ Oware value loss', r'$\bf{B.}$ Early-turn loss', r'$\bf{C.}$ Late-turn loss']
+    ylim = None
+    for i,ax in enumerate(axes.flat):
+        t = loss_types[i]
+        aligned_title(ax, title=titles[i],font=tf+4)
+        for label in checkpoints:
+            x = ranks[label][t]
+            y = losses[label][t]
+            ax.plot(x, y, color=matplotlib.cm.viridis(color_nums[label]))
+        ax.set_xscale('log')
+        ax.set_yscale('log')
+        ax.tick_params(axis='both', which='major', labelsize=tf-2)
+        ax.set_xlabel('State rank',fontsize=tf)
+        if i == 0:
+            ax.set_ylabel('Loss',fontsize=tf)
+            ax.set_ylim(bottom=0.8*10**-3)
+            ylim = ax.get_ylim()
+            late_start = min(ranks[label]['later_turns'][0] for label in checkpoints)
+            ax.axvline(x=late_start, linestyle='--', color='black', label='First late-turn states')
+        else:
+            ax.set_ylim(ylim)
+        if i==2:
+            ax.set_xlim(left=10**0)
+            # Add zoom-in inset
+            axin = ax.inset_axes([0.02, 0.02, 0.96, 0.48])
+            for label in checkpoints:
+                x = ranks[label][t]
+                y = losses[label][t]
+                axin.plot(x, y, color=matplotlib.cm.viridis(color_nums[label]))
+            axin.set_xscale('log')
+            axin.set_yscale('log')
+            axin.set_ylim(bottom=6*10**-2, top=2.8*10**-1)
+            axin.set_xlim(left=10**2, right=0.8*10**5)
+            axin.tick_params(axis='both', which='both', labelsize=0)
+            ax.indicate_inset_zoom(axin, edgecolor="black",linewidth=2)
+
+    norm = matplotlib.colors.LogNorm(vmin=par.min(), vmax=par.max())
+    # create a scalarmappable from the colormap
+    sm = matplotlib.cm.ScalarMappable(cmap=plt.get_cmap('viridis'), norm=norm)
+    cbar = fig.colorbar(sm, ax=axes[2]) # attach to plot 2, rather than to inset
+    cbar.ax.tick_params(labelsize=tf)
+    cbar.ax.set_ylabel('Checkpoint num', rotation=90, fontsize=tf)
+
+    fig.tight_layout()
+    fig.savefig('./plots/oware_value_loss_checkpoints.png', dpi=res)

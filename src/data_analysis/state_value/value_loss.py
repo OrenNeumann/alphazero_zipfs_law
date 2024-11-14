@@ -6,6 +6,7 @@ from tqdm import tqdm
 
 def value_loss(env, path_model: str,
                state_counter: StateCounter,
+               checkpoint_number: int = 10_000,
                num_chunks: int = 40,
                values=None) -> np.ndarray:
     """
@@ -17,7 +18,7 @@ def value_loss(env, path_model: str,
     if len(state_counter.serials) == 0 or len(values) == 0:
         raise ValueError('Serials and/or values counter are empty.\n'
                          'Did you forget to call StateCounter with save_serial=True, save_value=True?')
-    model_values = get_model_value_estimator(env, path_model)
+    model_values = get_model_value_estimator(env, path_model, checkpoint_number=checkpoint_number)
     sorted_serials = []
     z = []
     for key, _ in state_counter.frequencies.most_common():
