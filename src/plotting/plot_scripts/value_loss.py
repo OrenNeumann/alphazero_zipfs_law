@@ -336,17 +336,12 @@ def oware_checkpoint_value_loss(load_data=True, res=300):
         if i==2:
             ax.set_xlim(left=10**0)
             # Add zoom-in inset
-            axin = ax.inset_axes([0.02, 0.02, 0.96, 0.48])
             for label in checkpoints:
                 x = ranks[label][t]
                 y = losses[label][t]
-                axin.plot(x, y, color=matplotlib.cm.cividis(color_nums[label]))
-            axin.set_xscale('log')
-            axin.set_yscale('log')
-            axin.set_ylim(bottom=6*10**-2, top=2.8*10**-1)
-            axin.set_xlim(left=10**2, right=0.8*10**5)
-            axin.tick_params(axis='both', which='both', labelsize=0)
-            ax.indicate_inset_zoom(axin, edgecolor="black",linewidth=2)
+                ax.plot(x, y, color=matplotlib.cm.cividis(color_nums[label]))
+            ax.set_ylim(bottom=6*10**-2, top=2.8*10**-1)
+            ax.set_xlim(left=10**2, right=0.8*10**5)
 
     norm = matplotlib.colors.LogNorm(vmin=min(checkpoints)/max(checkpoints), vmax=1)
     # create a scalarmappable from the colormap
