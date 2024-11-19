@@ -342,7 +342,7 @@ def oware_checkpoint_value_loss(load_data=True, res=300):
                 ax.plot(x, y, color=matplotlib.cm.cividis(color_nums[label]))
             ax.set_ylim(bottom=6*10**-2, top=2.8*10**-1)
             ax.set_xlim(left=10**2, right=0.8*10**5)
-
+    plt.ylabel('Loss',fontsize=tf)
     norm = matplotlib.colors.LogNorm(vmin=min(checkpoints)/max(checkpoints), vmax=1)
     # create a scalarmappable from the colormap
     sm = matplotlib.cm.ScalarMappable(cmap=plt.get_cmap('cividis'), norm=norm)
