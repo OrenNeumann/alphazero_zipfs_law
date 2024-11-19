@@ -320,7 +320,7 @@ def oware_checkpoint_value_loss(load_data=True, res=300):
                 continue
             x = ranks[label][t]
             y = losses[label][t]
-            ax.plot(x, y, color=matplotlib.cm.inferno(color_nums[i]))
+            ax.plot(x, y, color=matplotlib.cm.cividis(color_nums[i]))
         ax.set_xscale('log')
         ax.set_yscale('log')
         ax.tick_params(axis='both', which='major', labelsize=tf-2)
@@ -340,7 +340,7 @@ def oware_checkpoint_value_loss(load_data=True, res=300):
             for label in checkpoints:
                 x = ranks[label][t]
                 y = losses[label][t]
-                axin.plot(x, y, color=matplotlib.cm.inferno(color_nums[label]))
+                axin.plot(x, y, color=matplotlib.cm.cividis(color_nums[label]))
             axin.set_xscale('log')
             axin.set_yscale('log')
             axin.set_ylim(bottom=6*10**-2, top=2.8*10**-1)
@@ -348,12 +348,12 @@ def oware_checkpoint_value_loss(load_data=True, res=300):
             axin.tick_params(axis='both', which='both', labelsize=0)
             ax.indicate_inset_zoom(axin, edgecolor="black",linewidth=2)
 
-    norm = matplotlib.colors.LogNorm(vmin=min(checkpoints), vmax=max(checkpoints))
+    norm = matplotlib.colors.LogNorm(vmin=min(checkpoints)/max(checkpoints), vmax=1)
     # create a scalarmappable from the colormap
-    sm = matplotlib.cm.ScalarMappable(cmap=plt.get_cmap('inferno'), norm=norm)
+    sm = matplotlib.cm.ScalarMappable(cmap=plt.get_cmap('cividis'), norm=norm)
     cbar = fig.colorbar(sm, ax=axes[2]) # attach to plot 2, rather than to inset
     cbar.ax.tick_params(labelsize=tf)
-    cbar.ax.set_ylabel('Training FLOPs (normalized)', rotation=90, fontsize=tf)
+    cbar.ax.set_ylabel('Training time (normalized)', rotation=90, fontsize=tf)
 
     fig.tight_layout()
     fig.savefig('./plots/oware_value_loss_checkpoints.png', dpi=res)
