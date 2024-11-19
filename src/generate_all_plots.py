@@ -1,4 +1,4 @@
-from src.plotting.plot_scripts.value_loss import connect4_loss_plots, oware_value_loss
+from src.plotting.plot_scripts.value_loss import connect4_loss_plots, oware_value_loss, oware_checkpoint_value_loss
 from src.plotting.plot_scripts.game_turns import plot_game_turns
 from src.plotting.plot_scripts.elo_curves import plot_scaling_failure
 from src.plotting.plot_scripts.appendix import board_positions as board
@@ -26,6 +26,8 @@ connect4_loss_plots(load_data)
 plot_scaling_failure(load_data)
 plot_game_turns()
 oware_value_loss(load_data)
+oware_checkpoint_value_loss(load_data)
+
 
 # Appendix:
 plot_appendix_theory_zipf()
