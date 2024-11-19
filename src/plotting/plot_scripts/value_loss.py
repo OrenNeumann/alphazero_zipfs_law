@@ -326,6 +326,7 @@ def oware_checkpoint_value_loss(load_data=True, res=300):
         ax.set_yscale('log')
         ax.tick_params(axis='both', which='major', labelsize=tf-2)
         ax.set_xlabel('State rank',fontsize=tf)
+        ax.set_ylabel('Loss',fontsize=tf)
         if i == 0:
             ax.set_ylabel('Loss',fontsize=tf)
             ax.set_ylim(bottom=0.8*10**-3)
