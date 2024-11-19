@@ -312,6 +312,7 @@ def oware_checkpoint_value_loss(load_data=True, res=300):
     loss_types = ('every_state', 'early_turns', 'later_turns')
     titles = [r'$\bf{A.}$ Large agent value loss', r'$\bf{B.}$ Early-turn loss', r'$\bf{C.}$ Late-turn loss']
     ylim = None
+    plt.ylabel('Loss',fontsize=tf)
     for i,ax in enumerate(axes.flat):
         t = loss_types[i]
         aligned_title(ax, title=titles[i],font=tf+4)
@@ -342,7 +343,6 @@ def oware_checkpoint_value_loss(load_data=True, res=300):
                 ax.plot(x, y, color=matplotlib.cm.cividis(color_nums[label]))
             ax.set_ylim(bottom=6*10**-2, top=2.8*10**-1)
             ax.set_xlim(left=10**2, right=0.8*10**5)
-    plt.ylabel('Loss',fontsize=tf)
     norm = matplotlib.colors.LogNorm(vmin=min(checkpoints)/max(checkpoints), vmax=1)
     # create a scalarmappable from the colormap
     sm = matplotlib.cm.ScalarMappable(cmap=plt.get_cmap('cividis'), norm=norm)
