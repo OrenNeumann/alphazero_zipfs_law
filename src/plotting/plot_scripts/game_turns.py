@@ -13,7 +13,7 @@ def plot_game_turns(res: int = 600) -> None:
     print('~~~~~~~~~~~~~~~~~~~ Plotting game turns ~~~~~~~~~~~~~~~~~~~')
     tf =12
     # Create figure and subplots
-    fig = plt.figure(figsize=(12, 6))
+    fig = plt.figure(figsize=(12, 4.5))
 
     # Define grid for subplots
     # Divide the figure into 3 columns and 2 rows
