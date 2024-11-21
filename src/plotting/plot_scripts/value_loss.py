@@ -294,7 +294,7 @@ def oware_checkpoint_value_loss(load_data=True, res=300):
     print('~~~~~~~~~~~~~~~~~~~ Plotting oware value loss (over checkpoints) ~~~~~~~~~~~~~~~~~~~')
     tf =12
     # Create figure and subplots
-    fig, axes = plt.subplots(nrows=1, ncols=3, figsize=(12, 3.5))
+    fig, axes = plt.subplots(nrows=1, ncols=3, figsize=(12, 2.5))
     sigma = 0.15
     label = 6
     checkpoints = [20, 30, 50, 70, 100, 150, 230, 340, 510, 770, 1150, 1730, 2590, 3880, 5820, 8730, 10000]
@@ -312,7 +312,6 @@ def oware_checkpoint_value_loss(load_data=True, res=300):
     loss_types = ('every_state', 'early_turns', 'later_turns')
     titles = [r'$\bf{A.}$ Large agent value loss', r'$\bf{B.}$ Early-turn loss', r'$\bf{C.}$ Late-turn loss']
     ylim = None
-    plt.ylabel('Loss',fontsize=tf)
     for i,ax in enumerate(axes.flat):
         t = loss_types[i]
         aligned_title(ax, title=titles[i],font=tf+4)
