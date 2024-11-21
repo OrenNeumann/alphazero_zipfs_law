@@ -40,7 +40,7 @@ def plot_temperature_curves(load_data=True, res=300):
     log_t = np.log(TEMPERATURES)
     color_nums = (log_t - log_t.min()) / (log_t.max() - log_t.min()) 
     tf =12
-    fig, axs = plt.subplots(1, 3, figsize=(12, 3), gridspec_kw={'width_ratios': [1.2, 1, 1]})
+    fig, axs = plt.subplots(1, 3, figsize=(12, 2.5), gridspec_kw={'width_ratios': [1.2, 1, 1]})
     par = np.load('src/config/parameter_counts/connect_four.npy')
     zipf_exponents = np.zeros(len(TEMPERATURES))
 
