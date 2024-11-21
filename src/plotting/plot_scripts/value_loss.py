@@ -228,7 +228,7 @@ def oware_value_loss(load_data=True, res=300):
     print('~~~~~~~~~~~~~~~~~~~ Plotting oware value loss ~~~~~~~~~~~~~~~~~~~')
     tf =12
     # Create figure and subplots
-    fig, axes = plt.subplots(nrows=1, ncols=3, figsize=(12, 3.5))
+    fig, axes = plt.subplots(nrows=1, ncols=3, figsize=(12, 3.))
     sigma = 0.15
     labels = [0, 1, 2, 3, 4, 5, 6]
     n_copies = 1
