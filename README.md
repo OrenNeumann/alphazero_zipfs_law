@@ -22,7 +22,7 @@ parent_directory/
 │   ├── board_positions.zip
 │   └── ...
 ```
-Unzip all files inside `plot_data`, then run:
+Unzip all files inside `plot_data` then run:
 ```
 python -m src.generate_all_plots
 ```

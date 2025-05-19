@@ -45,7 +45,7 @@ def _generate_gaussian_smoothed_loss(labels: str, loss_curves, sigma: float):
             pickle.dump(y, f)
 
 
-def _generate_solver_gaussian_loss(losses, label: int, l_max, sigma: float):
+def _generate_solver_gaussian_loss(losses: list, label: int, l_max, sigma: float):
     y = losses[label]
     y = y[:l_max]
     y = gaussian_average(y, sigma=sigma, cut_tail=True)

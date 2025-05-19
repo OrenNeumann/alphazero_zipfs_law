@@ -15,7 +15,7 @@ plt.style.use(['science','nature'])
 
 checkers_symbols = {'o': 'P', '+': 'p', '8': 'K', '*': 'k'}
 
-def checkers_to_fen(checkers_position):
+def checkers_to_fen(checkers_position: str) -> str:
     """
     Convert a checkers position string to a chess FEN string.
     """
@@ -40,7 +40,7 @@ def checkers_to_fen(checkers_position):
     return f"{fen} w - - 0 1"
 
 
-def plot_checkers_state(state, name):
+def plot_checkers_state(state, name: str):
     fen = checkers_to_fen(str(state))
     board = chess.Board(fen)
     svg_text = chess.svg.board(
@@ -49,7 +49,7 @@ def plot_checkers_state(state, name):
     svg2png(bytestring=svg_text, write_to='plots/board_positions/checkers-board_'+name+'.png')
 
 
-def create_subtitle(fig, grid, title):
+def create_subtitle(fig, grid, title: str):
     row = fig.add_subplot(grid)
     # the '\n' is important
     row.set_title(f'{title}\n', fontsize=18)

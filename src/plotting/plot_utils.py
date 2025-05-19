@@ -27,7 +27,7 @@ def aligned_title(ax, title: str, font: int):
     ax.set_title(title, ha='left',x=x,fontsize=font)
 
 
-def gaussian_average(y, sigma: float = 0.25, cut_tail: bool = False, mask: Optional[np.ndarray] = None):
+def gaussian_average(y: int, sigma: float = 0.25, cut_tail: bool = False, mask: Optional[np.ndarray] = None):
     """ Smooth y by averaging it with a log-scale gaussian kernel.
         Giving a mask will ignore the values that are False in the mask.
         If cut_tail is True, the tail of the distribution will be cut 
