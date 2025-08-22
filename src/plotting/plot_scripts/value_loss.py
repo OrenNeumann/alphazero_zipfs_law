@@ -179,7 +179,7 @@ def connect4_loss_plots_error_margins(load_data=True, res=300):
             with open('../plot_data/value_loss/training_loss/loss_curves_connect_four.pkl', 'rb') as f:
                 loss_curves = pickle.load(f)
             if True: #not load_data:
-                _generate_gaussian_smoothed_loss_error_margins(labels=labels, loss_curves=loss_curves, sigma=sigma, geometric=True)
+                _generate_gaussian_smoothed_loss_error_margins(labels=labels, loss_curves=loss_curves, sigma=sigma, geometric=False)# geometric=True)
             for label in tqdm([0, 1, 2, 3, 4, 5, 6]):
                 with open('../plot_data/value_loss/training_loss/gaussian_loss_connect_four_errors_'+str(label)+'.pkl', 'rb') as f:
                     data = pickle.load(f)
@@ -190,7 +190,7 @@ def connect4_loss_plots_error_margins(load_data=True, res=300):
                 #err = np.array([y*(1-1/gstdv), y*(gstdv-1)]) # geometric
                 # Fill the margins
                 #ax.fill_between(np.arange(len(y))+1, y/gstdv, y*gstdv, color=cm.viridis(color_nums[label]), alpha=0.2)
-                ax.fill_between(np.arange(len(y))+1, y-gstdv, y+gstdv, color=cm.viridis(color_nums[label]), alpha=0.2)
+                #ax.fill_between(np.arange(len(y))+1, y-gstdv, y+gstdv, color=cm.viridis(color_nums[label]), alpha=0.2)
                 #ax.errorbar(np.arange(len(y))+1, y, yerr=err, fmt='-o', color=cm.viridis(color_nums[label]))
             ax.set_xscale('log')
             ax.set_yscale('log')
