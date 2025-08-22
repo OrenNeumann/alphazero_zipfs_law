@@ -190,7 +190,7 @@ def connect4_loss_plots_error_margins(load_data=True, res=300):
                 #err = np.array([y*(1-1/gstdv), y*(gstdv-1)]) # geometric
                 # Fill the margins
                 #ax.fill_between(np.arange(len(y))+1, y/gstdv, y*gstdv, color=cm.viridis(color_nums[label]), alpha=0.2)
-                #ax.fill_between(np.arange(len(y))+1, y-gstdv, y+gstdv, color=cm.viridis(color_nums[label]), alpha=0.2)
+                ax.fill_between(np.arange(len(y))+1, y-gstdv, y+gstdv, color=cm.viridis(color_nums[label]), alpha=0.2)
                 #ax.errorbar(np.arange(len(y))+1, y, yerr=err, fmt='-o', color=cm.viridis(color_nums[label]))
             ax.set_xscale('log')
             ax.set_yscale('log')
