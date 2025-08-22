@@ -53,12 +53,12 @@ def _generate_gaussian_smoothed_loss_error_margins(labels: str, loss_curves, sig
         curves = [curve[:l] for curve in curves]
         if geometric:
             # take geometric mean and stdv
-            eps = 10**(-7)
+            eps = 10**(-5)
             curves = np.array(curves) + eps#
             y = np.exp(np.mean(np.log(curves), axis=0))
             stdv = np.exp(np.std(np.log(curves), axis=0))
-            for curve in curves:#
-                print(np.min(curve), np.any(curve <= 0))#
+            #for curve in curves:#
+            #    print(np.min(curve), np.any(curve <= 0))#
         else:
             y = np.mean(curves, axis=0)
             stdv = np.std(curves, axis=0)
@@ -189,7 +189,8 @@ def connect4_loss_plots_error_margins(load_data=True, res=300):
                 ax.plot(np.arange(len(y))+1, y, color=cm.viridis(color_nums[label]))
                 #err = np.array([y*(1-1/gstdv), y*(gstdv-1)]) # geometric
                 # Fill the margins
-                ax.fill_between(np.arange(len(y))+1, y/gstdv, y*gstdv, color=cm.viridis(color_nums[label]), alpha=0.2)
+                #ax.fill_between(np.arange(len(y))+1, y/gstdv, y*gstdv, color=cm.viridis(color_nums[label]), alpha=0.2)
+                ax.fill_between(np.arange(len(y))+1, y-gstdv, y+gstdv, color=cm.viridis(color_nums[label]), alpha=0.2)
                 #ax.errorbar(np.arange(len(y))+1, y, yerr=err, fmt='-o', color=cm.viridis(color_nums[label]))
             ax.set_xscale('log')
             ax.set_yscale('log')
