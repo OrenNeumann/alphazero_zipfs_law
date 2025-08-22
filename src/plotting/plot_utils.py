@@ -27,11 +27,12 @@ def aligned_title(ax, title: str, font: int):
     ax.set_title(title, ha='left',x=x,fontsize=font)
 
 
-def gaussian_average(y: int, sigma: float = 0.25, cut_tail: bool = False, mask: Optional[np.ndarray] = None):
+def gaussian_average(y: np.ndarray, sigma: float = 0.25, cut_tail: bool = False, mask: Optional[np.ndarray] = None, geometric=False):
     """ Smooth y by averaging it with a log-scale gaussian kernel.
         Giving a mask will ignore the values that are False in the mask.
         If cut_tail is True, the tail of the distribution will be cut 
-         off by 2*sigma, to ignore tail-abberations."""
+         off by 2*sigma, to ignore tail-abberations.
+        If geometric==True, will perform a geometric average rather than arithmetic."""
     ranks = np.arange(len(y))+1
     if mask is not None:
         ranks = ranks[mask]
@@ -43,7 +44,11 @@ def gaussian_average(y: int, sigma: float = 0.25, cut_tail: bool = False, mask: 
         x_ranks =  np.copy(ranks[:int(len(y)/10**(2*sigma))])
     for i,r in enumerate(x_ranks):
         kernel = np.exp(-0.5 * ((np.log10(ranks/r)) / sigma) ** 2)
-        y_smooth[i] = np.sum(y * kernel) / np.sum(kernel)
+        if geometric:
+            y_smooth_log = np.sum(np.log(y) * kernel) / np.sum(kernel)
+            y_smooth[i] = np.exp(y_smooth_log)
+        else:
+            y_smooth[i] = np.sum(y * kernel) / np.sum(kernel)
     if mask is not None:
         return y_smooth, x_ranks
     return y_smooth

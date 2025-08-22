@@ -44,6 +44,25 @@ def _generate_gaussian_smoothed_loss(labels: str, loss_curves, sigma: float):
         with open('../plot_data/value_loss/training_loss/gaussian_loss_connect_four_'+str(label)+'.pkl', 'wb') as f:
             pickle.dump(y, f)
 
+def _generate_gaussian_smoothed_loss_error_margins(labels: str, loss_curves, sigma: float, geometric: bool=False):
+    # This makes most sense with geometric mean and stdv, when y-axis is in logscale.
+    # Since x-axis is in logscale, the gaussian averaging should be geometric.
+    for label in tqdm(labels):
+        curves = [np.array(loss_curves[f'q_{label}_{copy}']) for copy in range(6)]
+        l = min([len(curve) for curve in curves])
+        curves = [curve[:l] for curve in curves]
+        if geometric:
+            # take geometric mean and stdv
+            y = np.exp(np.mean(np.log(curves), axis=0))
+            stdv = np.exp(np.std(np.log(curves), axis=0))
+        else:
+            y = np.mean(curves, axis=0)
+            stdv = np.std(curves, axis=0)
+        y = gaussian_average(y, sigma=sigma, cut_tail=True, geometric=geometric)
+        stdv = gaussian_average(stdv, sigma=sigma, cut_tail=True, geometric=geometric)
+        loss_data = {'mean': y, 'stdv': stdv}
+        with open('../plot_data/value_loss/training_loss/gaussian_loss_connect_four_errors_'+str(label)+'.pkl', 'wb') as f:
+            pickle.dump(loss_data, f)
 
 def _generate_solver_gaussian_loss(losses: list, label: int, l_max, sigma: float):
     y = losses[label]
@@ -106,7 +125,7 @@ def connect4_loss_plots(load_data=True, res=300):
         if i == 2:
             print('[3/3] Plotting AB pruning complexity')
             if not load_data:
-                save_pruning_time(generate_counter=True, plot=False)
+                save_pruning_time(generate_counter=True)
             with open('../plot_data/ab_pruning/data.pkl', 'rb') as f:
                 ab_data = pickle.load(f)
             x = ab_data['x']
@@ -131,6 +150,89 @@ def connect4_loss_plots(load_data=True, res=300):
 
     fig.tight_layout()
     fig.savefig('./plots/connect4_value_loss.png', dpi=res)
+
+def connect4_loss_plots_error_margins(load_data=True, res=300):
+    print('Plotting Connect Four value loss plots')
+    tf =12
+    # Create figure and subplots
+    fig, axs = plt.subplots(1, 3, figsize=(12, 3))
+
+    par = np.load('src/config/parameter_counts/connect_four.npy')
+    log_par = np.log(par)
+    color_nums = (log_par - log_par.min()) / (log_par.max() - log_par.min())
+
+    titles = [r'$\bf{A.}$ Value loss (train set)',
+              r'$\bf{B.}$ Value loss (ground truth)',
+              r'$\bf{C.}$ Time required, $\alpha$-$\beta$ pruning']
+    sigma = 0.15
+    labels = [0, 1, 2, 3, 4, 5, 6]
+    l_max = 0
+    for i, ax in enumerate(axs):
+        if i == 0:
+            print('[1/3] Plotting training loss')
+            #if not load_data:
+            #    _generate_loss_curves('connect_four', labels, 6)
+            with open('../plot_data/value_loss/training_loss/loss_curves_connect_four.pkl', 'rb') as f:
+                loss_curves = pickle.load(f)
+            if True: #not load_data:
+                _generate_gaussian_smoothed_loss_error_margins(labels=labels, loss_curves=loss_curves, sigma=sigma, geometric=True)
+            for label in tqdm([0, 1, 2, 3, 4, 5, 6]):
+                with open('../plot_data/value_loss/training_loss/gaussian_loss_connect_four_errors_'+str(label)+'.pkl', 'rb') as f:
+                    data = pickle.load(f)
+                y = data['y']
+                gstdv = data['stdv']
+                l_max = max(l_max, len(y))
+                #ax.plot(np.arange(len(y))+1, y, color=cm.viridis(color_nums[label]))
+                err = np.array([y*(1-1/gstdv), y*(gstdv-1)])
+                ax.errorbar(np.arange(len(y))+1, y, yerr=err, fmt='-o', color=cm.viridis(color_nums[label]))
+            ax.set_xscale('log')
+            ax.set_yscale('log')
+            ax.tick_params(axis='both', which='major', labelsize=tf-2)
+            ax.set_ylabel('Loss',fontsize=tf)
+            del loss_curves
+        if i == 1:
+            print('[2/3] Plotting ground-truth loss')
+            print('x axis length:', l_max)
+            with open('../plot_data/solver/loss_curves.pkl', "rb") as f:
+                losses = pickle.load(f)
+            for label in tqdm([0, 1, 2, 3, 4, 5, 6]):
+                if not load_data:
+                    _generate_solver_gaussian_loss(losses, label, l_max, sigma)
+                with open('../plot_data/solver/gaussian_loss'+str(label)+'.pkl', 'rb') as f:
+                    y = pickle.load(f)
+                ax.plot(np.arange(len(y))+1, y, color=cm.viridis(color_nums[label]))
+            ax.set_xscale('log')
+            ax.set_yscale('linear')
+            ax.tick_params(axis='both', which='major', labelsize=tf-2)
+            ax.set_ylabel('Loss',fontsize=tf)
+        if i == 2:
+            print('[3/3] Plotting AB pruning complexity')
+            if not load_data:
+                save_pruning_time(generate_counter=True, plot=False)
+            with open('../plot_data/ab_pruning/data.pkl', 'rb') as f:
+                ab_data = pickle.load(f)
+            x = ab_data['x']
+            y = np.array(ab_data['g_mean'])
+            gstd = np.array(ab_data['gstd'])
+            err = np.array([y*(1-1/gstd), y*(gstd-1)])
+            c = -15 # Cut off hardware-limit plateau
+            ax.errorbar(x[:c], y[:c], yerr=err[:,:c], fmt='-o')
+            ax.set_xscale('log')
+            ax.set_yscale('log')
+            ax.tick_params(axis='both', which='major', labelsize=tf-2)
+            ax.set_ylabel('CPU time (s)',fontsize=tf)
+        ax.set_xlabel('State rank',fontsize=tf)
+        aligned_title(ax, title=titles[i],font=tf+4)
+    
+    # Colorbar:
+    norm = matplotlib.colors.LogNorm(vmin=par.min(), vmax=par.max())
+    sm = matplotlib.cm.ScalarMappable(cmap=plt.get_cmap('viridis'), norm=norm)
+    cbar = fig.colorbar(sm, ax=axs[2])
+    cbar.ax.tick_params(labelsize=tf)
+    cbar.ax.set_ylabel('Parameters', rotation=90, fontsize=tf)
+
+    fig.tight_layout()
+    fig.savefig('./plots/connect4_value_loss_error_bars.png', dpi=res)
 
 
 def _state_loss(env, path, checkpoint_number=10_000):
