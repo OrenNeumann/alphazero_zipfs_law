@@ -61,9 +61,12 @@ def _generate_gaussian_smoothed_loss_error_margins(labels: str, loss_curves, sig
             #    print(np.min(curve), np.any(curve <= 0))#
         else:
             y = np.mean(curves, axis=0)
-            stdv = np.std(curves, axis=0)
+            #stdv = np.std(curves, axis=0)
         y = gaussian_average(y, sigma=sigma, cut_tail=True, geometric=geometric)
-        stdv = gaussian_average(stdv, sigma=sigma, cut_tail=True, geometric=geometric)
+        for i, curve in enumerate(curves):
+            curves[i] = gaussian_average(curve, sigma=sigma, cut_tail=True, geometric=geometric)
+        stdv = np.exp(np.std(np.log(curves), axis=0)) #geometric
+        #stdv = gaussian_average(stdv, sigma=sigma, cut_tail=True, geometric=geometric)
         loss_data = {'mean': y, 'stdv': stdv}
         with open('../plot_data/value_loss/training_loss/gaussian_loss_connect_four_errors_'+str(label)+'.pkl', 'wb') as f:
             pickle.dump(loss_data, f)
@@ -187,11 +190,9 @@ def connect4_loss_plots_error_margins(load_data=True, res=300):
                 gstdv = data['stdv']
                 l_max = max(l_max, len(y))
                 ax.plot(np.arange(len(y))+1, y, color=cm.viridis(color_nums[label]))
-                #err = np.array([y*(1-1/gstdv), y*(gstdv-1)]) # geometric
                 # Fill the margins
-                #ax.fill_between(np.arange(len(y))+1, y/gstdv, y*gstdv, color=cm.viridis(color_nums[label]), alpha=0.2)
-                ax.fill_between(np.arange(len(y))+1, y-gstdv, y+gstdv, color=cm.viridis(color_nums[label]), alpha=0.2)
-                #ax.errorbar(np.arange(len(y))+1, y, yerr=err, fmt='-o', color=cm.viridis(color_nums[label]))
+                ax.fill_between(np.arange(len(y))+1, y/gstdv, y*gstdv, color=cm.viridis(color_nums[label]), alpha=0.2)
+                #ax.fill_between(np.arange(len(y))+1, y-gstdv, y+gstdv, color=cm.viridis(color_nums[label]), alpha=0.2)
             ax.set_xscale('log')
             ax.set_yscale('log')
             ax.tick_params(axis='both', which='major', labelsize=tf-2)
