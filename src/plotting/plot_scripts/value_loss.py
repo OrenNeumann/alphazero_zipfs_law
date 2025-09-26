@@ -8,7 +8,7 @@ import scienceplots
 from src.plotting.plot_utils import aligned_title, gaussian_average
 from src.data_analysis.state_value.alpha_beta_pruning_time import save_pruning_time
 from src.data_analysis.state_frequency.state_counter import StateCounter
-from src.data_analysis.state_value.value_loss import value_loss
+from src.data_analysis.state_value.value_loss import value_loss, solver_loss
 from src.general.general_utils import models_path, game_path
 
 plt.style.use(['science','nature','grid'])
@@ -33,6 +33,29 @@ def _generate_loss_curves(env, data_labels, n_copies):
     with open('../plot_data/value_loss/training_loss/loss_curves_'+env+'.pkl', 'wb') as f:
         pickle.dump(loss_curves, f)
 
+def _generate_solver_loss_curves(env, data_labels, n_copies):
+    """Collect states for each agent, calculate their solver values,
+    then calculate the agent's ground truth value loss."""
+    print('Generating solver loss curves for ', env)
+    path = models_path()
+    state_counter = StateCounter(env, save_serial=True, save_value=True)
+    loss_curves = dict()
+    for label in data_labels:
+        for copy in range(n_copies):
+            model_name = f'q_{label}_{copy}'
+            print(model_name)
+            model_path = path + game_path(env) + model_name + '/'
+            state_counter.reset_counters()
+            state_counter.collect_data(path=model_path, max_file_num=39)
+            state_counter.normalize_counters()
+            state_counter.prune_low_frequencies(10)
+            loss = solver_loss(env, model_path, state_counter=state_counter)
+            loss_curves[model_name] = loss
+            # save intermediate results because they are expensive
+            with open('../plot_data/value_loss/solver_loss/loss_curve_'+model_name+'.pkl', 'wb') as f:
+                pickle.dump(loss, f)
+    with open('../plot_data/value_loss/solver_loss/loss_curves_'+env+'.pkl', 'wb') as f:
+        pickle.dump(loss_curves, f)
 
 def _generate_gaussian_smoothed_loss(labels: str, loss_curves, sigma: float):
     for label in tqdm(labels):
@@ -45,8 +68,10 @@ def _generate_gaussian_smoothed_loss(labels: str, loss_curves, sigma: float):
             pickle.dump(y, f)
 
 def _generate_gaussian_smoothed_loss_error_margins(labels: str, loss_curves, sigma: float, geometric: bool=False):
-    # This makes most sense with geometric mean and stdv, when y-axis is in logscale.
-    # Since x-axis is in logscale, the gaussian averaging should be geometric.
+    """Takes the mean of all loss curves and smoothes it with a gaussian kernel.
+        Then calulates the geometric standard-deviation of the mean on the smoothed
+        curves. Geometric stdv makes more sense due to the changes between curves 
+        being in log-scale."""
     for label in tqdm(labels):
         curves = [np.array(loss_curves[f'q_{label}_{copy}']) for copy in range(6)]
         l = min([len(curve) for curve in curves])
@@ -57,8 +82,6 @@ def _generate_gaussian_smoothed_loss_error_margins(labels: str, loss_curves, sig
             curves = np.array(curves) + eps#
             y = np.exp(np.mean(np.log(curves), axis=0))
             stdv = np.exp(np.std(np.log(curves), axis=0))
-            #for curve in curves:#
-            #    print(np.min(curve), np.any(curve <= 0))#
         else:
             y = np.mean(curves, axis=0)
             #stdv = np.std(curves, axis=0)
@@ -66,7 +89,6 @@ def _generate_gaussian_smoothed_loss_error_margins(labels: str, loss_curves, sig
         for i, curve in enumerate(curves):
             curves[i] = gaussian_average(curve, sigma=sigma, cut_tail=True, geometric=geometric)
         stdv = np.exp(np.std(np.log(curves), axis=0)) #geometric
-        #stdv = gaussian_average(stdv, sigma=sigma, cut_tail=True, geometric=geometric)
         loss_data = {'mean': y, 'stdv': stdv}
         with open('../plot_data/value_loss/training_loss/gaussian_loss_connect_four_errors_'+str(label)+'.pkl', 'wb') as f:
             pickle.dump(loss_data, f)
@@ -77,7 +99,6 @@ def _generate_solver_gaussian_loss(losses: list, label: int, l_max, sigma: float
     y = gaussian_average(y, sigma=sigma, cut_tail=True)
     with open('../plot_data/solver/gaussian_loss'+str(label)+'.pkl', 'wb') as f:
         pickle.dump(y, f)
-
 
 def connect4_loss_plots(load_data=True, res=300):
     print('Plotting Connect Four value loss plots')
@@ -181,8 +202,8 @@ def connect4_loss_plots_error_margins(load_data=True, res=300):
             #    _generate_loss_curves('connect_four', labels, 6)
             with open('../plot_data/value_loss/training_loss/loss_curves_connect_four.pkl', 'rb') as f:
                 loss_curves = pickle.load(f)
-            if True: #not load_data:
-                _generate_gaussian_smoothed_loss_error_margins(labels=labels, loss_curves=loss_curves, sigma=sigma, geometric=False)# geometric=True)
+            if not load_data:
+                _generate_gaussian_smoothed_loss_error_margins(labels=labels, loss_curves=loss_curves, sigma=sigma)
             for label in tqdm([0, 1, 2, 3, 4, 5, 6]):
                 with open('../plot_data/value_loss/training_loss/gaussian_loss_connect_four_errors_'+str(label)+'.pkl', 'rb') as f:
                     data = pickle.load(f)
@@ -190,7 +211,7 @@ def connect4_loss_plots_error_margins(load_data=True, res=300):
                 gstdv = data['stdv']
                 l_max = max(l_max, len(y))
                 ax.plot(np.arange(len(y))+1, y, color=cm.viridis(color_nums[label]))
-                # Fill the margins
+                # plot geometric stdv margins
                 ax.fill_between(np.arange(len(y))+1, y/gstdv, y*gstdv, color=cm.viridis(color_nums[label]), alpha=0.2)
                 #ax.fill_between(np.arange(len(y))+1, y-gstdv, y+gstdv, color=cm.viridis(color_nums[label]), alpha=0.2)
             ax.set_xscale('log')
