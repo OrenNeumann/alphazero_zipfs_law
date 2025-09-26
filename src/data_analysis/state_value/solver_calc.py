@@ -101,9 +101,8 @@ def solver_loss(env, path_model: str,
     """
     model_values = get_model_value_estimator(env, path_model, checkpoint_number=checkpoint_number)
     sorted_serials = []
-    z = solver_values([key for key, _ in state_counter.frequencies.most_common()])
+    z = solver_values([state_counter.serials[key] for key, _ in state_counter.frequencies.most_common()])
     z = np.array(z)
-    
     # Chunk data to smaller pieces to save memory:
     chunk_size = len(sorted_serials) // num_chunks
     data_chunks = [sorted_serials[i:i + chunk_size] for i in range(0, len(sorted_serials), chunk_size)]
