@@ -8,7 +8,8 @@ import scienceplots
 from src.plotting.plot_utils import aligned_title, gaussian_average
 from src.data_analysis.state_value.alpha_beta_pruning_time import save_pruning_time
 from src.data_analysis.state_frequency.state_counter import StateCounter
-from src.data_analysis.state_value.value_loss import value_loss, solver_loss
+from src.data_analysis.state_value.value_loss import value_loss#, solver_loss
+from src.data_analysis.state_value.solver_calc import solver_loss
 from src.general.general_utils import models_path, game_path
 
 plt.style.use(['science','nature','grid'])
