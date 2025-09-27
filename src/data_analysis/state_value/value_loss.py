@@ -3,7 +3,6 @@ from src.data_analysis.state_value.value_prediction import get_model_value_estim
 from src.data_analysis.state_frequency.state_counter import StateCounter
 from tqdm import tqdm
 from src.data_analysis.state_value.value_prediction import get_solver_value_estimator
-import multiprocessing as mp
 
 
 def value_loss(env, path_model: str,
@@ -54,24 +53,13 @@ def solver_loss(env, path_model: str,
     """
     model_values = get_model_value_estimator(env, path_model, checkpoint_number=checkpoint_number)
     sorted_serials = []
-    for key, _ in tqdm(state_counter.frequencies.most_common(), desc='collecting serials'):
+    z = []
+    for key, _ in tqdm(state_counter.frequencies.most_common(), desc='calculating solver values'):
         serial = state_counter.serials[key]
         sorted_serials.append(state_counter.serials[key])
-    
-    # Parallelize solver value calculations
-    num_processes = max(1, mp.cpu_count() - 2)
-    solver_chunk_size = 100
-    solver_chunks = [sorted_serials[i:i + solver_chunk_size] for i in range(0, len(sorted_serials), solver_chunk_size)]
-    
-    with mp.Pool(processes=num_processes) as pool:
-        chunk_args = [(env, chunk) for chunk in solver_chunks]
-        z_chunks = list(tqdm(
-            pool.imap(_calculate_solver_values_chunk, chunk_args),
-            total=len(solver_chunks),
-            desc='calculating solver values'
-        ))
-    
-    z = np.array([val for chunk in z_chunks for val in chunk])
+        solver_value = get_solver_value_estimator(env)
+        z.append(solver_value(serial))
+    z = np.array(z)
 
     # Chunk data to smaller pieces to save memory:
     chunk_size = len(sorted_serials) // num_chunks
