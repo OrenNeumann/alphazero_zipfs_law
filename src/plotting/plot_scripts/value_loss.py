@@ -244,7 +244,7 @@ def connect4_loss_plots_error_margins(load_data=True, res=300):
                     model_name = f'q_{label}_{copy}'
                     with open('../plot_data/value_loss/solver_loss/loss_curve_'+model_name+'.pkl', "rb") as f:
                         losses[model_name] = pickle.load(f)
-            if not load_data:
+            if True:#not load_data:
                 # arithmetic mean and stdv
                 """
                 _generate_gaussian_smoothed_loss_error_margins(labels=labels,
