@@ -68,13 +68,19 @@ def _generate_gaussian_smoothed_loss(labels: str, loss_curves, sigma: float):
         with open('../plot_data/value_loss/training_loss/gaussian_loss_connect_four_'+str(label)+'.pkl', 'wb') as f:
             pickle.dump(y, f)
 
-def _generate_gaussian_smoothed_loss_error_margins(labels: str, loss_curves, sigma: float, geometric: bool=False):
+def _generate_gaussian_smoothed_loss_error_margins(labels: list[int], 
+                                                   loss_curves, 
+                                                   sigma: float, 
+                                                   geometric: bool=False,
+                                                   geometric_stdv: bool=False,
+                                                   dir_name: str ="training_loss",
+                                                   copies:int=6):
     """Takes the mean of all loss curves and smoothes it with a gaussian kernel.
         Then calulates the geometric standard-deviation of the mean on the smoothed
         curves. Geometric stdv makes more sense due to the changes between curves 
         being in log-scale."""
     for label in tqdm(labels):
-        curves = [np.array(loss_curves[f'q_{label}_{copy}']) for copy in range(6)]
+        curves = [np.array(loss_curves[f'q_{label}_{copy}']) for copy in range(copies)]
         l = min([len(curve) for curve in curves])
         curves = [curve[:l] for curve in curves]
         if geometric:
@@ -89,9 +95,12 @@ def _generate_gaussian_smoothed_loss_error_margins(labels: str, loss_curves, sig
         y = gaussian_average(y, sigma=sigma, cut_tail=True, geometric=geometric)
         for i, curve in enumerate(curves):
             curves[i] = gaussian_average(curve, sigma=sigma, cut_tail=True, geometric=geometric)
-        stdv = np.exp(np.std(np.log(curves), axis=0)) #geometric
+        if geometric_stdv: #take a geometric stdv, regardless of mean calculation
+            stdv = np.exp(np.std(np.log(curves), axis=0)) #geometric
+        else: #arithmetic stdv
+            stdv = np.std(curves, axis=0)
         loss_data = {'mean': y, 'stdv': stdv}
-        with open('../plot_data/value_loss/training_loss/gaussian_loss_connect_four_errors_'+str(label)+'.pkl', 'wb') as f:
+        with open('../plot_data/value_loss/'+dir_name+'/gaussian_loss_connect_four_errors_'+str(label)+'.pkl', 'wb') as f:
             pickle.dump(loss_data, f)
 
 def _generate_solver_gaussian_loss(losses: list, label: int, l_max, sigma: float):
@@ -204,7 +213,10 @@ def connect4_loss_plots_error_margins(load_data=True, res=300):
             with open('../plot_data/value_loss/training_loss/loss_curves_connect_four.pkl', 'rb') as f:
                 loss_curves = pickle.load(f)
             if not load_data:
-                _generate_gaussian_smoothed_loss_error_margins(labels=labels, loss_curves=loss_curves, sigma=sigma)
+                _generate_gaussian_smoothed_loss_error_margins(labels=labels,
+                                                               loss_curves=loss_curves,
+                                                               sigma=sigma,
+                                                               geometric_stdv=True)
             for label in tqdm([0, 1, 2, 3, 4, 5, 6]):
                 with open('../plot_data/value_loss/training_loss/gaussian_loss_connect_four_errors_'+str(label)+'.pkl', 'rb') as f:
                     data = pickle.load(f)
@@ -220,21 +232,46 @@ def connect4_loss_plots_error_margins(load_data=True, res=300):
             ax.tick_params(axis='both', which='major', labelsize=tf-2)
             ax.set_ylabel('Loss',fontsize=tf)
             del loss_curves
+
         if i == 1:
             print('[2/3] Plotting ground-truth loss')
             print('x axis length:', l_max)
-            with open('../plot_data/solver/loss_curves.pkl', "rb") as f:
-                losses = pickle.load(f)
-            for label in tqdm([0, 1, 2, 3, 4, 5, 6]):
-                if not load_data:
-                    _generate_solver_gaussian_loss(losses, label, l_max, sigma)
-                with open('../plot_data/solver/gaussian_loss'+str(label)+'.pkl', 'rb') as f:
-                    y = pickle.load(f)
+            #with open('../plot_data/value_loss/solver_loss/loss_curves_connect_four.pkl', "rb") as f:
+            #    losses = pickle.load(f)
+            losses = {}
+            for label in [0,1,2,3]:
+                for copy in range(4):
+                    model_name = f'q_{label}_{copy}'
+                    with open('../plot_data/value_loss/solver_loss/loss_curve_'+model_name+'.pkl', "rb") as f:
+                        losses[model_name] = pickle.load(f)
+            if not load_data:
+                # arithmetic mean and stdv
+                """
+                _generate_gaussian_smoothed_loss_error_margins(labels=labels,
+                                                               loss_curves=losses,
+                                                               sigma=sigma,
+                                                               dir_name="solver_loss")"""
+                _generate_gaussian_smoothed_loss_error_margins(labels=[0,1,2,3],
+                                                               loss_curves=losses,
+                                                               sigma=sigma,
+                                                               dir_name="solver_loss",
+                                                               copies=4)
+            for label in tqdm([0, 1, 2, 3]):#tqdm([0, 1, 2, 3, 4, 5, 6]):
+                #if not load_data:
+                #    _generate_solver_gaussian_loss(losses, label, l_max, sigma)
+                with open('../plot_data/value_loss/solver_loss/gaussian_loss_connect_four_errors_'+str(label)+'.pkl', 'rb') as f:
+                    data = pickle.load(f)
+                y = data['mean']
+                stdv = data['stdv']
+                l_max = max(l_max, len(y))
                 ax.plot(np.arange(len(y))+1, y, color=cm.viridis(color_nums[label]))
+                # plot stdv margins
+                ax.fill_between(np.arange(len(y))+1, y-stdv, y+stdv, color=cm.viridis(color_nums[label]), alpha=0.2)
             ax.set_xscale('log')
             ax.set_yscale('linear')
             ax.tick_params(axis='both', which='major', labelsize=tf-2)
             ax.set_ylabel('Loss',fontsize=tf)
+            
         if i == 2:
             print('[3/3] Plotting AB pruning complexity')
             if not load_data:
