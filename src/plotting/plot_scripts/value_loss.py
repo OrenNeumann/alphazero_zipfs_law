@@ -45,6 +45,12 @@ def _generate_solver_loss_curves(env, data_labels, n_copies):
         for copy in range(n_copies):
             model_name = f'q_{label}_{copy}'
             print(model_name)
+            #####
+            if label<5 or (label==5 and copy<2): #skip
+                with open('../plot_data/value_loss/solver_loss/loss_curve_'+model_name+'.pkl', "rb") as f:
+                        loss_curves[model_name] = pickle.load(f)
+                continue
+            #####
             model_path = path + game_path(env) + model_name + '/'
             state_counter.reset_counters()
             state_counter.collect_data(path=model_path, max_file_num=39)
