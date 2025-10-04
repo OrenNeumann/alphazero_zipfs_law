@@ -46,9 +46,13 @@ def generate_solver_loss_curves(env, data_labels, n_copies):
         for copy in range(n_copies):
             model_name = f'q_{label}_{copy}'
             print(model_name)
+            if model_name not in ['q_4_1','q_4_2','q_4_3','q_4_4','q_5_3']:
+                with open('../plot_data/value_loss/solver_loss/loss_curve_'+model_name+'.pkl', 'rb') as f:
+                    loss_curves[model_name] = pickle.load(f)
+                continue
             model_path = path + game_path(env) + model_name + '/'
             state_counter.reset_counters()
-            state_counter.collect_data(path=model_path, max_file_num=39)
+            state_counter.collect_data(path=model_path, max_file_num=59)#39)
             state_counter.normalize_counters()
             state_counter.prune_low_frequencies(10)
             loss = solver_loss(env, model_path, state_counter=state_counter)
@@ -256,7 +260,7 @@ def connect4_loss_plots_error_margins(load_data=True, res=300):
                 ax.fill_between(np.arange(len(y))+1, y-stdv, y+stdv, color=cm.viridis(color_nums[label]), alpha=0.2)
             ax.set_xscale('log')
             ax.set_yscale('linear')
-            ax.set_ylim(bottom=None, top=0.8)
+            ax.set_ylim(bottom=0.0, top=0.8)
             ax.tick_params(axis='both', which='major', labelsize=tf-2)
             ax.set_ylabel('Loss',fontsize=tf)
             
