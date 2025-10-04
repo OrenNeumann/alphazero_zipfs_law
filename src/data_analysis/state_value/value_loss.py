@@ -82,7 +82,7 @@ def solver_loss_from_dataset(env, path_model: str,
     for key, _ in tqdm(state_counter.frequencies.most_common(), desc='calculating solver values'):
         serial = state_counter.serials[key]
         sorted_serials.append(state_counter.serials[key])
-        z.append(solver_labels[serial])
+        z.append(solver_labels[key])#[serial])
     z = np.array(z)
 
     # Chunk data to smaller pieces to save memory:

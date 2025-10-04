@@ -2,6 +2,7 @@ import matplotlib
 import matplotlib.cm as cm
 import matplotlib.pyplot as plt
 import pickle
+import os
 from tqdm import tqdm
 import numpy as np
 import scienceplots
@@ -122,6 +123,7 @@ def _generate_gaussian_smoothed_loss_error_margins(labels: list[int],
         else: #arithmetic stdv
             stdv = np.std(curves, axis=0)
         loss_data = {'mean': y, 'stdv': stdv}
+        os.makedirs('../plot_data/value_loss/'+dir_name, exist_ok=True)
         with open('../plot_data/value_loss/'+dir_name+'/gaussian_loss_connect_four_errors_'+str(label)+'.pkl', 'wb') as f:
             pickle.dump(loss_data, f)
 
@@ -258,16 +260,17 @@ def connect4_loss_plots_error_margins(load_data=True, res=300):
         if i == 1:
             print('[2/3] Plotting ground-truth loss')
             print('x axis length:', l_max)
-            with open('../plot_data/value_loss/solver_loss/loss_curves_connect_four.pkl', "rb") as f:
+            with open('../plot_data/value_loss/solver_loss/loss_curves_from_dataset_connect_four.pkl', "rb") as f:
                 losses = pickle.load(f)
-            if not load_data:
+            data_dir ="solver_loss_from_dataset"
+            if True:#not load_data:
                 # arithmetic mean and stdv
                 _generate_gaussian_smoothed_loss_error_margins(labels=labels,
                                                                loss_curves=losses,
                                                                sigma=sigma,
-                                                               dir_name="solver_loss")
+                                                               dir_name=data_dir)
             for label in tqdm(labels):
-                with open('../plot_data/value_loss/solver_loss/gaussian_loss_connect_four_errors_'+str(label)+'.pkl', 'rb') as f:
+                with open('../plot_data/value_loss/'+data_dir+'/gaussian_loss_connect_four_errors_'+str(label)+'.pkl', 'rb') as f:
                     data = pickle.load(f)
                 y = data['mean']
                 stdv = data['stdv']
