@@ -8,7 +8,7 @@ import scienceplots
 from src.plotting.plot_utils import aligned_title, gaussian_average
 from src.data_analysis.state_value.alpha_beta_pruning_time import save_pruning_time
 from src.data_analysis.state_frequency.state_counter import StateCounter
-from src.data_analysis.state_value.value_loss import value_loss#, solver_loss
+from src.data_analysis.state_value.value_loss import value_loss
 from src.data_analysis.state_value.solver_calc import solver_loss
 from src.general.general_utils import models_path, game_path
 
@@ -34,9 +34,10 @@ def _generate_loss_curves(env, data_labels, n_copies):
     with open('../plot_data/value_loss/training_loss/loss_curves_'+env+'.pkl', 'wb') as f:
         pickle.dump(loss_curves, f)
 
-def _generate_solver_loss_curves(env, data_labels, n_copies):
+def generate_solver_loss_curves(env, data_labels, n_copies):
     """Collect states for each agent, calculate their solver values,
-    then calculate the agent's ground truth value loss."""
+    then calculate the agent's ground truth value loss.
+    Use this function to generate the loss curves for Fig. 3B"""
     print('Generating solver loss curves for ', env)
     path = models_path()
     state_counter = StateCounter(env, save_serial=True, save_value=True)
@@ -45,12 +46,6 @@ def _generate_solver_loss_curves(env, data_labels, n_copies):
         for copy in range(n_copies):
             model_name = f'q_{label}_{copy}'
             print(model_name)
-            #####
-            if label<5 or (label==5 and copy<2): #skip
-                with open('../plot_data/value_loss/solver_loss/loss_curve_'+model_name+'.pkl', "rb") as f:
-                        loss_curves[model_name] = pickle.load(f)
-                continue
-            #####
             model_path = path + game_path(env) + model_name + '/'
             state_counter.reset_counters()
             state_counter.collect_data(path=model_path, max_file_num=39)
@@ -223,7 +218,7 @@ def connect4_loss_plots_error_margins(load_data=True, res=300):
                                                                loss_curves=loss_curves,
                                                                sigma=sigma,
                                                                geometric_stdv=True)
-            for label in tqdm([0, 1, 2, 3, 4, 5, 6]):
+            for label in tqdm(labels):
                 with open('../plot_data/value_loss/training_loss/gaussian_loss_connect_four_errors_'+str(label)+'.pkl', 'rb') as f:
                     data = pickle.load(f)
                 y = data['mean']
@@ -242,29 +237,21 @@ def connect4_loss_plots_error_margins(load_data=True, res=300):
         if i == 1:
             print('[2/3] Plotting ground-truth loss')
             print('x axis length:', l_max)
-            #with open('../plot_data/value_loss/solver_loss/loss_curves_connect_four.pkl', "rb") as f:
-            #    losses = pickle.load(f)
-            losses = {}
-            for label in [0,1,2,3]:
-                for copy in range(4):
-                    model_name = f'q_{label}_{copy}'
-                    with open('../plot_data/value_loss/solver_loss/loss_curve_'+model_name+'.pkl', "rb") as f:
-                        losses[model_name] = pickle.load(f)
+            with open('../plot_data/value_loss/solver_loss/loss_curves_connect_four.pkl', "rb") as f:
+                losses = pickle.load(f)
+            #losses = {}
+            #for label in labels:
+            #    for copy in range(6):
+            #        model_name = f'q_{label}_{copy}'
+            #        with open('../plot_data/value_loss/solver_loss/loss_curve_'+model_name+'.pkl', "rb") as f:
+            #            losses[model_name] = pickle.load(f)
             if True:#not load_data:
                 # arithmetic mean and stdv
-                """
                 _generate_gaussian_smoothed_loss_error_margins(labels=labels,
                                                                loss_curves=losses,
                                                                sigma=sigma,
-                                                               dir_name="solver_loss")"""
-                _generate_gaussian_smoothed_loss_error_margins(labels=[0,1,2,3],
-                                                               loss_curves=losses,
-                                                               sigma=sigma,
-                                                               dir_name="solver_loss",
-                                                               copies=4)
-            for label in tqdm([0, 1, 2, 3]):#tqdm([0, 1, 2, 3, 4, 5, 6]):
-                #if not load_data:
-                #    _generate_solver_gaussian_loss(losses, label, l_max, sigma)
+                                                               dir_name="solver_loss")
+            for label in tqdm(labels):
                 with open('../plot_data/value_loss/solver_loss/gaussian_loss_connect_four_errors_'+str(label)+'.pkl', 'rb') as f:
                     data = pickle.load(f)
                 y = data['mean']
