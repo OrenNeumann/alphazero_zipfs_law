@@ -230,6 +230,7 @@ def connect4_loss_plots_error_margins(load_data=True, res=300):
                 #ax.fill_between(np.arange(len(y))+1, y-gstdv, y+gstdv, color=cm.viridis(color_nums[label]), alpha=0.2)
             ax.set_xscale('log')
             ax.set_yscale('log')
+            ax.set_ylim(bottom=None, top=0.8) 
             ax.tick_params(axis='both', which='major', labelsize=tf-2)
             ax.set_ylabel('Loss',fontsize=tf)
             del loss_curves
@@ -239,13 +240,7 @@ def connect4_loss_plots_error_margins(load_data=True, res=300):
             print('x axis length:', l_max)
             with open('../plot_data/value_loss/solver_loss/loss_curves_connect_four.pkl', "rb") as f:
                 losses = pickle.load(f)
-            #losses = {}
-            #for label in labels:
-            #    for copy in range(6):
-            #        model_name = f'q_{label}_{copy}'
-            #        with open('../plot_data/value_loss/solver_loss/loss_curve_'+model_name+'.pkl', "rb") as f:
-            #            losses[model_name] = pickle.load(f)
-            if True:#not load_data:
+            if not load_data:
                 # arithmetic mean and stdv
                 _generate_gaussian_smoothed_loss_error_margins(labels=labels,
                                                                loss_curves=losses,
