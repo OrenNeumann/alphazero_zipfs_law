@@ -230,7 +230,6 @@ def connect4_loss_plots_error_margins(load_data=True, res=300):
                 #ax.fill_between(np.arange(len(y))+1, y-gstdv, y+gstdv, color=cm.viridis(color_nums[label]), alpha=0.2)
             ax.set_xscale('log')
             ax.set_yscale('log')
-            ax.set_ylim(bottom=None, top=0.8) 
             ax.tick_params(axis='both', which='major', labelsize=tf-2)
             ax.set_ylabel('Loss',fontsize=tf)
             del loss_curves
@@ -257,6 +256,7 @@ def connect4_loss_plots_error_margins(load_data=True, res=300):
                 ax.fill_between(np.arange(len(y))+1, y-stdv, y+stdv, color=cm.viridis(color_nums[label]), alpha=0.2)
             ax.set_xscale('log')
             ax.set_yscale('linear')
+            ax.set_ylim(bottom=None, top=0.8)
             ax.tick_params(axis='both', which='major', labelsize=tf-2)
             ax.set_ylabel('Loss',fontsize=tf)
             
