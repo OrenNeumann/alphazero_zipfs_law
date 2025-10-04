@@ -8,7 +8,7 @@ import scienceplots
 from src.plotting.plot_utils import aligned_title, gaussian_average
 from src.data_analysis.state_value.alpha_beta_pruning_time import save_pruning_time
 from src.data_analysis.state_frequency.state_counter import StateCounter
-from src.data_analysis.state_value.value_loss import value_loss
+from src.data_analysis.state_value.value_loss import value_loss, solver_loss_from_dataset
 from src.data_analysis.state_value.solver_calc import solver_loss
 from src.general.general_utils import models_path, game_path
 
@@ -57,6 +57,27 @@ def generate_solver_loss_curves(env, data_labels, n_copies):
             with open('../plot_data/value_loss/solver_loss/loss_curve_'+model_name+'.pkl', 'wb') as f:
                 pickle.dump(loss, f)
     with open('../plot_data/value_loss/solver_loss/loss_curves_'+env+'.pkl', 'wb') as f:
+        pickle.dump(loss_curves, f)
+
+
+def generate_common_solver_loss_curves(env, data_labels, n_copies):
+    """Uses states aggragated over several different sized agents.
+    Calculate the agent's ground truth value loss."""
+    print('Generating solver loss curves for ', env)
+    path = models_path()
+    loss_curves = dict()
+    with open('../plot_data/solver/true_values.pkl', 'rb') as f:
+        solver_labels = pickle.load(f)
+    with open('../plot_data/solver/state_counter.pkl', 'rb') as f:
+        states = pickle.load(f)
+    for label in data_labels:
+        for copy in range(n_copies):
+            model_name = f'q_{label}_{copy}'
+            print(model_name)
+            model_path = path + game_path(env) + model_name + '/'
+            loss = solver_loss_from_dataset(env, model_path, state_counter=states, solver_labels=solver_labels)
+            loss_curves[model_name] = loss
+    with open('../plot_data/value_loss/solver_loss/loss_curves_from_dataset_'+env+'.pkl', 'wb') as f:
         pickle.dump(loss_curves, f)
 
 def _generate_gaussian_smoothed_loss(labels: str, loss_curves, sigma: float):
@@ -289,6 +310,83 @@ def connect4_loss_plots_error_margins(load_data=True, res=300):
     fig.tight_layout()
     fig.savefig('./plots/connect4_value_loss_error_bars.png', dpi=res)
 
+def connect4_appndx_solver_plots(load_data=True, res=300):
+    print('Plotting Connect Four value loss plots')
+    tf =12
+    # Create figure and subplots
+    fig, axs = plt.subplots(1, 2, figsize=(8, 3))
+
+    par = np.load('src/config/parameter_counts/connect_four.npy')
+    log_par = np.log(par)
+    color_nums = (log_par - log_par.min()) / (log_par.max() - log_par.min())
+
+    titles = [r'$\bf{A.}$ Value loss (train set)',
+              r'$\bf{B.}$ Value loss (ground truth)']
+    sigma = 0.15
+    labels = [0, 1, 2, 3, 4, 5, 6]
+    l_max = 0
+    for i, ax in enumerate(axs):
+        if i == 0:
+            print('[1/2] Plotting loss on fixed dataset')
+            print('x axis length:', l_max)
+            with open('../plot_data/value_loss/solver_loss/loss_curves_connect_four.pkl', "rb") as f:
+                losses = pickle.load(f)
+            if not load_data:
+                # arithmetic mean and stdv
+                _generate_gaussian_smoothed_loss_error_margins(labels=labels,
+                                                               loss_curves=losses,
+                                                               sigma=sigma,
+                                                               dir_name="solver_loss")
+            for label in tqdm(labels):
+                with open('../plot_data/value_loss/solver_loss/gaussian_loss_connect_four_errors_'+str(label)+'.pkl', 'rb') as f:
+                    data = pickle.load(f)
+                y = data['mean']
+                stdv = data['stdv']
+                l_max = max(l_max, len(y))
+                ax.plot(np.arange(len(y))+1, y, color=cm.viridis(color_nums[label]))
+                # plot stdv margins
+                ax.fill_between(np.arange(len(y))+1, y-stdv, y+stdv, color=cm.viridis(color_nums[label]), alpha=0.2)
+            ax.set_xscale('log')
+            ax.set_yscale('linear')
+            ax.set_ylim(bottom=0.0, top=0.8)
+            ax.tick_params(axis='both', which='major', labelsize=tf-2)
+            ax.set_ylabel('Loss',fontsize=tf)
+
+        if i == 1:
+            print('[2/2] Plotting loss on individual data')
+            print('x axis length:', l_max)
+            with open('../plot_data/value_loss/solver_loss/loss_curves_connect_four.pkl', "rb") as f:
+                losses = pickle.load(f)
+            if not load_data:
+                # arithmetic mean and stdv
+                _generate_gaussian_smoothed_loss_error_margins(labels=labels,
+                                                               loss_curves=losses,
+                                                               sigma=sigma,
+                                                               dir_name="solver_loss")
+            for label in tqdm(labels):
+                with open('../plot_data/value_loss/solver_loss/gaussian_loss_connect_four_errors_'+str(label)+'.pkl', 'rb') as f:
+                    data = pickle.load(f)
+                y = data['mean']
+                stdv = data['stdv']
+                l_max = max(l_max, len(y))
+                ax.plot(np.arange(len(y))+1, y, color=cm.viridis(color_nums[label]))
+                # plot stdv margins
+                ax.fill_between(np.arange(len(y))+1, y-stdv, y+stdv, color=cm.viridis(color_nums[label]), alpha=0.2)
+            ax.set_xscale('log')
+            ax.set_yscale('linear')
+            ax.set_ylim(bottom=0.0, top=0.8)
+            ax.tick_params(axis='both', which='major', labelsize=tf-2)
+            ax.set_ylabel('Loss',fontsize=tf)
+    
+    # Colorbar:
+    norm = matplotlib.colors.LogNorm(vmin=par.min(), vmax=par.max())
+    sm = matplotlib.cm.ScalarMappable(cmap=plt.get_cmap('viridis'), norm=norm)
+    cbar = fig.colorbar(sm, ax=axs[1])
+    cbar.ax.tick_params(labelsize=tf)
+    cbar.ax.set_ylabel('Parameters', rotation=90, fontsize=tf)
+
+    fig.tight_layout()
+    fig.savefig('./plots/connect4_value_solver_loss_appndx.png', dpi=res)
 
 def _state_loss(env, path, checkpoint_number=10_000):
     state_counter = StateCounter(env, save_serial=True, save_value=True, save_turn_num=True, cut_extensive=False)

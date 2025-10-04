@@ -70,3 +70,27 @@ def solver_loss(env, path_model: str,
     v = np.concatenate(vl)
 
     return (z - v) ** 2
+
+def solver_loss_from_dataset(env, path_model: str,
+               state_counter: StateCounter,
+               solver_labels: dict[str, float],
+               checkpoint_number: int = 10_000,
+               num_chunks: int = 40) -> np.ndarray:
+    model_values = get_model_value_estimator(env, path_model, checkpoint_number=checkpoint_number)
+    sorted_serials = []
+    z = []
+    for key, _ in tqdm(state_counter.frequencies.most_common(), desc='calculating solver values'):
+        serial = state_counter.serials[key]
+        sorted_serials.append(state_counter.serials[key])
+        z.append(solver_labels[serial])
+    z = np.array(z)
+
+    # Chunk data to smaller pieces to save memory:
+    chunk_size = len(sorted_serials) // num_chunks
+    data_chunks = [sorted_serials[i:i + chunk_size] for i in range(0, len(sorted_serials), chunk_size)]
+    vl = []
+    for chunk in data_chunks:
+        vl.append(model_values(chunk))
+    v = np.concatenate(vl)
+
+    return (z - v) ** 2
