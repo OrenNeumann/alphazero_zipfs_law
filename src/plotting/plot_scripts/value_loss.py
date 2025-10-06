@@ -355,12 +355,14 @@ def connect4_appndx_solver_plots(load_data=True, res=300):
                 y = data['mean']
                 stdv = data['stdv']
                 ax.plot(np.arange(len(y))+1, y, color=cm.viridis(color_nums[label]))
+                # plot stdv margins
+                ax.fill_between(np.arange(len(y))+1, y-stdv, y+stdv, color=cm.viridis(color_nums[label]), alpha=0.2)
             ax.set_xscale('log')
             ax.set_yscale('linear')
             ax.set_ylim(bottom=0.0, top=0.8)
             ax.tick_params(axis='both', which='major', labelsize=tf-2)
             #ax.set_ylabel('Loss',fontsize=tf)
-            
+
         ax.set_xlabel('State rank',fontsize=tf)
         aligned_title(ax, title=titles[i],font=tf+4)
 
