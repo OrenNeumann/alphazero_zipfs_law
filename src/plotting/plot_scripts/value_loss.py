@@ -261,7 +261,7 @@ def connect4_loss_plots_error_margins(load_data=True, res=300):
             with open('../plot_data/value_loss/solver_loss/loss_curves_from_dataset_connect_four.pkl', "rb") as f:
                 losses = pickle.load(f)
             data_dir ="solver_loss_from_dataset"
-            if True:#not load_data:
+            if not load_data:
                 # arithmetic mean and stdv
                 _generate_gaussian_smoothed_loss_error_margins(labels=labels,
                                                                loss_curves=losses,
@@ -348,27 +348,21 @@ def connect4_appndx_solver_plots(load_data=True, res=300):
     
         if i == 1:            
             print('[2/2] Plotting loss on fixed dataset')
-            if not load_data:
-                with open('../plot_data/value_loss/solver_loss/loss_curves_connect_four.pkl', "rb") as f:
-                    losses = pickle.load(f)
-                # arithmetic mean and stdv
-                _generate_gaussian_smoothed_loss_error_margins(labels=labels,
-                                                               loss_curves=losses,
-                                                               sigma=sigma,
-                                                               dir_name="solver_loss")
+            data_dir ="solver_loss_from_dataset"
             for label in tqdm(labels):
-                with open('../plot_data/value_loss/solver_loss/gaussian_loss_connect_four_errors_'+str(label)+'.pkl', 'rb') as f:
+                with open('../plot_data/value_loss/'+data_dir+'/gaussian_loss_connect_four_errors_'+str(label)+'.pkl', 'rb') as f:
                     data = pickle.load(f)
                 y = data['mean']
                 stdv = data['stdv']
                 ax.plot(np.arange(len(y))+1, y, color=cm.viridis(color_nums[label]))
-                # plot stdv margins
-                ax.fill_between(np.arange(len(y))+1, y-stdv, y+stdv, color=cm.viridis(color_nums[label]), alpha=0.2)
             ax.set_xscale('log')
             ax.set_yscale('linear')
             ax.set_ylim(bottom=0.0, top=0.8)
             ax.tick_params(axis='both', which='major', labelsize=tf-2)
-            ax.set_ylabel('Loss',fontsize=tf)
+            #ax.set_ylabel('Loss',fontsize=tf)
+            
+        ax.set_xlabel('State rank',fontsize=tf)
+        aligned_title(ax, title=titles[i],font=tf+4)
 
     # Colorbar:
     norm = matplotlib.colors.LogNorm(vmin=par.min(), vmax=par.max())
