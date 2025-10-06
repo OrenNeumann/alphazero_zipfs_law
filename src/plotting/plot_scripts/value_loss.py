@@ -49,7 +49,7 @@ def generate_solver_loss_curves(env, data_labels, n_copies):
             print(model_name)
             model_path = path + game_path(env) + model_name + '/'
             state_counter.reset_counters()
-            state_counter.collect_data(path=model_path, max_file_num=59)#39)
+            state_counter.collect_data(path=model_path, max_file_num=39)
             state_counter.normalize_counters()
             state_counter.prune_low_frequencies(10)
             loss = solver_loss(env, model_path, state_counter=state_counter)
@@ -105,6 +105,7 @@ def _generate_gaussian_smoothed_loss_error_margins(labels: list[int],
     for label in tqdm(labels):
         curves = [np.array(loss_curves[f'q_{label}_{copy}']) for copy in range(copies)]
         l = min([len(curve) for curve in curves])
+        l = min([l, 3*10**5]) #limit length to manageable OOM
         curves = [curve[:l] for curve in curves]
         if geometric:
             # take geometric mean and stdv
@@ -228,7 +229,6 @@ def connect4_loss_plots_error_margins(load_data=True, res=300):
               r'$\bf{C.}$ Time required, $\alpha$-$\beta$ pruning']
     sigma = 0.15
     labels = [0, 1, 2, 3, 4, 5, 6]
-    l_max = 0
     for i, ax in enumerate(axs):
         if i == 0:
             print('[1/3] Plotting training loss')
@@ -246,7 +246,6 @@ def connect4_loss_plots_error_margins(load_data=True, res=300):
                     data = pickle.load(f)
                 y = data['mean']
                 gstdv = data['stdv']
-                l_max = max(l_max, len(y))
                 ax.plot(np.arange(len(y))+1, y, color=cm.viridis(color_nums[label]))
                 # plot geometric stdv margins
                 ax.fill_between(np.arange(len(y))+1, y/gstdv, y*gstdv, color=cm.viridis(color_nums[label]), alpha=0.2)
@@ -259,7 +258,6 @@ def connect4_loss_plots_error_margins(load_data=True, res=300):
 
         if i == 1:
             print('[2/3] Plotting ground-truth loss')
-            print('x axis length:', l_max)
             with open('../plot_data/value_loss/solver_loss/loss_curves_from_dataset_connect_four.pkl', "rb") as f:
                 losses = pickle.load(f)
             data_dir ="solver_loss_from_dataset"
@@ -274,7 +272,6 @@ def connect4_loss_plots_error_margins(load_data=True, res=300):
                     data = pickle.load(f)
                 y = data['mean']
                 stdv = data['stdv']
-                l_max = max(l_max, len(y))
                 ax.plot(np.arange(len(y))+1, y, color=cm.viridis(color_nums[label]))
                 # plot stdv margins
                 ax.fill_between(np.arange(len(y))+1, y-stdv, y+stdv, color=cm.viridis(color_nums[label]), alpha=0.2)
@@ -287,7 +284,7 @@ def connect4_loss_plots_error_margins(load_data=True, res=300):
         if i == 2:
             print('[3/3] Plotting AB pruning complexity')
             if not load_data:
-                save_pruning_time(generate_counter=True, plot=False)
+                save_pruning_time(generate_counter=True)
             with open('../plot_data/ab_pruning/data.pkl', 'rb') as f:
                 ab_data = pickle.load(f)
             x = ab_data['x']
@@ -323,55 +320,23 @@ def connect4_appndx_solver_plots(load_data=True, res=300):
     log_par = np.log(par)
     color_nums = (log_par - log_par.min()) / (log_par.max() - log_par.min())
 
-    titles = [r'$\bf{A.}$ Value loss (train set)',
-              r'$\bf{B.}$ Value loss (ground truth)']
+    titles = [r'$\bf{A.}$ Value loss on own train set',
+              r'$\bf{B.}$ Value loss on all train sets']
     sigma = 0.15
     labels = [0, 1, 2, 3, 4, 5, 6]
-    l_max = 0
     for i, ax in enumerate(axs):
         if i == 0:
-            print('[1/2] Plotting loss on fixed dataset')
-            print('x axis length:', l_max)
-            with open('../plot_data/value_loss/solver_loss/loss_curves_connect_four.pkl', "rb") as f:
-                losses = pickle.load(f)
-            if not load_data:
-                # arithmetic mean and stdv
-                _generate_gaussian_smoothed_loss_error_margins(labels=labels,
-                                                               loss_curves=losses,
-                                                               sigma=sigma,
-                                                               dir_name="solver_loss")
+            print('[1/2] Plotting loss on individual data')
+            # To generate the data for this plot, run:
+            #  generate_solver_loss_curves(env='connect_four',
+            #                              data_labels=[0,1,2,3,4,5,6],
+            #                              n_copies=6)
+            # This can take a while. Don't forget to place the 7x6 book at the top folder.
             for label in tqdm(labels):
                 with open('../plot_data/value_loss/solver_loss/gaussian_loss_connect_four_errors_'+str(label)+'.pkl', 'rb') as f:
                     data = pickle.load(f)
                 y = data['mean']
                 stdv = data['stdv']
-                l_max = max(l_max, len(y))
-                ax.plot(np.arange(len(y))+1, y, color=cm.viridis(color_nums[label]))
-                # plot stdv margins
-                ax.fill_between(np.arange(len(y))+1, y-stdv, y+stdv, color=cm.viridis(color_nums[label]), alpha=0.2)
-            ax.set_xscale('log')
-            ax.set_yscale('linear')
-            ax.set_ylim(bottom=0.0, top=0.8)
-            ax.tick_params(axis='both', which='major', labelsize=tf-2)
-            ax.set_ylabel('Loss',fontsize=tf)
-
-        if i == 1:
-            print('[2/2] Plotting loss on individual data')
-            print('x axis length:', l_max)
-            with open('../plot_data/value_loss/solver_loss/loss_curves_connect_four.pkl', "rb") as f:
-                losses = pickle.load(f)
-            if not load_data:
-                # arithmetic mean and stdv
-                _generate_gaussian_smoothed_loss_error_margins(labels=labels,
-                                                               loss_curves=losses,
-                                                               sigma=sigma,
-                                                               dir_name="solver_loss")
-            for label in tqdm(labels):
-                with open('../plot_data/value_loss/solver_loss/gaussian_loss_connect_four_errors_'+str(label)+'.pkl', 'rb') as f:
-                    data = pickle.load(f)
-                y = data['mean']
-                stdv = data['stdv']
-                l_max = max(l_max, len(y))
                 ax.plot(np.arange(len(y))+1, y, color=cm.viridis(color_nums[label]))
                 # plot stdv margins
                 ax.fill_between(np.arange(len(y))+1, y-stdv, y+stdv, color=cm.viridis(color_nums[label]), alpha=0.2)
@@ -381,6 +346,30 @@ def connect4_appndx_solver_plots(load_data=True, res=300):
             ax.tick_params(axis='both', which='major', labelsize=tf-2)
             ax.set_ylabel('Loss',fontsize=tf)
     
+        if i == 1:            
+            print('[2/2] Plotting loss on fixed dataset')
+            if not load_data:
+                with open('../plot_data/value_loss/solver_loss/loss_curves_connect_four.pkl', "rb") as f:
+                    losses = pickle.load(f)
+                # arithmetic mean and stdv
+                _generate_gaussian_smoothed_loss_error_margins(labels=labels,
+                                                               loss_curves=losses,
+                                                               sigma=sigma,
+                                                               dir_name="solver_loss")
+            for label in tqdm(labels):
+                with open('../plot_data/value_loss/solver_loss/gaussian_loss_connect_four_errors_'+str(label)+'.pkl', 'rb') as f:
+                    data = pickle.load(f)
+                y = data['mean']
+                stdv = data['stdv']
+                ax.plot(np.arange(len(y))+1, y, color=cm.viridis(color_nums[label]))
+                # plot stdv margins
+                ax.fill_between(np.arange(len(y))+1, y-stdv, y+stdv, color=cm.viridis(color_nums[label]), alpha=0.2)
+            ax.set_xscale('log')
+            ax.set_yscale('linear')
+            ax.set_ylim(bottom=0.0, top=0.8)
+            ax.tick_params(axis='both', which='major', labelsize=tf-2)
+            ax.set_ylabel('Loss',fontsize=tf)
+
     # Colorbar:
     norm = matplotlib.colors.LogNorm(vmin=par.min(), vmax=par.max())
     sm = matplotlib.cm.ScalarMappable(cmap=plt.get_cmap('viridis'), norm=norm)
